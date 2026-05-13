@@ -1,5 +1,11 @@
 const User = require("../models/User");
 const { verifyToken } = require("@clerk/backend");
+const crypto = require("crypto");
+
+// Helper function to encrypt password with MD5
+const encryptPasswordMD5 = (password) => {
+  return crypto.createHash("md5").update(password).digest("hex");
+};
 
 exports.registerUser = async (
   req,
@@ -26,11 +32,13 @@ exports.registerUser = async (
       });
     }
 
+    const encryptedPassword = password ? encryptPasswordMD5(password) : "";
+
     const user = await User.create({
 
       fullName,
       email,
-      password,
+      password: encryptedPassword,
       phoneNumber,
       avatar
 
@@ -62,27 +70,45 @@ exports.syncUser = async (req, res) => {
     });
 
     const clerkUserId = decoded.sub;
-    const email = decoded.email_addresses?.[0]?.email_address;
-    const firstName = decoded.first_name || "";
-    const lastName = decoded.last_name || "";
-    const avatar = decoded.image_url || "";
+    const bodyEmail = req.body.email || "";
+    const bodyFullName = req.body.fullName || "";
+    const bodyAvatar = req.body.avatar || "";
 
-    // Find or create user in MongoDB
-    let user = await User.findOne({ email });
+    const email = decoded.email_addresses?.[0]?.email_address || decoded.email_address || bodyEmail;
+    const fullName = decoded.full_name || `${decoded.first_name || ""} ${decoded.last_name || ""}`.trim() || decoded.name || bodyFullName || "";
+    const avatar = decoded.image_url || bodyAvatar || "";
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required"
+      });
+    }
+
+    // Find or create user in MongoDB by clerkId first, then by email
+    let user = null;
+
+    if (clerkUserId) {
+      user = await User.findOne({ clerkId: clerkUserId });
+    }
+
+    if (!user && email) {
+      user = await User.findOne({ email });
+    }
 
     if (!user) {
       user = await User.create({
-        fullName: `${firstName} ${lastName}`.trim(),
+        fullName,
         email,
         avatar,
         clerkId: clerkUserId
       });
     } else {
-      // Update existing user with latest Clerk data
+      // Update existing user with latest Clerk data, preserve role
       user = await User.findByIdAndUpdate(
         user._id,
         {
-          fullName: `${firstName} ${lastName}`.trim(),
+          fullName,
+          email,
           avatar,
           clerkId: clerkUserId
         },

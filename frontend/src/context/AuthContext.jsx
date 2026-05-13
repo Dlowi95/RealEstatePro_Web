@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const { getToken, isSignedIn, userId } = useAuth();
+  const { user: clerkUser } = useUser();
   const [user, setUser] = useState(null);       // thông tin user từ DB của mình
   const [role, setRole] = useState(null);        // "user" | "admin"
   const [loading, setLoading] = useState(true);
@@ -22,9 +23,17 @@ export function AuthProvider({ children }) {
     const syncUser = async () => {
       try {
         const token = await getToken();  // JWT từ Clerk
+        const email = clerkUser?.primaryEmailAddress?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress || "";
+        const fullName = clerkUser?.fullName || `${clerkUser?.firstName || ""} ${clerkUser?.lastName || ""}`.trim() || clerkUser?.username || "";
+        const avatar = clerkUser?.imageUrl || "";
+
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/auth/sync`,
-          {},
+          {
+            email,
+            fullName,
+            avatar,
+          },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUser(res.data.user);
@@ -37,7 +46,7 @@ export function AuthProvider({ children }) {
     };
 
     syncUser();
-  }, [isSignedIn, userId]);
+  }, [isSignedIn, userId, clerkUser]);
 
   // Hàm helper: gọi API có kèm JWT tự động
   const authAxios = async () => {
