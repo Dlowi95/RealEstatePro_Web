@@ -9,52 +9,9 @@ import {
   UserButton
 } from "@clerk/clerk-react";
 import { useAuthContext } from "./context/AuthContext";
-import AdminDashboard from "./pages/AdminDashboard";
-
-function Home() {
-  const { user: clerkUser, isLoaded } = useUser();
-  const { role, loading, isAdmin } = useAuthContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && isAdmin) {
-      navigate('/admin');
-    }
-  }, [loading, isAdmin, navigate]);
-
-  return (
-    <div style={{ padding: "40px" }}>
-      <h1>RealEstatePro</h1>
-
-      <SignedOut>
-        <button style={{ marginRight: "10px" }}>
-          <SignInButton />
-        </button>
-
-        <button>
-          <SignUpButton />
-        </button>
-      </SignedOut>
-
-      <SignedIn>
-        <div style={{ marginBottom: "18px" }}>
-          <p>Welcome, {clerkUser?.fullName || clerkUser?.username}</p>
-          <p>Role: {loading ? "Loading..." : role || "user"}</p>
-        </div>
-
-        {isAdmin && (
-          <Link to="/admin" style={{ textDecoration: "none" }}>
-            <button style={{ marginBottom: "18px" }}>
-              Open Admin Dashboard
-            </button>
-          </Link>
-        )}
-
-        <UserButton />
-      </SignedIn>
-    </div>
-  );
-}
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import HomePage from "./pages/users/HomePage";
+import CreatePropertyPage from "./pages/users/CreatePropertyPage";
 
 function AdminPage() {
   const { loading, isAdmin } = useAuthContext();
@@ -74,8 +31,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/create-property" element={<CreatePropertyPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

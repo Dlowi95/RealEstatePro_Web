@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const propertyRoutes = require("./routes/propertyRoutes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/properties", propertyRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running");
