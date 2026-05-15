@@ -12,6 +12,8 @@ import { useAuthContext } from "./context/AuthContext";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import HomePage from "./pages/users/HomePage";
 import CreatePropertyPage from "./pages/users/CreatePropertyPage";
+import ManagePropertiesPage from "./pages/users/ManagePropertyPage";
+import EditPropertyPage from "./pages/users/UpdatePropertyPage";
 
 function AdminPage() {
   const { loading, isAdmin } = useAuthContext();
@@ -34,6 +36,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/create-property" element={<CreatePropertyPage />} />
+        <Route path="/manage-properties" element={<ManagePropertiesPage />} />
+        <Route path="/edit-property/:id" element={<EditPropertyPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

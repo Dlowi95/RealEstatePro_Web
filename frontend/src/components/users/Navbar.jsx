@@ -1,21 +1,23 @@
-import { 
-  Box, 
-  Button, 
-  Container, 
-  Flex, 
-  HStack, 
-  IconButton, 
-  Link, 
-  Text,
-  Drawer
-} from "@chakra-ui/react";
-import { LuMenu } from "react-icons/lu";
 import {
-    SignedIn,
-    SignedOut,
-    SignInButton,
-    SignUpButton,
-    UserButton
+  Box,
+  Button,
+  Container,
+  Flex,
+  HStack,
+  IconButton,
+  Link,
+  Text,
+  Drawer,
+  Menu,
+  Portal
+} from "@chakra-ui/react";
+import { LuChevronDown, LuMenu } from "react-icons/lu";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton
 } from "@clerk/clerk-react";
 
 const navLinks = [
@@ -26,19 +28,19 @@ const navLinks = [
 
 const Navbar = () => {
   return (
-    <Box 
-      as="nav" 
-      bg="#fff" 
-      borderBottom="1px solid" 
-      borderColor="gray.100" 
-      py={3} 
-      position="sticky" 
-      top="0" 
+    <Box
+      as="nav"
+      bg="#fff"
+      borderBottom="1px solid"
+      borderColor="gray.100"
+      py={3}
+      position="sticky"
+      top="0"
       zIndex="1000"
     >
       <Container maxW="container.xl">
         <Flex justify="space-between" align="center">
-          
+
           {/* TRÁI: Logo & Menu Desktop */}
           <HStack gap={8}>
             <Link href="/" _hover={{ textDecoration: "none" }}>
@@ -51,11 +53,11 @@ const Navbar = () => {
 
             <HStack gap={5} hideBelow="lg">
               {navLinks.map((link) => (
-                <Link 
-                  key={link.label} 
-                  href={link.href} 
-                  fontSize="sm" 
-                  fontWeight="600" 
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  fontSize="sm"
+                  fontWeight="600"
                   color="gray.700"
                   _hover={{ color: "red.600", textDecoration: "none" }}
                 >
@@ -85,9 +87,27 @@ const Navbar = () => {
               {/* TRƯỜNG HỢP ĐÃ ĐĂNG NHẬP */}
               <SignedIn>
                 <HStack gap={4}>
-                  <Button bg="red.600" color="white" _hover={{ bg: "red.700" }} fontSize="sm" fontWeight="600" as="a" href="/create-property">
-                    Đăng tin
-                  </Button>
+                  {/* Dropdown Menu thay thế cho nút Đăng tin cũ */}
+                  <Menu.Root>
+                    <Menu.Trigger asChild>
+                      <Button variant="outline" colorPalette="red" size="sm" fontWeight="600">
+                        Quản lý tin <LuChevronDown style={{ marginLeft: '5px' }} />
+                      </Button>
+                    </Menu.Trigger>
+                    <Portal>
+                      <Menu.Positioner>
+                        <Menu.Content>
+                          <Menu.Item value="create" as="a" href="/create-property">
+                            Đăng tin mới
+                          </Menu.Item>
+                          <Menu.Item value="manage" as="a" href="/manage-properties">
+                            Tin của tôi
+                          </Menu.Item>
+                        </Menu.Content>
+                      </Menu.Positioner>
+                    </Portal>
+                  </Menu.Root>
+
                   <UserButton afterSignOutUrl="/" />
                 </HStack>
               </SignedIn>
@@ -111,19 +131,19 @@ const Navbar = () => {
                     <Drawer.Body>
                       <Flex direction="column" gap={4}>
                         {navLinks.map((link) => (
-                          <Link 
-                            key={link.label} 
-                            href={link.href} 
-                            fontWeight="600" 
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            fontWeight="600"
                             fontSize="md"
-                            py={2} 
-                            borderBottom="1px solid" 
+                            py={2}
+                            borderBottom="1px solid"
                             borderColor="gray.50"
                           >
                             {link.label}
                           </Link>
                         ))}
-                        
+
                         <Box pt={4}>
                           <SignedIn>
                             <Flex direction="column" gap={3}>
@@ -136,7 +156,7 @@ const Navbar = () => {
                               </HStack>
                             </Flex>
                           </SignedIn>
-                          
+
                           <SignedOut>
                             <SignInButton mode="modal">
                               <Button variant="outline" w="full">Đăng nhập / Đăng ký</Button>
