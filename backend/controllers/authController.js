@@ -116,6 +116,15 @@ exports.syncUser = async (req, res) => {
       );
     }
 
+    // Debug: log which DB user matched or created
+    console.log("[authController.syncUser] matched user:", {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      clerkId: user.clerkId,
+      clerkUserId
+    });
+
     res.status(200).json({
       success: true,
       user

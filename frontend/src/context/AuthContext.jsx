@@ -36,6 +36,8 @@ export function AuthProvider({ children }) {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        // Debug: log sync response
+        console.log("[AuthContext] sync response:", res.data);
         setUser(res.data.user);
         setRole(res.data.user.role);  // "user" hoặc "admin"
       } catch (err) {
