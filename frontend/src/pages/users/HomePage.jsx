@@ -4,8 +4,8 @@ import SearchBar from "@/components/users/SerchBar";
 export default function HomePage() {
     return (
         <UserLayout>
-            <SearchBar />
             <HeroSection />
+         <SearchBar />
         </UserLayout>
     );
 }
