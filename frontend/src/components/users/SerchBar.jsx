@@ -8,6 +8,7 @@ import {
   Card,
   Flex,
   Grid,
+  Image,
   Input,
   InputGroup,
   NativeSelect,
@@ -274,43 +275,66 @@ export default function SearchBar({
           </Text>
         )}
 
-        {!loading && !error && hasSearched && (
-          <Text fontSize="md" fontWeight="semibold" mb="4">
-            Tìm thấy {filteredProperties.length} bất động sản
-          </Text>
-        )}
+        {!loading && !error && (
+            <Text fontSize="md" fontWeight="semibold" mb="4">
+              Tìm thấy {(hasSearched ? filteredProperties.length : properties.length) || 0} bất động sản
+            </Text>
+          )}
 
-        {!loading && !error && hasSearched && filteredProperties.length === 0 && (
-          <Text fontSize="md" color="gray.500" mb="4">
-            Không tìm thấy bất động sản phù hợp.
-          </Text>
-        )}
+          {!loading && !error && (hasSearched ? filteredProperties.length === 0 : properties.length === 0) && (
+            <Text fontSize="md" color="gray.500" mb="4">
+              Không tìm thấy bất động sản phù hợp.
+            </Text>
+          )}
 
-        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap="4">
-          {filteredProperties.map((property) => (
-            <Box
-              key={property._id}
-              borderWidth="1px"
-              borderRadius="md"
-              p="4"
-              bg="gray.50"
-            >
-              <Flex justify="space-between" align="center" mb="2">
-                <Text fontWeight="bold">{property.title}</Text>
-                <Badge colorScheme="green">{property.type}</Badge>
-              </Flex>
-              <Text fontSize="sm" mb="1">
-                {property.location?.address || property.location?.district || property.location?.province}
-              </Text>
-              <Text fontSize="sm" mb="1">
-                Giá: {property.price?.toLocaleString("vi-VN")} VNĐ • Diện tích: {property.area} m²
-              </Text>
-              <Text fontSize="sm" noOfLines={2}>
-                {property.description}
-              </Text>
-            </Box>
-          ))}
-        </Grid>
+          <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4">
+            {(hasSearched ? filteredProperties : properties).map((property) => (
+              <Box key={property._id} borderWidth="1px" borderRadius="md" overflow="hidden" bg="white">
+                <Grid templateColumns={{ base: "1fr", md: "2fr 1fr" }} gap="0">
+                  <Box>
+                    {property.images && property.images.length > 0 ? (
+                      <Image src={property.images[0]} alt={property.title} objectFit="cover" h={{ base: "200px", md: "220px" }} w="100%" />
+                    ) : (
+                      <Box h={{ base: "200px", md: "220px" }} bg="gray.100" />
+                    )}
+                  </Box>
+                  <Box p="2">
+                    <Grid templateColumns="repeat(2,1fr)" gap="2">
+                      {(property.images || []).slice(1,5).map((img, idx) => (
+                        <Box key={idx} h="100px" bg="gray.50" overflow="hidden">
+                          <Image src={img} alt={`${property.title}-${idx}`} objectFit="cover" h="100%" w="100%" />
+                        </Box>
+                      ))}
+                      {((property.images || []).length <= 1) && Array.from({ length: 4 }).map((_, idx) => (
+                        <Box key={`ph-${idx}`} h="100px" bg="gray.50" />
+                      ))}
+                    </Grid>
+                  </Box>
+                </Grid>
+
+                <Box p="3">
+                  <Flex justify="space-between" align="center" mb="2">
+                    <Text fontWeight="bold" fontSize="lg" noOfLines={2}>{property.title}</Text>
+                    {(property.isVip || property.vip || property.featured) && (
+                      <Badge colorScheme="red">VIP KIM CƯƠNG</Badge>
+                    )}
+                  </Flex>
+
+                  <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
+                    {property.location?.address || property.location?.district || property.location?.province}
+                  </Text>
+
+                  <Text fontSize="lg" fontWeight="bold" color="red.500">
+                    {Number(property.price).toLocaleString("vi-VN")} VNĐ
+                  </Text>
+
+                  <Text fontSize="sm" color="gray.600">
+                    • {property.area} m² • {property.bedrooms || 1} phòng ngủ • {property.bathrooms || 1} toilet
+                  </Text>
+                </Box>
+              </Box>
+            ))}
+          </Grid>
       </Box>
     </Card.Root>
   );
