@@ -7,7 +7,7 @@ export default function HomePage() {
     return (
         <UserLayout>
                 <HeroSection />
-             <SearchBar />
+                <SearchBar />
                 <FeaturedProperties />
         </UserLayout>
     );
