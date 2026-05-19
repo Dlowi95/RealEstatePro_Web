@@ -5,6 +5,7 @@ import {
   Flex,
   HStack,
   IconButton,
+  Image,
   Link,
   Text,
   Drawer,
@@ -44,10 +45,9 @@ const Navbar = () => {
           {/* TRÁI: Logo & Menu Desktop */}
           <HStack gap={8}>
             <Link href="/" _hover={{ textDecoration: "none" }}>
-              <HStack gap={1} fontWeight="bold" fontSize="xl">
-                <Text color="red.600">🏠</Text>
-                <Text color="black">RealEstate</Text>
-                <Text color="red.600">Pro</Text>
+              <HStack gap={2} align="center">
+                <Image src="/imgs/logo.png" alt="RealEstate Pro" w="150px" objectFit="contain" />
+                
               </HStack>
             </Link>
 
