@@ -17,8 +17,8 @@ export default function SearchBar({
   setKeyword,
   location,
   setLocation,
-  type,
-  setType,
+  propertyType,
+  setPropertyType,
   maxPrice,
   setMaxPrice,
   minArea,
@@ -28,7 +28,7 @@ export default function SearchBar({
 }) {
   const [keywordState, setKeywordState] = useState(keyword || "");
   const [locationState, setLocationState] = useState(location || "");
-  const [typeState, setTypeState] = useState(type || "");
+  const [propertyTypeState, setPropertyTypeState] = useState(propertyType || "");
   const [maxPriceState, setMaxPriceState] = useState(maxPrice || "");
   const [minAreaState, setMinAreaState] = useState(minArea || "");
 
@@ -41,8 +41,8 @@ export default function SearchBar({
   }, [location]);
 
   useEffect(() => {
-    setTypeState(type || "");
-  }, [type]);
+    setPropertyTypeState(propertyType || "");
+  }, [propertyType]);
 
   useEffect(() => {
     setMaxPriceState(maxPrice || "");
@@ -63,8 +63,8 @@ export default function SearchBar({
   };
 
   const handleTypeChange = (value) => {
-    setTypeState(value);
-    if (setType) setType(value);
+    setPropertyTypeState(value);
+    if (setPropertyType) setPropertyType(value);
   };
 
   const handleMaxPriceChange = (value) => {
@@ -86,13 +86,13 @@ export default function SearchBar({
   const handleClearClick = () => {
     setKeywordState("");
     setLocationState("");
-    setTypeState("");
+    setPropertyTypeState("");
     setMaxPriceState("");
     setMinAreaState("");
 
     if (setKeyword) setKeyword("");
     if (setLocation) setLocation("");
-    if (setType) setType("");
+    if (setPropertyType) setPropertyType("");
     if (setMaxPrice) setMaxPrice("");
     if (setMinArea) setMinArea("");
 
@@ -133,7 +133,7 @@ export default function SearchBar({
 
         <NativeSelect.Root>
           <NativeSelect.Field
-            value={typeState}
+            value={propertyTypeState}
             onChange={(e) => handleTypeChange(e.target.value)}
           >
             <option value="">Tất cả loại hình</option>

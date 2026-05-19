@@ -1,17 +1,15 @@
 import { useState } from "react";
-import HeroSection from "@/components/users/HeroSection";
-import UserLayout from "@/layouts/UserLayout";
 import SearchBar from "@/components/users/SerchBar";
 import PropertyList from "@/components/users/PropertyList";
-import FeaturedProperties from "@/components/users/FeaturedProperties";
+import { Box, Container, Text } from "@chakra-ui/react";
 
-export default function HomePage() {
+export default function SellPropertiesPage() {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minArea, setMinArea] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
+  const [hasSearched, setHasSearched] = useState(true);
 
   const handleSearch = () => {
     setHasSearched(true);
@@ -22,8 +20,13 @@ export default function HomePage() {
   };
 
   return (
-    <UserLayout>
-      <HeroSection />
+    <Container maxW="container.xl" py="6">
+      <Box mb="6">
+        <Text fontSize="3xl" fontWeight="bold">Nhà đất bán</Text>
+        <Text color="gray.600" mt="2">
+          Hiển thị tất cả sản phẩm cần bán. Bạn có thể lọc theo khu vực, loại hình, giá và diện tích.
+        </Text>
+      </Box>
       <SearchBar
         keyword={keyword}
         setKeyword={setKeyword}
@@ -41,12 +44,12 @@ export default function HomePage() {
       <PropertyList
         keyword={keyword}
         location={location}
+        type="Buy"
         propertyType={propertyType}
         maxPrice={maxPrice}
         minArea={minArea}
         hasSearched={hasSearched}
       />
-      <FeaturedProperties />
-    </UserLayout>
+    </Container>
   );
 }

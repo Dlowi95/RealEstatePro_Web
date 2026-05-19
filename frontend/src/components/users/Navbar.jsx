@@ -12,6 +12,7 @@ import {
   Menu,
   Portal
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { LuChevronDown, LuMenu } from "react-icons/lu";
 import {
   SignedIn,
@@ -22,8 +23,8 @@ import {
 } from "@clerk/clerk-react";
 
 const navLinks = [
-  { label: "Nhà đất bán", href: "#" },
-  { label: "Nhà đất cho thuê", href: "#" },
+  { label: "Nhà đất bán", href: "/ban" },
+  { label: "Nhà đất cho thuê", href: "/cho-thue" },
 ];
 
 const Navbar = () => {
@@ -54,7 +55,8 @@ const Navbar = () => {
               {navLinks.map((link) => (
                 <Link
                   key={link.label}
-                  href={link.href}
+                  as={RouterLink}
+                  to={link.href}
                   fontSize="sm"
                   fontWeight="600"
                   color="gray.700"
@@ -132,7 +134,8 @@ const Navbar = () => {
                         {navLinks.map((link) => (
                           <Link
                             key={link.label}
-                            href={link.href}
+                            as={RouterLink}
+                            to={link.href}
                             fontWeight="600"
                             fontSize="md"
                             py={2}

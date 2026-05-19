@@ -17,6 +17,7 @@ export default function PropertyList({
   keyword,
   location,
   type,
+  propertyType,
   maxPrice,
   minArea,
   hasSearched,
@@ -49,16 +50,18 @@ export default function PropertyList({
   const filteredProperties = useMemo(() => {
     if (!hasSearched) return [];
 
-    const normalizedKeyword = keyword.trim().toLowerCase();
-    const normalizedLocation = location.trim().toLowerCase();
-    const normalizedType = type.trim().toLowerCase();
+    const normalizedKeyword = (keyword || "").trim().toLowerCase();
+  const normalizedLocation = (location || "").trim().toLowerCase();
+  const normalizedType = (type || "").trim().toLowerCase();
+    const normalizedPropertyType = (propertyType || "").trim().toLowerCase();
     const maxPriceNumber = Number(maxPrice) || Number.POSITIVE_INFINITY;
     const minAreaNumber = Number(minArea) || 0;
 
     return properties.filter((property) => {
       const title = property.title?.toLowerCase() || "";
       const description = property.description?.toLowerCase() || "";
-      const propertyType = property.type?.toLowerCase() || "";
+      const propertySaleType = property.type?.toLowerCase() || "";
+      const propertyTypeValue = property.propertyType?.toLowerCase() || "";
       const propertyLocation = `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
       const price = Number(property.price) || 0;
       const area = Number(property.area) || 0;
@@ -69,7 +72,9 @@ export default function PropertyList({
         description.includes(normalizedKeyword);
       const matchesLocation =
         !normalizedLocation || propertyLocation.includes(normalizedLocation);
-      const matchesType = !normalizedType || propertyType.includes(normalizedType);
+      const matchesType = !normalizedType || propertySaleType.includes(normalizedType);
+      const matchesPropertyType =
+        !normalizedPropertyType || propertyTypeValue.includes(normalizedPropertyType);
       const matchesMaxPrice = price <= maxPriceNumber;
       const matchesMinArea = area >= minAreaNumber;
 
@@ -77,11 +82,12 @@ export default function PropertyList({
         matchesKeyword &&
         matchesLocation &&
         matchesType &&
+        matchesPropertyType &&
         matchesMaxPrice &&
         matchesMinArea
       );
     });
-  }, [hasSearched, keyword, location, type, maxPrice, minArea, properties]);
+  }, [hasSearched, keyword, location, type, propertyType, maxPrice, minArea, properties]);
 
   if (!hasSearched) {
     return null;

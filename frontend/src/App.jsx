@@ -11,6 +11,8 @@ import {
 import { useAuthContext } from "./context/AuthContext";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import HomePage from "./pages/users/HomePage";
+import SellPropertiesPage from "./pages/users/SellPropertiesPage";
+import RentPropertiesPage from "./pages/users/RentPropertiesPage";
 import CreatePropertyPage from "./pages/users/CreatePropertyPage";
 import ManagePropertiesPage from "./pages/users/ManagePropertyPage";
 import EditPropertyPage from "./pages/users/UpdatePropertyPage";
@@ -54,6 +56,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/ban" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
+        <Route path="/cho-thue" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
         <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
         <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
