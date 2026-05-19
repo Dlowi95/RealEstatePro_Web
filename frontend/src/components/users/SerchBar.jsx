@@ -275,20 +275,21 @@ export default function SearchBar({
           </Text>
         )}
 
-        {!loading && !error && (
-            <Text fontSize="md" fontWeight="semibold" mb="4">
-              Tìm thấy {(hasSearched ? filteredProperties.length : properties.length) || 0} bất động sản
-            </Text>
-          )}
+        {hasSearched && !loading && !error && (
+          <Text fontSize="md" fontWeight="semibold" mb="4">
+            Tìm thấy {filteredProperties.length || 0} bất động sản
+          </Text>
+        )}
 
-          {!loading && !error && (hasSearched ? filteredProperties.length === 0 : properties.length === 0) && (
-            <Text fontSize="md" color="gray.500" mb="4">
-              Không tìm thấy bất động sản phù hợp.
-            </Text>
-          )}
+        {hasSearched && !loading && !error && filteredProperties.length === 0 && (
+          <Text fontSize="md" color="gray.500" mb="4">
+            Không tìm thấy bất động sản phù hợp.
+          </Text>
+        )}
 
+        {hasSearched && (
           <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4">
-            {(hasSearched ? filteredProperties : properties).map((property) => (
+            {filteredProperties.map((property) => (
               <Box key={property._id} borderWidth="1px" borderRadius="md" overflow="hidden" bg="white">
                 <Grid templateColumns={{ base: "1fr", md: "2fr 1fr" }} gap="0">
                   <Box>
@@ -335,6 +336,7 @@ export default function SearchBar({
               </Box>
             ))}
           </Grid>
+        )}
       </Box>
     </Card.Root>
   );
