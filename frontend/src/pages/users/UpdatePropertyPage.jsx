@@ -20,6 +20,7 @@ import { useUser, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-rea
 import Navbar from "@/components/users/Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
 const EditPropertyPage = () => {
     const { id } = useParams();
     const { user } = useUser();
@@ -38,6 +39,15 @@ const EditPropertyPage = () => {
         district: "",
         address: "",
     });
+
+    const provinces = vnAddressData.map((province) => ({
+        code: province.Code,
+        name: province.Name,
+    }));
+
+    const wards = formData.province
+        ? vnAddressData.find((province) => province.Name === formData.province)?.Wards || []
+        : [];
     // 1. Lấy dữ liệu cũ của bài đăng
     useEffect(() => {
         const fetchProperty = async () => {
@@ -72,7 +82,11 @@ const EditPropertyPage = () => {
     }, [id, user, navigate]);
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+            ...(name === "province" ? { district: "" } : {}),
+        }));
     };
     const removeImage = (urlToRemove) => {
         setImages(images.filter((url) => url !== urlToRemove));
@@ -146,8 +160,39 @@ const EditPropertyPage = () => {
                                 <Box border="1px solid" borderColor="gray.100" p={4} rounded="md">
                                     <Text fontWeight="bold" mb={3} fontSize="sm">Địa chỉ</Text>
                                     <SimpleGrid columns={2} gap={3} mb={3}>
-                                        <Input name="province" value={formData.province} onChange={handleChange} />
-                                        <Input name="district" value={formData.district} onChange={handleChange} />
+                                        <Field.Root required>
+                                            <Field.Label fontWeight="600">Tỉnh/Thành</Field.Label>
+                                            <NativeSelect.Root>
+                                                <NativeSelect.Field name="province" value={formData.province} onChange={handleChange}>
+                                                    <option value="">Chọn tỉnh/thành</option>
+                                                    {provinces.map((province) => (
+                                                        <option key={province.code} value={province.name}>
+                                                            {province.name}
+                                                        </option>
+                                                    ))}
+                                                </NativeSelect.Field>
+                                            </NativeSelect.Root>
+                                        </Field.Root>
+                                        <Field.Root required>
+                                            <Field.Label fontWeight="600">Xã/Phường</Field.Label>
+                                            <NativeSelect.Root>
+                                                <NativeSelect.Field
+                                                    name="district"
+                                                    value={formData.district}
+                                                    onChange={handleChange}
+                                                    disabled={!formData.province}
+                                                >
+                                                    <option value="">
+                                                        {formData.province ? "Chọn xã/phường" : "Chọn tỉnh trước"}
+                                                    </option>
+                                                    {wards.map((ward) => (
+                                                        <option key={ward.Code} value={ward.Name}>
+                                                            {ward.Name}
+                                                        </option>
+                                                    ))}
+                                                </NativeSelect.Field>
+                                            </NativeSelect.Root>
+                                        </Field.Root>
                                     </SimpleGrid>
                                     <Input name="address" value={formData.address} onChange={handleChange} />
                                 </Box>
