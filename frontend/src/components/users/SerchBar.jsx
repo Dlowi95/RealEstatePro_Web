@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
 
 import {
   Badge,
@@ -42,6 +43,8 @@ export default function SearchBar({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+
+  const provinces = vnAddressData.map((province) => province.Name);
 
   const fetchProperties = async () => {
     try {
@@ -96,7 +99,7 @@ export default function SearchBar({
       const title = property.title?.toLowerCase() || "";
       const description = property.description?.toLowerCase() || "";
       const propertyType = property.type?.toLowerCase() || "";
-      const propertyLocation = `${property.location?.province || ""} ${property.location?.district || ""} ${property.location?.address || ""}`.toLowerCase();
+      const propertyLocation = `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
       const price = Number(property.price) || 0;
       const area = Number(property.area) || 0;
 
@@ -196,18 +199,11 @@ export default function SearchBar({
             <option value="">
               Tất cả khu vực
             </option>
-
-            <option value="TP Thủ Đức">
-              TP Thủ Đức
-            </option>
-
-            <option value="Quận 9">
-              Quận 9
-            </option>
-
-            <option value="Bình Thạnh">
-              Bình Thạnh
-            </option>
+            {provinces.map((province) => (
+              <option key={province} value={province}>
+                {province}
+              </option>
+            ))}
           </NativeSelect.Field>
         </NativeSelect.Root>
 
@@ -322,7 +318,7 @@ export default function SearchBar({
                   </Flex>
 
                   <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
-                    {property.location?.address || property.location?.district || property.location?.province}
+                    {property.location.address}, {property.location.ward || "Chưa cập nhật"}, {property.location.province}
                   </Text>
 
                   <Text fontSize="lg" fontWeight="bold" color="red.500">
@@ -330,7 +326,7 @@ export default function SearchBar({
                   </Text>
 
                   <Text fontSize="sm" color="gray.600">
-                    • {property.area} m² • {property.bedrooms || 1} phòng ngủ • {property.bathrooms || 1} toilet
+                    • {property.area} m²
                   </Text>
                 </Box>
               </Box>
