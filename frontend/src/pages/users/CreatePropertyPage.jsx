@@ -33,7 +33,7 @@ const CreatePropertyPage = () => {
         price: "",
         area: "",
         province: "",
-        district: "",
+        ward: "",
         address: "",
     });
 
@@ -57,7 +57,7 @@ const CreatePropertyPage = () => {
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-            ...(name === "province" ? { district: "" } : {}),
+            ...(name === "province" ? { ward: "" } : {}),
         }));
     };
 
@@ -71,7 +71,7 @@ const CreatePropertyPage = () => {
             userId: user?.id,
             location: {
                 province: formData.province,
-                district: formData.district,
+                ward: formData.ward,
                 address: formData.address
             }
         };
@@ -93,7 +93,7 @@ const CreatePropertyPage = () => {
                     price: "",
                     area: "",
                     province: "",
-                    district: "",
+                    ward: "",
                     address: "",
                 });
 
@@ -138,8 +138,6 @@ const CreatePropertyPage = () => {
         <>
             <SignedIn>
                 <Box bg="gray.50" minH="100vh">
-                    <Navbar />
-
                     <Container maxW="container.md" py={10}>
                         <Box bg="white" p={8} rounded="lg" shadow="md">
                             <Heading size="md" mb={6} color="red.600">Đăng tin mới</Heading>
@@ -212,8 +210,8 @@ const CreatePropertyPage = () => {
                                                 <Field.Label fontWeight="600">Xã/Phường</Field.Label>
                                                 <NativeSelect.Root>
                                                     <NativeSelect.Field
-                                                        name="district"
-                                                        value={formData.district}
+                                                        name="ward"
+                                                        value={formData.ward}
                                                         onChange={handleChange}
                                                         disabled={!formData.province}
                                                     >

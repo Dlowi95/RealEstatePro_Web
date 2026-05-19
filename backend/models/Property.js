@@ -9,7 +9,7 @@ const propertySchema = new mongoose.Schema({
     area: { type: Number, required: true },
     location: {
         province: String,
-        district: String,
+        ward: String,
         address: String
     },
     images: [String],

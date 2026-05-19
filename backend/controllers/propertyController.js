@@ -30,7 +30,7 @@ const createProperty = async (req, res) => {
             area,
             location: {
                 province: location?.province,
-                district: location?.district,
+                ward: location?.ward,
                 address: location?.address
             },
             images,

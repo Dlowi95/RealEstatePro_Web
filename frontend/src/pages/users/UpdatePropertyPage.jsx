@@ -36,7 +36,7 @@ const EditPropertyPage = () => {
         area: "",
         province: "",
 
-        district: "",
+        ward: "",
         address: "",
     });
 
@@ -67,7 +67,7 @@ const EditPropertyPage = () => {
                     price: data.price,
                     area: data.area,
                     province: data.location.province,
-                    district: data.location.district,
+                    ward: data.location.district,
                     address: data.location.address,
                 });
                 setDescription(data.description);
@@ -85,7 +85,7 @@ const EditPropertyPage = () => {
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-            ...(name === "province" ? { district: "" } : {}),
+            ...(name === "province" ? { ward: "" } : {}),
         }));
     };
     const removeImage = (urlToRemove) => {
@@ -114,7 +114,7 @@ const EditPropertyPage = () => {
             images,
             location: {
                 province: formData.province,
-                district: formData.district,
+                ward: formData.ward,
                 address: formData.address
             }
         };
@@ -135,7 +135,6 @@ const EditPropertyPage = () => {
     if (loading) return <Center h="100vh"><Spinner color="red.500" /></Center>;
     return (
         <Box bg="gray.50" minH="100vh">
-            <Navbar />
             <SignedIn>
                 <Container maxW="container.md" py={10}>
                     <Box bg="white" p={8} rounded="lg" shadow="md">
@@ -177,8 +176,8 @@ const EditPropertyPage = () => {
                                             <Field.Label fontWeight="600">Xã/Phường</Field.Label>
                                             <NativeSelect.Root>
                                                 <NativeSelect.Field
-                                                    name="district"
-                                                    value={formData.district}
+                                                    name="ward"
+                                                    value={formData.ward}
                                                     onChange={handleChange}
                                                     disabled={!formData.province}
                                                 >

@@ -1,3 +1,4 @@
+import ChatbotWidget from '@/components/users/ChatbotWidget'
 import Navbar from '@/components/users/Navbar'
 import React from 'react'
 
@@ -9,6 +10,8 @@ const UserLayout = ({ children }) => {
       <main>
         {children}
       </main>
+
+      <ChatbotWidget />
     </>
   )
 }

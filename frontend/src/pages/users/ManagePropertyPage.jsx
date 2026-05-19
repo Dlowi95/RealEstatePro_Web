@@ -46,7 +46,6 @@ const ManagePropertiesPage = () => {
 
     return (
         <Box bg="gray.50" minH="100vh">
-            <Navbar />
             <Container maxW="container.lg" py={10}>
                 <Heading size="lg" mb={6}>Quản lý tin đăng của tôi</Heading>
                 <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
