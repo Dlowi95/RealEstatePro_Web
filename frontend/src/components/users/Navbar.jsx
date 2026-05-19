@@ -24,7 +24,6 @@ import {
 const navLinks = [
   { label: "Nhà đất bán", href: "#" },
   { label: "Nhà đất cho thuê", href: "#" },
-  { label: "Dự án", href: "#" },
 ];
 
 const Navbar = () => {

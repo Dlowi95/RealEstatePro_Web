@@ -1,14 +1,52 @@
+import { useState } from "react";
 import HeroSection from "@/components/users/HeroSection";
 import UserLayout from "@/layouts/UserLayout";
 import SearchBar from "@/components/users/SerchBar";
+import PropertyList from "@/components/users/PropertyList";
 import FeaturedProperties from "@/components/users/FeaturedProperties";
 
 export default function HomePage() {
-    return (
-        <UserLayout>
-                <HeroSection />
-                <SearchBar />
-                <FeaturedProperties />
-        </UserLayout>
-    );
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [minArea, setMinArea] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const handleSearch = () => {
+    setHasSearched(true);
+  };
+
+  const handleClear = () => {
+    setHasSearched(false);
+  };
+
+  return (
+    <UserLayout>
+      <HeroSection />
+      <SearchBar
+        keyword={keyword}
+        setKeyword={setKeyword}
+        location={location}
+        setLocation={setLocation}
+        type={type}
+        setType={setType}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        minArea={minArea}
+        setMinArea={setMinArea}
+        onSearch={handleSearch}
+        onClear={handleClear}
+      />
+      <PropertyList
+        keyword={keyword}
+        location={location}
+        type={type}
+        maxPrice={maxPrice}
+        minArea={minArea}
+        hasSearched={hasSearched}
+      />
+      <FeaturedProperties />
+    </UserLayout>
+  );
 }
