@@ -137,9 +137,9 @@ export default function SearchBar({
             onChange={(e) => handleTypeChange(e.target.value)}
           >
             <option value="">Tất cả loại hình</option>
-            <option value="Căn hộ">Căn hộ</option>
-            <option value="Đất nền">Đất nền</option>
-            <option value="Nhà phố">Nhà phố</option>
+            <option value="Apartment">Căn hộ</option>
+            <option value="Land">Đất nền</option>
+            <option value="House">Nhà phố</option>
           </NativeSelect.Field>
         </NativeSelect.Root>
 
