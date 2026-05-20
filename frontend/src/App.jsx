@@ -1,6 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import { useAuthContext } from "./context/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -15,34 +13,12 @@ import EditPropertyPage from "./pages/users/UpdatePropertyPage";
 import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
 import UserLayout from "./layouts/UserLayout";
 
-// Bảo vệ route admin: chỉ admin mới vào được
-function AdminRoute({ children }) {
-  const { loading, isAdmin } = useAuthContext();
-  if (loading) return <div>Loading...</div>;
-  return isAdmin ? children : <Navigate to="/" replace />;
-}
 
-// Tự động chuyển admin từ "/" sang "/admin"
-function AdminRedirector() {
-  const { loading, isAdmin } = useAuthContext();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (!loading && isAdmin && location.pathname === "/") {
-      navigate("/admin", { replace: true });
-    }
-  }, [loading, isAdmin, location.pathname, navigate]);
-
-  return null;
-}
 
 function App() {
   return (
     <BrowserRouter>
-      <AdminRedirector />
       <Routes>
-        {/* User routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/ban" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/cho-thue" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
@@ -51,11 +27,7 @@ function App() {
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
         <Route path="/property/:id" element={<UserLayout><PropertyDetailsPage /></UserLayout>} />
 
-        <Route path="/admin" element={
-          <AdminRoute>
-            <AdminLayout />
-          </AdminRoute>
-        }>
+        <Route path="/admin/*" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="properties" element={<AdminProperties />} />

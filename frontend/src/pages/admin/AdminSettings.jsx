@@ -30,7 +30,7 @@ export default function AdminSettings() {
       });
       toaster.create({ title: 'Cập nhật thành công!', type: 'success' });
       if (fetchCurrentUser) await fetchCurrentUser();
-      else setTimeout(() => window.location.reload(), 2000);
+      else setTimeout(() => window.location.reload(), 2000); // sửa lỗi reload
     } catch (err) {
       toaster.create({ title: 'Lỗi cập nhật', description: err.response?.data?.message || err.message, type: 'error' });
     } finally {
@@ -82,8 +82,8 @@ export default function AdminSettings() {
           </Card.Header>
           <Card.Body>
             <VStack align="stretch" spacing={4}>
-              <Button leftIcon={<FaArrowLeft />} variant="ghost" onClick={() => navigate('/admin')}>
-                Quay lại Dashboard
+              <Button leftIcon={<FaArrowLeft />} variant="ghost" onClick={() => navigate('/')}>
+                Về trang chủ
               </Button>
             </VStack>
           </Card.Body>

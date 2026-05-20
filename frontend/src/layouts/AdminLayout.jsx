@@ -2,7 +2,8 @@ import { Box, Flex, VStack, HStack, Text, Icon, Link as ChakraLink, Image, Menu,
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaHome, FaChartLine, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '@clerk/clerk-react';
-import { useAuthContext } from '../context/AuthContext'; // 👈 thêm import
+import { useAuthContext } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 const navItems = [
   { name: 'Tổng quan', path: '/admin', icon: FaTachometerAlt },
@@ -13,9 +14,18 @@ const navItems = [
 
 export default function AdminLayout() {
   const { signOut } = useAuth();
-  const { user: dbUser } = useAuthContext(); // 👈 lấy user từ MongoDB (đã sync)
+  const { user: dbUser, loading } = useAuthContext();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Kiểm tra quyền admin: nếu không phải admin thì redirect về trang chủ
+  useEffect(() => {
+    if (!loading) {
+      if (!dbUser || dbUser.role !== 'admin') {
+        navigate('/');
+      }
+    }
+  }, [dbUser, loading, navigate]);
 
   const handleLogout = async () => {
     await signOut();
@@ -31,9 +41,13 @@ export default function AdminLayout() {
   const displayName = dbUser?.fullName || 'Admin';
   const shortName = displayName.split(' ')[0];
 
+  // Hiển thị loading nếu chưa xác định user
+  if (loading) {
+    return <Flex justify="center" align="center" h="100vh">Loading...</Flex>;
+  }
+
   return (
     <Flex minH="100vh">
-      {/* Sidebar - giữ nguyên */}
       <Box
         w="260px"
         bg={sidebarBg}

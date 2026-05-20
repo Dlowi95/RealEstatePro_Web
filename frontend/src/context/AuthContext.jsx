@@ -5,13 +5,18 @@ import axios from "axios";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const { getToken, isSignedIn, userId } = useAuth();
+  const { getToken, isSignedIn, userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
   const [user, setUser] = useState(null);       // thông tin user từ DB của mình
   const [role, setRole] = useState(null);        // "user" | "admin"
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoaded) {
+      setLoading(true);
+      return;
+    }
+
     if (!isSignedIn) {
       setUser(null);
       setRole(null);
@@ -19,6 +24,7 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    setLoading(true);
     // Khi Clerk đăng nhập xong → lấy JWT rồi gửi lên backend để đồng bộ user
     const syncUser = async () => {
       try {
@@ -40,6 +46,7 @@ export function AuthProvider({ children }) {
         console.log("[AuthContext] sync response:", res.data);
         setUser(res.data.user);
         setRole(res.data.user.role);  // "user" hoặc "admin"
+        console.log("Role set from backend:", res.data.user.role);
       } catch (err) {
         console.error("Sync user failed:", err);
       } finally {
@@ -48,7 +55,7 @@ export function AuthProvider({ children }) {
     };
 
     syncUser();
-  }, [isSignedIn, userId, clerkUser]);
+  }, [isLoaded, isSignedIn, userId, clerkUser]);
 
   // Hàm helper: gọi API có kèm JWT tự động
   const authAxios = async () => {
