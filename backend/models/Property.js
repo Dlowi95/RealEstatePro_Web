@@ -12,6 +12,7 @@ const propertySchema = new mongoose.Schema({
         ward: String,
         address: String
     },
+    contactPhone: { type: String, required: true },
     images: [String],
     userId: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected', 'hidden'], default: 'pending' },

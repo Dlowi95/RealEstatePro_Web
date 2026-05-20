@@ -147,7 +147,7 @@ export default function PropertyDetailsPage() {
 
           {/* CONTACT BUTTON */}
           <Button mt={8} colorScheme="red" size="lg" px={10}>
-            Liên hệ ngay
+            Liên hệ ngay: {property.contactPhone}
           </Button>
         </Box>
       </Container>
