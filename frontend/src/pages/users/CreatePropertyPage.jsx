@@ -106,6 +106,7 @@ const CreatePropertyPage = () => {
           province: "",
           ward: "",
           address: "",
+          contactPhone: "",
         });
 
         setDescription("");

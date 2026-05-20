@@ -10,11 +10,12 @@ const createProperty = async (req, res) => {
             price,
             area,
             location,
+            contactPhone,
             images,
             userId
         } = req.body;
 
-        if (!title || !description || !type || !propertyType || !price || !area || !location || !userId) {
+        if (!title || !description || !type || !propertyType || !price || !area || !location || !contactPhone || !userId) {
             return res.status(400).json({
                 success: false,
                 message: "Missing required fields"
@@ -33,6 +34,7 @@ const createProperty = async (req, res) => {
                 ward: location?.ward,
                 address: location?.address
             },
+            contactPhone,
             images,
             userId
         });
