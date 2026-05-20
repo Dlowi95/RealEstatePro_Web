@@ -14,6 +14,15 @@ const optimizedLocationContext = vietnamData
   })
   .join("\n");
 
+const stripHTML = (htmlString) => {
+  if (!htmlString) return "";
+  // Xóa tất cả các thẻ HTML, biến đổi thành text thường
+  return htmlString
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 const chatAssistant = async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -25,9 +34,11 @@ const chatAssistant = async (req, res) => {
 
     const propertyContext = propertiesFromDB
       .map((p) => {
-        // Lấy thông tin từ trường ward thay vì district
         const locationStr = `${p.location.address}, ${p.location.ward || "Chưa cập nhật"}, ${p.location.province}`;
-        return `- [ID: ${p._id}] ${p.title} | ${p.propertyType} | ${p.price.toLocaleString("vi-VN")} VNĐ | ${p.area}m² | Địa chỉ: ${locationStr}`;
+        // 2. Tẩy HTML trước khi nối vào chuỗi
+        const cleanDesc = stripHTML(p.description);
+
+        return `- [ID: ${p._id}] ${p.title} | ${p.propertyType} | ${p.price.toLocaleString("vi-VN")} VNĐ | Diện tích: ${p.area}m² | Địa chỉ: ${locationStr} | Mô tả: ${cleanDesc}`;
       })
       .join("\n");
 
@@ -48,7 +59,9 @@ LƯU Ý VỀ ĐỊA CHỈ:
 - KHÔNG sử dụng kiến thức bên ngoài về Quận/Huyện của dự án (vì kiến thức đó có thể sai lệch).
 - CHỈ sử dụng thông tin địa danh (xã, phường, khu vực) được cung cấp trong "DANH SÁCH BẤT ĐỘNG SẢN" và đối chiếu với "BỘ TỪ ĐIỂN ĐỊA DANH" phía trên để xác định vị trí thực tế.
 - Nếu dữ liệu trong danh sách ghi "Nhà Bè" hay "Chợ Lớn", đó là địa điểm chính xác, hãy sử dụng nó để phản hồi cho khách hàng.
-- Trả lời thân thiện, lịch sự bằng tiếng Việt, định dạng Markdown.`;
+- Trả lời thân thiện, lịch sự bằng tiếng Việt, định dạng Markdown.
+- TUYỆT ĐỐI KHÔNG SỬ DỤNG code HTML (như <div>, <p>, <strong>...) trong câu trả lời.
+    - CHỈ SỬ DỤNG Markdown cơ bản để trình bày (dấu ** để in đậm, dấu - để tạo danh sách).`;
 
     const model = genAI.getGenerativeModel({
       model: "gemini-flash-latest", // Gọi thẳng bản ổn định
