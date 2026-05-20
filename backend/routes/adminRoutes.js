@@ -1,12 +1,32 @@
 const express = require("express");
-const { getUsers, getStats, promoteToAdmin } = require("../controllers/adminController");
+const {
+  getUsers,
+  getStats,
+  promoteToAdmin,
+  getPendingProperties,
+  approveProperty,
+  toggleHideProperty,
+  getStatsByArea,
+  toggleBlockUser,
+  updateUser,
+  deleteUser
+
+} = require("../controllers/adminController");
 const { requireAuth, requireAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 router.use(requireAuth, requireAdmin);
+
 router.get("/users", getUsers);
 router.get("/stats", getStats);
 router.post("/promote", promoteToAdmin);
+router.get("/properties/pending", getPendingProperties);
+router.put("/properties/:id/approve", approveProperty);
+router.put("/properties/:id/toggle-hide", toggleHideProperty);
+router.get("/stats/area", getStatsByArea);
+router.put("/users/:id/block", toggleBlockUser);
+router.put("/users/:id", updateUser);
+router.delete("/users/:id", deleteUser);
 
 module.exports = router;

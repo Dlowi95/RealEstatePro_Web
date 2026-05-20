@@ -1,15 +1,11 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  useUser,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton
-} from "@clerk/clerk-react";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuthContext } from "./context/AuthContext";
+import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminProperties from "./pages/admin/AdminProperties";
+import AdminSettings from "./pages/admin/AdminSettings";
 import HomePage from "./pages/users/HomePage";
 import SellPropertiesPage from "./pages/users/SellPropertiesPage";
 import RentPropertiesPage from "./pages/users/RentPropertiesPage";
@@ -18,22 +14,14 @@ import ManagePropertiesPage from "./pages/users/ManagePropertyPage";
 import EditPropertyPage from "./pages/users/UpdatePropertyPage";
 import UserLayout from "./layouts/UserLayout";
 
-function AdminPage() {
+// Bảo vệ route admin: chỉ admin mới vào được
+function AdminRoute({ children }) {
   const { loading, isAdmin } = useAuthContext();
-
-  console.log("[AdminPage] loading:", loading, "isAdmin:", isAdmin);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAdmin) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <AdminDashboard />;
+  if (loading) return <div>Loading...</div>;
+  return isAdmin ? children : <Navigate to="/" replace />;
 }
 
+// Tự động chuyển admin từ "/" sang "/admin"
 function AdminRedirector() {
   const { loading, isAdmin } = useAuthContext();
   const navigate = useNavigate();
@@ -41,7 +29,6 @@ function AdminRedirector() {
 
   useEffect(() => {
     if (!loading && isAdmin && location.pathname === "/") {
-      console.log("[AdminRedirector] detected admin, redirecting to /admin");
       navigate("/admin", { replace: true });
     }
   }, [loading, isAdmin, location.pathname, navigate]);
@@ -54,13 +41,26 @@ function App() {
     <BrowserRouter>
       <AdminRedirector />
       <Routes>
+        {/* User routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/admin" element={<AdminPage />} />
         <Route path="/ban" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/cho-thue" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
         <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
         <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
+
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="properties" element={<AdminProperties />} />
+          <Route path="stats" element={<AdminDashboard />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

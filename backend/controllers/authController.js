@@ -57,83 +57,54 @@ exports.registerUser = async (
 exports.syncUser = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    
     if (!token) {
-      return res.status(401).json({
-        message: "No token provided"
-      });
+      return res.status(401).json({ message: "No token provided" });
     }
 
-    // Verify Clerk token
-    const decoded = await verifyToken(token, {
-      secretKey: process.env.CLERK_SECRET_KEY
-    });
-
+    const decoded = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
     const clerkUserId = decoded.sub;
-    const bodyEmail = req.body.email || "";
-    const bodyFullName = req.body.fullName || "";
-    const bodyAvatar = req.body.avatar || "";
-
-    const email = decoded.email_addresses?.[0]?.email_address || decoded.email_address || bodyEmail;
-    const fullName = decoded.full_name || `${decoded.first_name || ""} ${decoded.last_name || ""}`.trim() || decoded.name || bodyFullName || "";
-    const avatar = decoded.image_url || bodyAvatar || "";
+    const email = decoded.email_addresses?.[0]?.email_address || decoded.email_address || req.body.email || "";
+    const fullName = decoded.full_name || `${decoded.first_name || ""} ${decoded.last_name || ""}`.trim() || decoded.name || req.body.fullName || "";
+    const avatar = decoded.image_url || req.body.avatar || "";
 
     if (!email) {
-      return res.status(400).json({
-        message: "Email is required"
-      });
+      return res.status(400).json({ message: "Email is required" });
     }
 
-    // Find or create user in MongoDB by clerkId first, then by email
     let user = null;
-
     if (clerkUserId) {
       user = await User.findOne({ clerkId: clerkUserId });
     }
-
     if (!user && email) {
       user = await User.findOne({ email });
     }
 
     if (!user) {
+      // Tạo mới user, lấy fullName từ Clerk
       user = await User.create({
         fullName,
         email,
         avatar,
-        clerkId: clerkUserId
+        clerkId: clerkUserId,
+        phoneNumber: "",
+        role: "user"
       });
     } else {
-      // Update existing user with latest Clerk data, preserve role
-      user = await User.findByIdAndUpdate(
-        user._id,
-        {
-          fullName,
-          email,
-          avatar,
-          clerkId: clerkUserId
-        },
-        { new: true }
-      );
+      // Cập nhật các trường, nhưng giữ nguyên fullName và phoneNumber đã có
+      user.avatar = avatar;
+      user.email = email;
+      if (clerkUserId) user.clerkId = clerkUserId;
+      // Chỉ cập nhật fullName nếu user chưa có tên
+      if (!user.fullName && fullName) {
+        user.fullName = fullName;
+      }
+      await user.save();
     }
 
-    // Debug: log which DB user matched or created
-    console.log("[authController.syncUser] matched user:", {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-      clerkId: user.clerkId,
-      clerkUserId
-    });
-
-    res.status(200).json({
-      success: true,
-      user
-    });
-
+    console.log("[authController.syncUser] matched user:", { id: user._id, email: user.email, role: user.role });
+    res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Sync error:", error);
-    res.status(401).json({
-      message: "Invalid token"
-    });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
