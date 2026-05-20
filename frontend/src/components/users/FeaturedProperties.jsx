@@ -10,6 +10,7 @@ import {
   Spinner,
   Container,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -81,9 +82,18 @@ export default function FeaturedProperties({ limit = 6 }) {
           {properties.map((p) => (
             <Box
               key={p._id}
+              as={Link} // Thêm as={Link}
+              to={`/property/${p._id}`} // Đường dẫn tới trang chi tiết
               borderWidth="1px"
               borderRadius="md"
               overflow="hidden"
+              bg="white"
+              transition="0.3s"
+              _hover={{
+                shadow: "lg",
+                transform: "translateY(-4px)",
+                cursor: "pointer",
+              }}
             >
               {p.images && p.images.length > 0 ? (
                 <Image
@@ -104,7 +114,8 @@ export default function FeaturedProperties({ limit = 6 }) {
                   <Badge colorScheme="green">{p.type}</Badge>
                 </Flex>
                 <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
-                  {p.location.address}, {p.location.ward || "Chưa cập nhật"}, {p.location.province}
+                  {p.location.address}, {p.location.ward || "Chưa cập nhật"},{" "}
+                  {p.location.province}
                 </Text>
                 <Text fontSize="sm" fontWeight="semibold">
                   Giá: {Number(p.price).toLocaleString("vi-VN")} VNĐ • {p.area}{" "}

@@ -10,8 +10,10 @@ import {
   Spinner,
   Container,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function PropertyList({
   keyword,
@@ -51,8 +53,8 @@ export default function PropertyList({
     if (!hasSearched) return [];
 
     const normalizedKeyword = (keyword || "").trim().toLowerCase();
-  const normalizedLocation = (location || "").trim().toLowerCase();
-  const normalizedType = (type || "").trim().toLowerCase();
+    const normalizedLocation = (location || "").trim().toLowerCase();
+    const normalizedType = (type || "").trim().toLowerCase();
     const normalizedPropertyType = (propertyType || "").trim().toLowerCase();
     const maxPriceNumber = Number(maxPrice) || Number.POSITIVE_INFINITY;
     const minAreaNumber = Number(minArea) || 0;
@@ -62,7 +64,8 @@ export default function PropertyList({
       const description = property.description?.toLowerCase() || "";
       const propertySaleType = property.type?.toLowerCase() || "";
       const propertyTypeValue = property.propertyType?.toLowerCase() || "";
-      const propertyLocation = `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
+      const propertyLocation =
+        `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
       const price = Number(property.price) || 0;
       const area = Number(property.area) || 0;
 
@@ -72,9 +75,11 @@ export default function PropertyList({
         description.includes(normalizedKeyword);
       const matchesLocation =
         !normalizedLocation || propertyLocation.includes(normalizedLocation);
-      const matchesType = !normalizedType || propertySaleType.includes(normalizedType);
+      const matchesType =
+        !normalizedType || propertySaleType.includes(normalizedType);
       const matchesPropertyType =
-        !normalizedPropertyType || propertyTypeValue.includes(normalizedPropertyType);
+        !normalizedPropertyType ||
+        propertyTypeValue.includes(normalizedPropertyType);
       const matchesMaxPrice = price <= maxPriceNumber;
       const matchesMinArea = area >= minAreaNumber;
 
@@ -87,7 +92,16 @@ export default function PropertyList({
         matchesMinArea
       );
     });
-  }, [hasSearched, keyword, location, type, propertyType, maxPrice, minArea, properties]);
+  }, [
+    hasSearched,
+    keyword,
+    location,
+    type,
+    propertyType,
+    maxPrice,
+    minArea,
+    properties,
+  ]);
 
   if (!hasSearched) {
     return null;
@@ -129,10 +143,18 @@ export default function PropertyList({
             {filteredProperties.map((property) => (
               <Box
                 key={property._id}
+                as={Link} // Thêm as={Link}
+                to={`/property/${property._id}`} // Đường dẫn tới trang chi tiết
                 borderWidth="1px"
                 borderRadius="md"
                 overflow="hidden"
                 bg="white"
+                transition="0.3s"
+                _hover={{
+                  shadow: "lg",
+                  transform: "translateY(-4px)",
+                  cursor: "pointer",
+                }}
               >
                 {property.images && property.images.length > 0 ? (
                   <Image
@@ -153,10 +175,13 @@ export default function PropertyList({
                     <Badge colorScheme="green">{property.type}</Badge>
                   </Flex>
                   <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
-                    {property.location?.address}, {property.location?.ward || "Chưa cập nhật"}, {property.location?.province}
+                    {property.location?.address},{" "}
+                    {property.location?.ward || "Chưa cập nhật"},{" "}
+                    {property.location?.province}
                   </Text>
                   <Text fontSize="sm" fontWeight="semibold">
-                    Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ • {property.area} m²
+                    Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ •{" "}
+                    {property.area} m²
                   </Text>
                 </Box>
               </Box>
