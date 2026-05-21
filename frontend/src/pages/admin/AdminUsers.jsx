@@ -177,14 +177,14 @@ export default function AdminUsers() {
                     <HStack gap={2} flexWrap="wrap">
                       {canEdit ? (
                         <Tooltip content="Chỉnh sửa thông tin">
-                          <Button size="xs" leftIcon={<FaEdit />} colorScheme="blue" variant="surface" onClick={() => openEditModal(user)}>
-                            Sửa
+                          <Button size="xs" colorPalette="blue" variant="solid" onClick={() => openEditModal(user)}>
+                            <FaEdit /> Sửa
                           </Button>
                         </Tooltip>
                       ) : (
                         <Tooltip content="Chỉnh sửa hồ sơ của bạn">
-                          <Button size="xs" leftIcon={<FaUserEdit />} colorScheme="gray" variant="surface" as={Link} to="/admin/settings">
-                            Sửa hồ sơ
+                          <Button size="xs" colorPalette="gray" variant="solid" as={Link} to="/admin/settings">
+                            <FaUserEdit /> Sửa hồ sơ
                           </Button>
                         </Tooltip>
                       )}
@@ -192,26 +192,25 @@ export default function AdminUsers() {
                         <Tooltip content={user.isBlocked ? "Mở khóa người dùng" : "Khóa người dùng"}>
                           <Button
                             size="xs"
-                            leftIcon={user.isBlocked ? <FaLockOpen /> : <FaLock />}
-                            colorScheme={user.isBlocked ? 'green' : 'red'}
-                            variant="surface"
+                            colorPalette={user.isBlocked ? 'green' : 'red'}
+                            variant="solid"
                             onClick={() => handleToggleBlock(user._id, user.isBlocked)}
                           >
-                            {user.isBlocked ? 'Mở khóa' : 'Khóa'}
+                            {user.isBlocked ? <FaLockOpen /> : <FaLock />} {user.isBlocked ? 'Mở khóa' : 'Khóa'}
                           </Button>
                         </Tooltip>
                       )}
                       {canPromote && (
                         <Tooltip content="Nâng cấp lên quyền Admin">
-                          <Button size="xs" leftIcon={<FaUserShield />} colorScheme="purple" variant="surface" onClick={() => handlePromote(user._id)}>
-                            Lên Admin
+                          <Button size="xs" colorPalette="purple" variant="solid" onClick={() => handlePromote(user._id)}>
+                            <FaUserShield /> Lên Admin
                           </Button>
                         </Tooltip>
                       )}
                       {canDelete && (
                         <Tooltip content="Xóa vĩnh viễn người dùng">
-                          <Button size="xs" leftIcon={<FaTrash />} colorScheme="red" variant="surface" onClick={() => handleDelete(user._id)}>
-                            Xóa
+                          <Button size="xs" colorPalette="red" variant="solid" onClick={() => handleDelete(user._id)}>
+                            <FaTrash /> Xóa
                           </Button>
                         </Tooltip>
                       )}

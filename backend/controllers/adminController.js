@@ -1,13 +1,11 @@
 const User = require("../models/User");
 const Property = require("../models/Property");
 
-// ===== Các hàm cũ =====
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password -__v");
     return res.json({ users });
   } catch (error) {
-    console.error("Admin getUsers error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -19,7 +17,6 @@ exports.getStats = async (req, res) => {
     const userCount = totalUsers - adminCount;
     return res.json({ totalUsers, adminCount, userCount });
   } catch (error) {
-    console.error("Admin stats error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -32,20 +29,21 @@ exports.promoteToAdmin = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
     return res.json({ message: "User promoted to admin", user });
   } catch (error) {
-    console.error("Admin promote error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// ===== Quản lý bài đăng =====
 exports.getPendingProperties = async (req, res) => {
   try {
-    const properties = await Property.find({ status: "pending" })
-      .populate("userId", "fullName email phoneNumber avatar")
-      .sort({ createdAt: -1 });
-    return res.json({ properties });
+    const properties = await Property.find({ status: "pending" }).sort({ createdAt: -1 }).lean();
+    
+    const populatedProperties = await Promise.all(properties.map(async (prop) => {
+      const user = await User.findOne({ clerkId: prop.userId }).select("fullName email avatar");
+      return { ...prop, user: user || prop.userId };
+    }));
+
+    return res.json({ properties: populatedProperties });
   } catch (error) {
-    console.error("Get pending properties error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -74,7 +72,6 @@ exports.toggleHideProperty = async (req, res) => {
   }
 };
 
-// ===== Thống kê =====
 exports.getStatsByArea = async (req, res) => {
   try {
     const stats = await Property.aggregate([
@@ -84,12 +81,10 @@ exports.getStatsByArea = async (req, res) => {
     ]);
     return res.json({ stats });
   } catch (error) {
-    console.error("Stats by area error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// ===== Quản lý người dùng (khóa/mở) =====
 exports.toggleBlockUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,23 +98,18 @@ exports.toggleBlockUser = async (req, res) => {
   }
 };
 
-// ===== Sửa thông tin người dùng =====
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { fullName, phoneNumber } = req.body;
-    console.log("Updating user:", id, fullName, phoneNumber);
     const user = await User.findByIdAndUpdate(id, { fullName, phoneNumber }, { new: true });
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log("Updated user:", user);
     res.json({ success: true, user });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// ===== Xóa người dùng (tùy chọn) =====
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
