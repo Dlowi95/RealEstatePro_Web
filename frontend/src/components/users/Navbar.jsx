@@ -104,6 +104,9 @@ const Navbar = () => {
                           <Menu.Item value="manage" as="a" href="/manage-properties">
                             Tin của tôi
                           </Menu.Item>
+                          <Menu.Item value="favorites" as={RouterLink} to="/favorites">
+                            Tin yêu thích
+                          </Menu.Item>
                         </Menu.Content>
                       </Menu.Positioner>
                     </Portal>

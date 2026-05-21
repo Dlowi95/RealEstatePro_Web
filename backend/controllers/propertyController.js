@@ -1,4 +1,5 @@
 const Property = require("../models/Property");
+const Favourite = require("../models/Favourite");
 
 const createProperty = async (req, res) => {
     try {
@@ -156,11 +157,89 @@ const updateProperty = async (req, res) => {
     }
 };
 
+// 1. Bật/Tắt trạng thái yêu thích (Toggle Favorite)
+const toggleFavorite = async (req, res) => {
+    try {
+        const { propertyId, userId } = req.body; // userId là clerkId từ frontend gửi lên
+
+        if (!propertyId || !userId) {
+            return res.status(400).json({ success: false, message: "Thiếu thông tin propertyId hoặc userId" });
+        }
+
+        // Kiểm tra xem cặp userId và propertyId này đã tồn tại trong DB chưa
+        const existingFavorite = await Favourite.findOne({ userId, propertyId });
+
+        if (existingFavorite) {
+            // Nếu ĐÃ TỒN TẠI -> Người dùng muốn BỎ YÊU THÍCH (Unlike)
+            await Favourite.findByIdAndDelete(existingFavorite._id);
+            return res.status(200).json({
+                success: true,
+                isFavorite: false,
+                message: "Đã xóa khỏi danh sách yêu thích"
+            });
+        } else {
+            // Nếu CHƯA TỒN TẠI -> Người dùng muốn YÊU THÍCH (Like)
+            const newFavorite = new Favourite({ userId, propertyId });
+            await newFavorite.save();
+            return res.status(200).json({
+                success: true,
+                isFavorite: true,
+                message: "Đã thêm vào danh sách yêu thích"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi hệ thống", error: error.message });
+    }
+};
+
+// 2. Lấy danh sách tất cả các BĐS đã yêu thích của một User
+const getFavoriteProperties = async (req, res) => {
+    try {
+        const { userId } = req.params; // nhận clerkId từ params
+
+        // Tìm tất cả bản ghi yêu thích của user này và populate thông tin BĐS tương ứng
+        const favorites = await Favourite.find({ userId }).populate({
+            path: "propertyId",
+            match: { status: "approved" } // Chỉ lấy các tin đã được Admin duyệt công khai
+        });
+
+        // Định dạng lại dữ liệu trả về: Chỉ lọc lấy các Object bài đăng BĐS hợp lệ (loại bỏ những bài đăng null do chưa duyệt)
+        const favoriteProperties = favorites
+            .filter(fav => fav.propertyId !== null)
+            .map(fav => fav.propertyId);
+
+        res.status(200).json({
+            success: true,
+            data: favoriteProperties
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi lấy danh sách yêu thích", error: error.message });
+    }
+};
+
+// 3. Kiểm tra bài đăng cụ thể này đã được User yêu thích hay chưa khi load trang chi tiết
+const checkFavoriteStatus = async (req, res) => {
+    try {
+        const { userId, propertyId } = req.params;
+        
+        const existingFavorite = await Favourite.findOne({ userId, propertyId });
+        
+        res.status(200).json({ 
+            isFavorite: !!existingFavorite // Trả về true nếu tìm thấy bản ghi, ngược lại là false
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createProperty,
     getApprovedProperties,
     getPropertyById,
     getUserProperties,
     deleteProperty,
-    updateProperty
+    updateProperty,
+    toggleFavorite,
+    getFavoriteProperties,
+    checkFavoriteStatus
 }

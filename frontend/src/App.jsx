@@ -10,8 +10,10 @@ import RentPropertiesPage from "./pages/users/RentPropertiesPage";
 import CreatePropertyPage from "./pages/users/CreatePropertyPage";
 import ManagePropertiesPage from "./pages/users/ManagePropertyPage";
 import EditPropertyPage from "./pages/users/UpdatePropertyPage";
-import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
+
 import UserLayout from "./layouts/UserLayout";
+import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
+import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 
 
 
@@ -25,6 +27,7 @@ function App() {
         <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
         <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
+        <Route path="/favorites" element={<UserLayout><FavoritePropertiesPage /></UserLayout>} />
         <Route path="/property/:id" element={<UserLayout><PropertyDetailsPage /></UserLayout>} />
 
         <Route path="/admin/*" element={<AdminLayout />}>

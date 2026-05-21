@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
+import { LucideHeart } from "lucide-react";
 import {
   Box,
   Flex,
@@ -13,15 +15,18 @@ import {
   Center,
   Container,
 } from "@chakra-ui/react";
-import Navbar from "../../components/users/Navbar"; // Đảm bảo đúng đường dẫn Navbar của bạn
+import Navbar from "../../components/users/Navbar";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
+  const { userId } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -40,6 +45,43 @@ export default function PropertyDetailsPage() {
     };
     fetchProperty();
   }, [id]);
+
+  // Check favorite status when property loads and userId is available
+  useEffect(() => {
+    if (property && userId) {
+      const checkFavorite = async () => {
+        try {
+          const res = await axios.get(
+            `${API_BASE_URL}/api/properties/favorites/check/${userId}/${id}`
+          );
+          setIsFavorite(res.data.isFavorite);
+        } catch (err) {
+          console.error("Error checking favorite status:", err);
+        }
+      };
+      checkFavorite();
+    }
+  }, [property, userId, id]);
+
+  const handleToggleFavorite = async () => {
+    if (!userId) {
+      console.error("User not logged in");
+      return;
+    }
+
+    try {
+      setFavLoading(true);
+      const res = await axios.post(`${API_BASE_URL}/api/properties/favorites/toggle`, {
+        propertyId: id,
+        userId: userId
+      });
+      setIsFavorite(res.data.isFavorite);
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -145,10 +187,24 @@ export default function PropertyDetailsPage() {
             />
           </Box>
 
-          {/* CONTACT BUTTON */}
-          <Button mt={8} colorScheme="red" size="lg" px={10}>
-            Liên hệ ngay: {property.contactPhone}
-          </Button>
+          {/* CONTACT AND FAVORITE BUTTONS */}
+          <HStack mt={8} gap={4}>
+            <Button colorPalette="red" size="lg" px={10}>
+              Liên hệ ngay: {property.contactPhone}
+            </Button>
+
+            {/* NÚT YÊU THÍCH */}
+            <Button
+              variant={isFavorite ? "solid" : "outline"}
+              colorPalette={isFavorite ? "red" : "gray"}
+              size="lg"
+              onClick={handleToggleFavorite}
+              loading={favLoading}
+            >
+              <LucideHeart style={{ fill: isFavorite ? "currentColor" : "none" }} /> 
+              {isFavorite ? "Đã yêu thích" : "Yêu thích"}
+            </Button>
+          </HStack>
         </Box>
       </Container>
     </Box>
