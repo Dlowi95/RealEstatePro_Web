@@ -3,6 +3,7 @@ import { Box, Container, Heading, SimpleGrid, Text, Badge, Stack, Button, HStack
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import Navbar from "@/components/users/Navbar";
+import { toaster } from "@/components/ui/toaster";
 
 const ManagePropertiesPage = () => {
     const { user } = useUser();
@@ -62,6 +63,7 @@ const ManagePropertiesPage = () => {
                                 <Text fontWeight="bold" color="red.600">
                                     {new Intl.NumberFormat('vi-VN').format(prop.price)} VNĐ
                                 </Text>
+                                
                             </Stack>
 
                             <HStack gap={2} mt={4}>

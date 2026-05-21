@@ -1,6 +1,7 @@
 const Property = require("../models/Property");
 const Favourite = require("../models/Favourite");
 
+
 const createProperty = async (req, res) => {
     try {
         const {
@@ -23,6 +24,7 @@ const createProperty = async (req, res) => {
             });
         }
 
+
         const newProperty = new Property({
             title,
             description,
@@ -37,7 +39,8 @@ const createProperty = async (req, res) => {
             },
             contactPhone,
             images,
-            userId
+            userId,
+            
         });
 
         const savedProperty = await newProperty.save();
@@ -140,6 +143,7 @@ const updateProperty = async (req, res) => {
         const updateData = req.body;
 
         updateData.status = 'pending';
+        
 
         const updatedProperty = await Property.findByIdAndUpdate(
             id, 

@@ -183,6 +183,7 @@ export default function PropertyList({
                     Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ •{" "}
                     {property.area} m²
                   </Text>
+                  
                 </Box>
               </Box>
             ))}
