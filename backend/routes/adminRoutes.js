@@ -12,11 +12,8 @@ const {
   toggleBlockUser,
   updateUser,
   deleteUser,
-  getCurrentApprovedProperties
-
+  getCurrentApprovedProperties,
 } = require("../controllers/adminController");
-
-
 
 const { requireAuth, requireAdmin } = require("../middleware/authMiddleware");
 
@@ -28,16 +25,10 @@ router.get("/users", getUsers);
 router.get("/stats", getStats);
 router.post("/promote", promoteToAdmin);
 router.get("/properties/pending", getPendingProperties);
-<<<<<<< Updated upstream
-router.get("/properties/current", getCurrentApprovedProperties);
-
-
-=======
 router.get("/properties/hidden", getHiddenProperties);
 router.get("/properties/all", getAllProperties);
->>>>>>> Stashed changes
+router.get("/properties/current", getCurrentApprovedProperties);
 router.put("/properties/:id/approve", approveProperty);
-
 router.put("/properties/:id/toggle-hide", toggleHideProperty);
 router.get("/stats/area", getStatsByArea);
 router.put("/users/:id/block", toggleBlockUser);
