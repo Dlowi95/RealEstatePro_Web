@@ -29,8 +29,8 @@ import axios from "axios";
 import { toaster } from "@/components/ui/toaster"; // Import toaster của Chakra UI v3
 
 const navLinks = [
-  { label: "Nhà đất bán", href: "/ban" },
-  { label: "Nhà đất cho thuê", href: "/cho-thue" },
+  { label: "Nhà đất bán", href: "/sell" },
+  { label: "Nhà đất cho thuê", href: "/rent" },
 ];
 
 const API_BASE_URL =

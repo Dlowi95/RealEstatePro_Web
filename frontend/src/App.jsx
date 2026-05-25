@@ -22,8 +22,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/ban" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
-        <Route path="/cho-thue" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
+        <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
+        <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
         <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
         <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
