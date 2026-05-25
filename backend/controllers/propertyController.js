@@ -1,5 +1,7 @@
+const mongoose = require("mongoose"); // 1. THÊM DÒNG NÀY Ở ĐẦU FILE để dùng hàm kiểm tra định dạng ID
 const Property = require("../models/Property");
 const Favourite = require("../models/Favourite");
+const User = require("../models/User");
 
 const createProperty = async (req, res) => {
     try {
@@ -23,7 +25,6 @@ const createProperty = async (req, res) => {
             });
         }
 
-
         const newProperty = new Property({
             title,
             description,
@@ -39,7 +40,6 @@ const createProperty = async (req, res) => {
             contactPhone,
             images,
             userId,
-            
         });
 
         const savedProperty = await newProperty.save();
@@ -81,11 +81,34 @@ const getApprovedProperties = async (req, res) => {
 const getPropertyById = async (req, res) => {
     try {
         const { id } = req.params;
-        const property = await Property.findById(id);
+        
+        const property = await Property.findById(id).lean(); 
 
         if (!property) {
             return res.status(404).json({ success: false, message: "Property not found" });
         }
+
+        // 2. TỐI ƯU ĐIỀU KIỆN TÌM KIẾM ĐỂ TRÁNH LỖI CASTERROR 500
+        // Mặc định chúng ta sẽ chỉ tìm User dựa trên trường clerkId (vì userId của bài đăng là chuỗi dạng Clerk)
+        let queryCondition = { clerkId: property.userId };
+
+        // Chỉ khi nào property.userId có cấu trúc đúng định dạng 24 ký tự Hex của MongoDB ObjectId, 
+        // chúng ta mới thêm điều kiện tìm kiếm bằng _id để tránh bị crash.
+        if (mongoose.Types.ObjectId.isValid(property.userId)) {
+            queryCondition = {
+                $or: [
+                    { clerkId: property.userId },
+                    { _id: property.userId }
+                ]
+            };
+        }
+
+        const owner = await User.findOne(queryCondition).select("fullName avatar");
+
+        property.owner = owner ? {
+            fullName: owner.fullName,
+            avatar: owner.avatar
+        } : { fullName: "Người dùng hệ thống", avatar: "" };
 
         res.status(200).json({
             success: true,
@@ -97,9 +120,9 @@ const getPropertyById = async (req, res) => {
             success: false,
             message: "Server error, please try again later",
             error: error.message
-        })
+        });
     }
-}
+};
 
 const getUserProperties = async (req, res) => {
     try {
@@ -136,6 +159,7 @@ const deleteProperty = async (req, res) => {
         res.status(500).json({ success: false, message: "Lỗi khi xóa bài đăng", error: error.message });
     }
 };
+
 const updateProperty = async (req, res) => {
     try {
         const { id } = req.params;
@@ -143,7 +167,6 @@ const updateProperty = async (req, res) => {
 
         updateData.status = 'pending';
         
-
         const updatedProperty = await Property.findByIdAndUpdate(
             id, 
             updateData, 
@@ -160,20 +183,17 @@ const updateProperty = async (req, res) => {
     }
 };
 
-// 1. Bật/Tắt trạng thái yêu thích (Toggle Favorite)
 const toggleFavorite = async (req, res) => {
     try {
-        const { propertyId, userId } = req.body; // userId là clerkId từ frontend gửi lên
+        const { propertyId, userId } = req.body;
 
         if (!propertyId || !userId) {
             return res.status(400).json({ success: false, message: "Thiếu thông tin propertyId hoặc userId" });
         }
 
-        // Kiểm tra xem cặp userId và propertyId này đã tồn tại trong DB chưa
         const existingFavorite = await Favourite.findOne({ userId, propertyId });
 
         if (existingFavorite) {
-            // Nếu ĐÃ TỒN TẠI -> Người dùng muốn BỎ YÊU THÍCH (Unlike)
             await Favourite.findByIdAndDelete(existingFavorite._id);
             return res.status(200).json({
                 success: true,
@@ -181,7 +201,6 @@ const toggleFavorite = async (req, res) => {
                 message: "Đã xóa khỏi danh sách yêu thích"
             });
         } else {
-            // Nếu CHƯA TỒN TẠI -> Người dùng muốn YÊU THÍCH (Like)
             const newFavorite = new Favourite({ userId, propertyId });
             await newFavorite.save();
             return res.status(200).json({
@@ -195,18 +214,15 @@ const toggleFavorite = async (req, res) => {
     }
 };
 
-// 2. Lấy danh sách tất cả các BĐS đã yêu thích của một User
 const getFavoriteProperties = async (req, res) => {
     try {
-        const { userId } = req.params; // nhận clerkId từ params
+        const { userId } = req.params;
 
-        // Tìm tất cả bản ghi yêu thích của user này và populate thông tin BĐS tương ứng
         const favorites = await Favourite.find({ userId }).populate({
             path: "propertyId",
-            match: { status: "approved" } // Chỉ lấy các tin đã được Admin duyệt công khai
+            match: { status: "approved" }
         });
 
-        // Định dạng lại dữ liệu trả về: Chỉ lọc lấy các Object bài đăng BĐS hợp lệ (loại bỏ những bài đăng null do chưa duyệt)
         const favoriteProperties = favorites
             .filter(fav => fav.propertyId !== null)
             .map(fav => fav.propertyId);
@@ -220,7 +236,6 @@ const getFavoriteProperties = async (req, res) => {
     }
 };
 
-// 3. Kiểm tra bài đăng cụ thể này đã được User yêu thích hay chưa khi load trang chi tiết
 const checkFavoriteStatus = async (req, res) => {
     try {
         const { userId, propertyId } = req.params;
@@ -228,7 +243,7 @@ const checkFavoriteStatus = async (req, res) => {
         const existingFavorite = await Favourite.findOne({ userId, propertyId });
         
         res.status(200).json({ 
-            isFavorite: !!existingFavorite // Trả về true nếu tìm thấy bản ghi, ngược lại là false
+            isFavorite: !!existingFavorite
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
