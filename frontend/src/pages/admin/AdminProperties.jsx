@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Heading, Badge, Button, Spinner, Table, Avatar,
-  HStack, Card, Text, Dialog, Portal, Stack, Input, Field
+  HStack, Card, Text, Dialog, Portal, Stack, Input, Field,
+  Tabs
 } from '@chakra-ui/react';
 import { useAuthContext } from '../../context/AuthContext';
 import { toaster } from '../../components/ui/toaster';
@@ -12,6 +13,7 @@ export default function AdminProperties() {
   const { authAxios, isAdmin } = useAuthContext();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState('pending');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -23,11 +25,27 @@ export default function AdminProperties() {
   const [editForm, setEditForm] = useState({ title: '', price: '', area: '', contactPhone: '' });
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const fetchPendingProps = useCallback(async () => {
+  const tabConfig = {
+    pending: {
+      label: 'Chờ duyệt',
+      endpoint: '/api/admin/properties/pending',
+    },
+    hidden: {
+      label: 'Tin ẩn',
+      endpoint: '/api/admin/properties/hidden',
+    },
+    all: {
+      label: 'Tất cả tin',
+      endpoint: '/api/admin/properties/all',
+    },
+  };
+
+  const fetchProperties = useCallback(async (tabKey) => {
     try {
+      setLoading(true);
       const client = await authAxios();
-      const res = await client.get('/api/admin/properties/pending');
-      setProperties(res.data.properties);
+      const res = await client.get(tabConfig[tabKey].endpoint);
+      setProperties(res.data.properties || res.data.data || []);
     } catch (err) {
       toaster.create({ title: 'Lỗi tải dữ liệu', type: 'error' });
     } finally {
@@ -36,8 +54,8 @@ export default function AdminProperties() {
   }, [authAxios]);
 
   useEffect(() => {
-    if (isAdmin) fetchPendingProps();
-  }, [isAdmin, fetchPendingProps]);
+    if (isAdmin) fetchProperties(selectedTab);
+  }, [isAdmin, selectedTab, fetchProperties]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -65,7 +83,7 @@ export default function AdminProperties() {
       const client = await authAxios();
       await client.put(`/api/admin/properties/${id}/approve`);
       toaster.create({ title: 'Đã duyệt tin', type: 'success' });
-      fetchPendingProps();
+      fetchProperties(selectedTab);
     } catch (err) {
       toaster.create({ title: 'Lỗi duyệt tin', type: 'error' });
     }
@@ -76,7 +94,7 @@ export default function AdminProperties() {
       const client = await authAxios();
       await client.put(`/api/admin/properties/${id}/toggle-hide`);
       toaster.create({ title: 'Đã ẩn/hiện tin', type: 'success' });
-      fetchPendingProps();
+      fetchProperties(selectedTab);
     } catch (err) {
       toaster.create({ title: 'Lỗi cập nhật', type: 'error' });
     }
@@ -88,7 +106,7 @@ export default function AdminProperties() {
       const client = await authAxios();
       await client.delete(`/api/properties/delete/${id}`);
       toaster.create({ title: 'Đã xóa tin', type: 'success' });
-      fetchPendingProps();
+      fetchProperties(selectedTab);
     } catch (err) {
       toaster.create({ title: 'Lỗi xóa tin', type: 'error' });
     }
@@ -106,7 +124,7 @@ export default function AdminProperties() {
       });
       toaster.create({ title: 'Cập nhật thành công', type: 'success' });
       setIsEditOpen(false);
-      fetchPendingProps();
+      fetchProperties(selectedTab);
     } catch (err) {
       toaster.create({ title: 'Lỗi cập nhật', type: 'error' });
     }
@@ -123,11 +141,42 @@ export default function AdminProperties() {
 
   if (loading) return <Spinner size="xl" mt={10} />;
 
+  const tabItems = [
+    { key: 'pending', label: 'Chờ duyệt' },
+    { key: 'hidden', label: 'Tin ẩn' },
+    { key: 'all', label: 'Tất cả tin' },
+  ];
+
   return (
     <Box>
-      <Heading size="lg" mb={4}>⏳ Duyệt tin đăng ({properties.length})</Heading>
+      <Heading size="lg" mb={4}>Quản lý tin đăng</Heading>
+      
+      {/* CẬP NHẬT: Sử dụng Tabs chuẩn v3 */}
+      <Tabs.Root
+        value={selectedTab}
+        onValueChange={(e) => setSelectedTab(e.value)}
+        colorPalette="blue"
+        mb={4}
+      >
+        <Tabs.List>
+          {tabItems.map((item) => (
+            <Tabs.Trigger key={item.key} value={item.key}>
+              {item.label}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+      </Tabs.Root>
+
+      <Box mb={4}>
+        <Text fontSize="md" fontWeight="semibold">
+          {tabConfig[selectedTab].label} ({properties.length})
+        </Text>
+      </Box>
+
       {properties.length === 0 ? (
-        <Box p={4} bg="green.50" borderRadius="md">Không có tin chờ duyệt.</Box>
+        <Box p={4} bg="green.50" borderRadius="md" color="green.800">
+          Không có bài đăng trong mục này.
+        </Box>
       ) : (
         <Card.Root variant="outline" overflowX="auto">
           <Table.Root variant="line" size="sm">
@@ -146,7 +195,7 @@ export default function AdminProperties() {
                 <Table.Row key={prop._id} _hover={{ bg: 'gray.50' }} transition="background 0.2s">
                   <Table.Cell px={4} py={2} fontWeight="medium">{prop.title}</Table.Cell>
                   <Table.Cell px={4} py={2}>
-                    <Badge colorScheme={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
+                    <Badge colorPalette={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
                       {prop.type === 'Buy' ? 'Mua' : 'Thuê'}
                     </Badge>
                   </Table.Cell>
@@ -163,15 +212,17 @@ export default function AdminProperties() {
                   </Table.Cell>
                   <Table.Cell px={4} py={2}>
                     <HStack gap={2} flexWrap="wrap">
-                      <Tooltip content="Duyệt tin">
-                        <Button size="xs" colorPalette="green" variant="solid" onClick={() => handleApprove(prop._id)}>
-                          <FaCheck /> Duyệt
-                        </Button>
-                      </Tooltip>
-                      
-                      <Tooltip content="Ẩn/Hiện tin">
+                      {prop.status === 'pending' && (
+                        <Tooltip content="Duyệt tin">
+                          <Button size="xs" colorPalette="green" variant="solid" onClick={() => handleApprove(prop._id)}>
+                            <FaCheck /> Duyệt
+                          </Button>
+                        </Tooltip>
+                      )}
+
+                      <Tooltip content={prop.status === 'hidden' ? 'Hiện tin' : 'Ẩn tin'}>
                         <Button size="xs" colorPalette="orange" variant="solid" onClick={() => handleToggleHide(prop._id)}>
-                          <FaEyeSlash /> Ẩn
+                          {prop.status === 'hidden' ? <FaEye /> : <FaEyeSlash />} {prop.status === 'hidden' ? 'Hiện' : 'Ẩn'}
                         </Button>
                       </Tooltip>
                       
@@ -212,7 +263,7 @@ export default function AdminProperties() {
                     key={num}
                     size="xs"
                     variant={itemsPerPage === num ? 'solid' : 'outline'}
-                    colorScheme={itemsPerPage === num ? 'blue' : 'gray'}
+                    colorPalette={itemsPerPage === num ? 'blue' : 'gray'}
                     onClick={() => {
                       setItemsPerPage(num);
                       setCurrentPage(1);
@@ -227,14 +278,14 @@ export default function AdminProperties() {
           </HStack>
 
           <HStack gap={2}>
+            {/* CẬP NHẬT: Sửa đổi cách đặt Icon và đổi colorScheme thành colorPalette */}
             <Button
               size="sm"
               variant="ghost"
-              leftIcon={<FaChevronLeft />}
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              Trước
+              <FaChevronLeft /> Trước
             </Button>
             <HStack gap={1}>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -242,7 +293,7 @@ export default function AdminProperties() {
                   key={page}
                   size="sm"
                   variant={currentPage === page ? 'solid' : 'ghost'}
-                  colorScheme={currentPage === page ? 'blue' : 'gray'}
+                  colorPalette={currentPage === page ? 'blue' : 'gray'}
                   onClick={() => goToPage(page)}
                 >
                   {page}
@@ -252,16 +303,16 @@ export default function AdminProperties() {
             <Button
               size="sm"
               variant="ghost"
-              rightIcon={<FaChevronRight />}
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
-              Sau
+              Sau <FaChevronRight />
             </Button>
           </HStack>
         </HStack>
       )}
 
+      {/* Cấu trúc Dialog bên dưới đã chuẩn v3 sẵn nên giữ nguyên */}
       <Dialog.Root open={isViewOpen} onOpenChange={(e) => setIsViewOpen(e.open)} size="lg">
         <Portal>
           <Dialog.Backdrop />
@@ -271,16 +322,16 @@ export default function AdminProperties() {
               <Dialog.Body>
                 {viewingProperty && (
                   <Stack gap={3}>
-                    <Text><strong>Tiêu đề:</strong> {viewingProperty.title}</Text>
-                    <Text><strong>Mô tả:</strong> {viewingProperty.description}</Text>
-                    <Text><strong>Loại giao dịch:</strong> {viewingProperty.type === 'Buy' ? 'Mua' : 'Thuê'}</Text>
-                    <Text><strong>Loại bất động sản:</strong> {viewingProperty.propertyType}</Text>
-                    <Text><strong>Giá:</strong> {viewingProperty.price.toLocaleString()} VNĐ</Text>
-                    <Text><strong>Diện tích:</strong> {viewingProperty.area} m²</Text>
-                    <Text><strong>Địa chỉ:</strong> {viewingProperty.location?.address}, {viewingProperty.location?.ward}, {viewingProperty.location?.province}</Text>
-                    <Text><strong>Số điện thoại liên hệ:</strong> {viewingProperty.contactPhone}</Text>
-                    <Text><strong>Người đăng:</strong> {getDisplayName(viewingProperty)}</Text>
-                    <Text><strong>Trạng thái:</strong> {viewingProperty.status}</Text>
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Tiêu đề:</strong> ${viewingProperty.title}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Mô tả:</strong> ${viewingProperty.description}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Loại giao dịch:</strong> ${viewingProperty.type === 'Buy' ? 'Mua' : 'Thuê'}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Loại bất động sản:</strong> ${viewingProperty.propertyType}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Giá:</strong> ${viewingProperty.price.toLocaleString()} VNĐ` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Diện tích:</strong> ${viewingProperty.area} m²` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Địa chỉ:</strong> ${viewingProperty.location?.address}, ${viewingProperty.location?.ward}, ${viewingProperty.location?.province}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Số điện thoại liên hệ:</strong> ${viewingProperty.contactPhone}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Người đăng:</strong> ${getDisplayName(viewingProperty)}` }} />
+                    <Text dangerouslySetInnerHTML={{ __html: `<strong>Trạng thái:</strong> ${viewingProperty.status}` }} />
                     {viewingProperty.images?.length > 0 && (
                       <Box>
                         <strong>Hình ảnh:</strong>
@@ -331,7 +382,7 @@ export default function AdminProperties() {
               </Dialog.Body>
               <Dialog.Footer>
                 <Button variant="ghost" onClick={() => setIsEditOpen(false)}>Hủy</Button>
-                <Button colorScheme="blue" onClick={handleEdit}>Lưu</Button>
+                <Button colorPalette="blue" onClick={handleEdit}>Lưu</Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger />
             </Dialog.Content>

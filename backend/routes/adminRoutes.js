@@ -4,6 +4,8 @@ const {
   getStats,
   promoteToAdmin,
   getPendingProperties,
+  getHiddenProperties,
+  getAllProperties,
   approveProperty,
   toggleHideProperty,
   getStatsByArea,
@@ -26,9 +28,14 @@ router.get("/users", getUsers);
 router.get("/stats", getStats);
 router.post("/promote", promoteToAdmin);
 router.get("/properties/pending", getPendingProperties);
+<<<<<<< Updated upstream
 router.get("/properties/current", getCurrentApprovedProperties);
 
 
+=======
+router.get("/properties/hidden", getHiddenProperties);
+router.get("/properties/all", getAllProperties);
+>>>>>>> Stashed changes
 router.put("/properties/:id/approve", approveProperty);
 
 router.put("/properties/:id/toggle-hide", toggleHideProperty);

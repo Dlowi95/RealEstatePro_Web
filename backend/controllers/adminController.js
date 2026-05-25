@@ -91,19 +91,32 @@ exports.getPendingProperties = async (req, res) => {
   }
 };
 
+<<<<<<< Updated upstream
 exports.getCurrentApprovedProperties = async (req, res) => {
   try {
     const properties = await Property.find({ status: "approved" })
+=======
+exports.getHiddenProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ status: "hidden" })
+>>>>>>> Stashed changes
       .sort({ createdAt: -1 })
       .lean();
 
     const populatedProperties = await Promise.all(
       properties.map(async (prop) => {
         const user = await User.findOne({ clerkId: prop.userId }).select(
+<<<<<<< Updated upstream
           "fullName email avatar"
         );
         return { ...prop, user: user || prop.userId };
       })
+=======
+          "fullName email avatar",
+        );
+        return { ...prop, user: user || prop.userId };
+      }),
+>>>>>>> Stashed changes
     );
 
     return res.json({ properties: populatedProperties });
@@ -112,6 +125,29 @@ exports.getCurrentApprovedProperties = async (req, res) => {
   }
 };
 
+<<<<<<< Updated upstream
+=======
+exports.getAllProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({})
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const populatedProperties = await Promise.all(
+      properties.map(async (prop) => {
+        const user = await User.findOne({ clerkId: prop.userId }).select(
+          "fullName email avatar",
+        );
+        return { ...prop, user: user || prop.userId };
+      }),
+    );
+
+    return res.json({ properties: populatedProperties });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+>>>>>>> Stashed changes
 
 // CẬP NHẬT: Duyệt bài đăng + Gửi thông báo
 exports.approveProperty = async (req, res) => {
