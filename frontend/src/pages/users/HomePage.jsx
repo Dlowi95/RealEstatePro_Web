@@ -4,7 +4,6 @@ import UserLayout from "@/layouts/UserLayout";
 import SearchBar from "@/components/users/SerchBar";
 import PropertyList from "@/components/users/PropertyList";
 import FeaturedProperties from "@/components/users/FeaturedProperties";
-import Footer from "@/components/users/Footer";
 export default function HomePage() {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
@@ -47,7 +46,6 @@ export default function HomePage() {
         hasSearched={hasSearched}
       />
       <FeaturedProperties />
-      <Footer />
     </UserLayout>
   );
 }
