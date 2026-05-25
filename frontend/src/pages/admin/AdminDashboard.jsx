@@ -202,7 +202,7 @@ export default function AdminDashboard() {
         </Box>
       </SimpleGrid>
 
-      <Box mt={8} bg="white" p={4} borderRadius="lg" shadow="sm">
+      <Box my={8} bg="white" p={4} borderRadius="lg" shadow="sm">
         <Heading size="md" mb={4}>🏆 Top khu vực nhiều tin</Heading>
         <Table.Root variant="simple">
           <Table.Header>
@@ -224,134 +224,6 @@ export default function AdminDashboard() {
         </Table.Root>
       </Box>
 
-      <Box mt={6} bg="white" p={4} borderRadius="lg" shadow="sm">
-        <Heading size="md" mb={4}>📌 Các bài đăng đang công khai (approved)</Heading>
-
-        {propsLoading ? (
-          <Spinner mt={2} />
-        ) : currentProps.length === 0 ? (
-          <Text>Không có tin approved.</Text>
-        ) : (
-          <Table.Root variant="line" size="sm">
-            <Table.Header>
-              <Table.Row bg="gray.50">
-                <Table.ColumnHeader py={3} px={4}>Tiêu đề</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Loại</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4} textAlign="right">Giá</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Diện tích</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Người đăng</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4} textAlign="center">Hành động</Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {currentProps.map((prop) => (
-                <Table.Row
-                  key={prop._id}
-                  _hover={{ bg: 'gray.50' }}
-                  transition="background 0.2s"
-                >
-                  <Table.Cell px={4} py={2} fontWeight="medium">{prop.title}</Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <Badge colorScheme={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
-                      {prop.type === 'Buy' ? 'Mua' : 'Thuê'}
-                    </Badge>
-                  </Table.Cell>
-                  <Table.Cell px={4} py={2} textAlign="right">
-                    {formatMoney(prop.price)} VNĐ
-                  </Table.Cell>
-                  <Table.Cell px={4} py={2}>{prop.area} m²</Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <HStack gap={2}>
-                      <Avatar.Root size="xs">
-                        <Avatar.Fallback name={prop.user?.fullName || prop.user?.email || prop.userId || ''} />
-                        <Avatar.Image src={prop.user?.avatar} />
-                      </Avatar.Root>
-                      <Text fontSize="sm" noOfLines={1} maxW="180px">
-                        {prop.user?.fullName || prop.user?.email || prop.userId || 'Không rõ'}
-                      </Text>
-                    </HStack>
-                  </Table.Cell>
-                  <Table.Cell px={4} py={2} textAlign="center">
-                    <HStack gap={2} justify="center">
-                      <Button size="xs" colorPalette="yellow" variant="solid" onClick={() => openEdit(prop)}>
-                        Sửa
-                      </Button>
-                      <Button size="xs" colorPalette="red" variant="solid" onClick={() => handleDelete(prop._id)}>
-                        Xóa
-                      </Button>
-                    </HStack>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        )}
-      </Box>
-
-      {isEditOpen && (
-        <Box
-          position="fixed"
-          inset={0}
-          bg="blackAlpha.600"
-          zIndex={1400}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          p={4}
-        >
-          <Box
-            bg="white"
-            borderRadius="lg"
-            width="100%"
-            maxW="560px"
-            boxShadow="lg"
-            p={5}
-          >
-            <Heading size="md" mb={4}>Chỉnh sửa tin</Heading>
-
-            <Stack gap={4}>
-              <Box>
-                <Text mb={1} fontWeight="medium">Tiêu đề</Text>
-                <Input
-                  value={editForm.title}
-                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                />
-              </Box>
-
-              <Box>
-                <Text mb={1} fontWeight="medium">Giá (VNĐ)</Text>
-                <Input
-                  type="number"
-                  value={editForm.price}
-                  onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                />
-              </Box>
-
-              <Box>
-                <Text mb={1} fontWeight="medium">Diện tích (m²)</Text>
-                <Input
-                  type="number"
-                  value={editForm.area}
-                  onChange={(e) => setEditForm({ ...editForm, area: e.target.value })}
-                />
-              </Box>
-
-              <Box>
-                <Text mb={1} fontWeight="medium">SĐT liên hệ</Text>
-                <Input
-                  value={editForm.contactPhone}
-                  onChange={(e) => setEditForm({ ...editForm, contactPhone: e.target.value })}
-                />
-              </Box>
-            </Stack>
-
-            <HStack justify="flex-end" mt={6} gap={3}>
-              <Button variant="ghost" onClick={() => setIsEditOpen(false)}>Hủy</Button>
-              <Button colorScheme="blue" onClick={handleEditSave}>Lưu</Button>
-            </HStack>
-          </Box>
-        </Box>
-      )}
 
     </Box>
   );

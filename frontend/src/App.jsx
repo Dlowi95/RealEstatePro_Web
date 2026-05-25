@@ -4,6 +4,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminProperties from "./pages/admin/AdminProperties";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminStats from "./pages/admin/AdminStats";
 import HomePage from "./pages/users/HomePage";
 import SellPropertiesPage from "./pages/users/SellPropertiesPage";
 import RentPropertiesPage from "./pages/users/RentPropertiesPage";
@@ -34,7 +35,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="properties" element={<AdminProperties />} />
-          <Route path="stats" element={<AdminDashboard />} />
+          <Route path="stats" element={<AdminStats />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 

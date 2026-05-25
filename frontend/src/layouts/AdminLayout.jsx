@@ -1,24 +1,18 @@
-import { Box, Flex, VStack, HStack, Text, Icon, Link as ChakraLink, Image, Menu, Portal, Avatar } from '@chakra-ui/react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FaTachometerAlt, FaUsers, FaHome, FaChartLine, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { Box, Flex, Spinner, Text } from '@chakra-ui/react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { useAuthContext } from '../context/AuthContext';
 import { useEffect } from 'react';
 
-const navItems = [
-  { name: 'Tổng quan', path: '/admin', icon: FaTachometerAlt },
-  { name: 'Quản lý người dùng', path: '/admin/users', icon: FaUsers },
-  { name: 'Quản lý tin đăng', path: '/admin/properties', icon: FaHome },
-  { name: 'Thống kê', path: '/admin/stats', icon: FaChartLine },
-];
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminHeader from '@/components/admin/AdminHeader';
+import AdminFooter from '@/components/admin/AdminFooter';
 
 export default function AdminLayout() {
   const { signOut } = useAuth();
   const { user: dbUser, loading } = useAuthContext();
-  const location = useLocation();
   const navigate = useNavigate();
 
-  // Kiểm tra quyền admin: nếu không phải admin thì redirect về trang chủ
   useEffect(() => {
     if (!loading) {
       if (!dbUser || dbUser.role !== 'admin') {
@@ -41,109 +35,39 @@ export default function AdminLayout() {
   const displayName = dbUser?.fullName || 'Admin';
   const shortName = displayName.split(' ')[0];
 
-  // Hiển thị loading nếu chưa xác định user
   if (loading) {
-    return <Flex justify="center" align="center" h="100vh">Loading...</Flex>;
+    return (
+      <Flex justify="center" align="center" h="100vh" bg="gray.50/50" direction="column" gap={4}>
+        <Spinner size="xl" color="red.500" borderWidth="4px" trackColor="gray.100" />
+        <Text fontSize="md" fontWeight="medium" color="gray.500">Loading admin dashboard...</Text>
+      </Flex>
+    );
   }
 
   return (
-    <Flex minH="100vh">
-      <Box
-        w="260px"
-        bg={sidebarBg}
-        borderRight="1px solid"
+    <Flex minH="100vh" bg="gray.50/50">
+      <AdminSidebar 
+        displayName={displayName}
+        shortName={shortName}
+        dbUser={dbUser}
+        handleLogout={handleLogout}
+        activeBg={activeBg}
+        activeColor={activeColor}
+        normalColor={normalColor}
+        hoverBg={hoverBg}
         borderColor={borderColor}
-        px={4}
-        py={6}
-        position="fixed"
-        h="full"
-        overflowY="auto"
-        display="flex"
-        flexDirection="column"
-      >
-        <Box mb={6} textAlign="center">
-          <Link to="/">
-            <Image
-              src="/imgs/logo.png"
-              alt="RealEstate Pro"
-              h="50px"
-              objectFit="contain"
-              mx="auto"
-              fallbackSrc="https://via.placeholder.com/150x50?text=RealEstatePro"
-            />
-          </Link>
-        </Box>
-        <Box borderBottom="1px solid" borderColor="gray.200" mb={4} />
+        sidebarBg={sidebarBg}
+      />
 
-        <VStack align="stretch" spacing={1} flex="1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <ChakraLink
-                as={Link}
-                to={item.path}
-                key={item.path}
-                _hover={{ textDecoration: 'none' }}
-              >
-                <HStack
-                  p={3}
-                  borderRadius="md"
-                  bg={isActive ? activeBg : 'transparent'}
-                  color={isActive ? activeColor : normalColor}
-                  _hover={{ bg: hoverBg }}
-                  transition="all 0.2s"
-                >
-                  <Icon as={item.icon} fontSize="lg" />
-                  <Text fontWeight={isActive ? 'semibold' : 'medium'}>{item.name}</Text>
-                </HStack>
-              </ChakraLink>
-            );
-          })}
-        </VStack>
+      <Flex ml="260px" flex="1" direction="column" minH="100vh">
+        <AdminHeader shortName={shortName} borderColor={borderColor} />
 
-        <Box mt="auto" pt={3} borderTop="1px solid" borderColor="gray.200">
-          <Menu.Root>
-            <Menu.Trigger asChild>
-              <HStack spacing={2} p={1.5} borderRadius="md" cursor="pointer" _hover={{ bg: hoverBg }} transition="all 0.2s">
-                <Avatar.Root size="xs">
-                  <Avatar.Fallback name={displayName} />
-                  <Avatar.Image src={dbUser?.avatar} />
-                </Avatar.Root>
-                <Text fontSize="xs" fontWeight="medium" noOfLines={1} maxW="140px">
-                  {shortName}
-                </Text>
-                <Icon as={FaCog} fontSize="xs" color="gray.400" ml="auto" />
-              </HStack>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  <Menu.Item value="settings" onClick={() => navigate('/admin/settings')}>
-                    <HStack><Icon as={FaCog} /><Text>Cài đặt</Text></HStack>
-                  </Menu.Item>
-                  <Menu.Item value="logout" onClick={handleLogout} color="red.500">
-                    <HStack><Icon as={FaSignOutAlt} /><Text>Đăng xuất</Text></HStack>
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
-        </Box>
-      </Box>
-
-      <Box ml="260px" flex="1" bg="gray.50" minH="100vh">
-        <Box bg="white" px={6} py={3} borderBottom="1px solid" borderColor={borderColor} mb={4}>
-          <Flex justify="space-between" align="center">
-            <Text fontSize="lg" fontWeight="semibold">
-              Chào mừng, {shortName}!
-            </Text>
-            <Text fontSize="lg" textTransform="uppercase" fontWeight="700">Admin Panel</Text>
-          </Flex>
-        </Box>
-        <Box px={6}>
+        <Box px={6} flex="1">
           <Outlet />
         </Box>
-      </Box>
+
+        <AdminFooter />
+      </Flex>
     </Flex>
   );
 }
