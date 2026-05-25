@@ -47,8 +47,46 @@ export default function PropertyDetailsPage() {
     fetchProperty();
   }, [id]);
 
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!userId || !property?._id) return;
+
+      try {
+        const statusRes = await axios.get(
+          `${API_BASE_URL}/api/properties/favorites/check/${userId}/${property._id}`
+        );
+        setIsFavorite(statusRes.data?.isFavorite ?? false);
+      } catch (err) {
+        console.error("Error checking favorite status:", err);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [property?._id, userId]);
+
   const handleToggleFavorite = async () => {
-    // Logic xử lý tin yêu thích cũ của bạn ở đây...
+    if (!userId || !property?._id) {
+      console.warn("Không thể cập nhật yêu thích: thiếu userId hoặc propertyId.");
+      return;
+    }
+
+    try {
+      setFavLoading(true);
+      const res = await axios.post(`${API_BASE_URL}/api/properties/favorites/toggle`, {
+        userId,
+        propertyId: property._id,
+      });
+
+      if (res.data?.success) {
+        setIsFavorite(res.data.isFavorite);
+      } else {
+        console.warn("Không thể đổi trạng thái yêu thích:", res.data?.message);
+      }
+    } catch (err) {
+      console.error("Lỗi khi chuyển yêu thích:", err);
+    } finally {
+      setFavLoading(false);
+    }
   };
 
   if (loading) {
