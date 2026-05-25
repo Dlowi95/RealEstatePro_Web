@@ -28,7 +28,13 @@ export function AuthProvider({ children }) {
     // Khi Clerk đăng nhập xong → lấy JWT rồi gửi lên backend để đồng bộ user
     const syncUser = async () => {
       try {
-        const token = await getToken();  // JWT từ Clerk
+        const token = await getToken();
+        if (!token) {
+          console.warn("[AuthContext] No Clerk token available, skipping sync");
+          setLoading(false);
+          return;
+        }
+
         const email = clerkUser?.primaryEmailAddress?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress || "";
         const fullName = clerkUser?.fullName || `${clerkUser?.firstName || ""} ${clerkUser?.lastName || ""}`.trim() || clerkUser?.username || "";
         const avatar = clerkUser?.imageUrl || "";
@@ -42,24 +48,38 @@ export function AuthProvider({ children }) {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // Debug: log sync response
         console.log("[AuthContext] sync response:", res.data);
         setUser(res.data.user);
-        setRole(res.data.user.role);  // "user" hoặc "admin"
+        setRole(res.data.user.role);
         console.log("Role set from backend:", res.data.user.role);
       } catch (err) {
-        console.error("Sync user failed:", err);
+        const status = err.response?.status;
+        const data = err.response?.data;
+
+        if (status === 401) {
+          console.warn("[AuthContext] Backend rejected Clerk token", data);
+          setUser(null);
+          setRole(null);
+          return;
+        }
+
+        console.error("[AuthContext] Sync user failed:", data || err.message);
       } finally {
         setLoading(false);
       }
     };
 
     syncUser();
-  }, [isLoaded, isSignedIn, userId, clerkUser]);
+  }, [isLoaded, isSignedIn, userId, clerkUser, getToken]);
 
   // Hàm helper: gọi API có kèm JWT tự động
   const authAxios = async () => {
     const token = await getToken();
+
+    if (!token) {
+      throw new Error("No Clerk token available");
+    }
+
     return axios.create({
       baseURL: import.meta.env.VITE_API_URL,
       headers: { Authorization: `Bearer ${token}` },

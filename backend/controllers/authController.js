@@ -7,6 +7,16 @@ const encryptPasswordMD5 = (password) => {
   return crypto.createHash("md5").update(password).digest("hex");
 };
 
+const formatClerkError = (error) => {
+  const firstError = Array.isArray(error?.errors) ? error.errors[0] : null;
+
+  return {
+    message: firstError?.message || error?.message || "Unauthorized",
+    reason: firstError?.reason || error?.reason || "unknown_reason",
+    status: error?.status || error?.response?.status || 401,
+  };
+};
+
 exports.registerUser = async (
   req,
   res
@@ -104,7 +114,13 @@ exports.syncUser = async (req, res) => {
     console.log("[authController.syncUser] matched user:", { id: user._id, email: user.email, role: user.role });
     res.status(200).json({ success: true, user });
   } catch (error) {
-    console.error("Sync error:", error);
-    res.status(401).json({ message: "Invalid token" });
+    const clerkError = formatClerkError(error);
+
+    console.error("[authController.syncUser] verification failed:", clerkError);
+    return res.status(clerkError.status).json({
+      message: "Unauthorized",
+      reason: clerkError.reason,
+      detail: clerkError.message,
+    });
   }
 };

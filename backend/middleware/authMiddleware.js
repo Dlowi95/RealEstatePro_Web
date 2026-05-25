@@ -1,6 +1,16 @@
 const { verifyToken } = require("@clerk/backend");
 const User = require("../models/User");
 
+const formatClerkError = (error) => {
+  const firstError = Array.isArray(error?.errors) ? error.errors[0] : null;
+
+  return {
+    message: firstError?.message || error?.message || "Unauthorized",
+    reason: firstError?.reason || error?.reason || "unknown_reason",
+    status: error?.status || error?.response?.status || 401,
+  };
+};
+
 const requireAuth = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
@@ -35,8 +45,14 @@ const requireAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error);
-    return res.status(401).json({ message: "Unauthorized" });
+    const clerkError = formatClerkError(error);
+
+    console.error("[authMiddleware] verification failed:", clerkError);
+    return res.status(clerkError.status).json({
+      message: "Unauthorized",
+      reason: clerkError.reason,
+      detail: clerkError.message,
+    });
   }
 };
 
