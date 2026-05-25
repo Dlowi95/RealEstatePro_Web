@@ -91,6 +91,28 @@ exports.getPendingProperties = async (req, res) => {
   }
 };
 
+exports.getCurrentApprovedProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ status: "approved" })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const populatedProperties = await Promise.all(
+      properties.map(async (prop) => {
+        const user = await User.findOne({ clerkId: prop.userId }).select(
+          "fullName email avatar"
+        );
+        return { ...prop, user: user || prop.userId };
+      })
+    );
+
+    return res.json({ properties: populatedProperties });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
 // CẬP NHẬT: Duyệt bài đăng + Gửi thông báo
 exports.approveProperty = async (req, res) => {
   try {
