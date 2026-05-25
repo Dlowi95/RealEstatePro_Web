@@ -1,7 +1,6 @@
 const Property = require("../models/Property");
 const Favourite = require("../models/Favourite");
 
-
 const createProperty = async (req, res) => {
     try {
         const {
