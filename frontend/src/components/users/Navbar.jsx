@@ -16,7 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { LuMenu, LuBell, LuChevronDown, LuBellOff } from "react-icons/lu";
+import { LuMenu, LuBell, LuChevronDown, LuBellOff, LuSun, LuMoon } from "react-icons/lu";
 import {
   SignedIn,
   SignedOut,
@@ -24,31 +24,30 @@ import {
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
+import { useColorMode } from "@/components/ui/color-mode";
 import { io } from "socket.io-client";
 import axios from "axios";
-import { toaster } from "@/components/ui/toaster"; // Import toaster của Chakra UI v3
+import { toaster } from "@/components/ui/toaster";
 
 const navLinks = [
   { label: "Nhà đất bán", href: "/sell" },
   { label: "Nhà đất cho thuê", href: "/rent" },
 ];
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const Navbar = () => {
   const { user } = useUser();
+  const { colorMode, toggleColorMode } = useColorMode();
   const [notifications, setNotifications] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false); // Dropdown riêng cho Desktop
-  const [showMobileNoti, setShowMobileNoti] = useState(false); // Trạng thái mở thông báo trên Mobile
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileNoti, setShowMobileNoti] = useState(false);
 
-  // Tính số lượng thông báo chưa đọc (isRead === false)
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
     if (!user) return;
 
-    // 1. Fetch lịch sử thông báo cũ từ DB
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/notifications/${user.id}`);
@@ -59,9 +58,9 @@ const Navbar = () => {
         console.error("Lỗi lấy lịch sử thông báo:", err);
       }
     };
+
     fetchNotifications();
 
-    // 2. Kết nối tới Socket.io Server
     const socket = io(API_BASE_URL);
 
     socket.on("connect", () => {
@@ -84,9 +83,9 @@ const Navbar = () => {
     };
   }, [user]);
 
-  // Xử lý khi bấm nút "Đọc tất cả"
   const handleMarkAllAsRead = async () => {
     if (!user || unreadCount === 0) return;
+
     try {
       await axios.put(`${API_BASE_URL}/api/notifications/read-all/${user.id}`);
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
@@ -98,9 +97,9 @@ const Navbar = () => {
   return (
     <Box
       as="nav"
-      bg="#fff"
+      bg={{ base: "#fff", _dark: "gray.950" }}
       borderBottom="1px solid"
-      borderColor="gray.100"
+      borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
       py={3}
       position="sticky"
       top="0"
@@ -108,18 +107,10 @@ const Navbar = () => {
     >
       <Container maxW="container.xl">
         <Flex justify="space-between" align="center">
-          {/* ======================================================== */}
-          {/* TRÁI: Logo & Menu Desktop */}
-          {/* ======================================================== */}
           <HStack gap={8}>
             <Link as={RouterLink} to="/" _hover={{ textDecoration: "none" }}>
               <HStack gap={2} align="center">
-                <Image
-                  src="/imgs/logo.png"
-                  alt="RealEstate Pro"
-                  w="150px"
-                  objectFit="contain"
-                />
+                <Image src="/imgs/logo.png" alt="RealEstate Pro" w="150px" objectFit="contain" />
               </HStack>
             </Link>
 
@@ -131,8 +122,8 @@ const Navbar = () => {
                   to={link.href}
                   fontSize="sm"
                   fontWeight="500"
-                  color="gray.700"
-                  _hover={{ color: "red.600", textDecoration: "none" }}
+                  color={{ base: "gray.700", _dark: "gray.100" }}
+                  _hover={{ color: "#E65C00", textDecoration: "none" }}
                 >
                   {link.label}
                 </Link>
@@ -140,29 +131,25 @@ const Navbar = () => {
             </HStack>
           </HStack>
 
-          {/* ======================================================== */}
-          {/* PHẢI: Buttons, Dropdown Quản lý & Quả chuông Thông báo (Desktop) */}
-          {/* ======================================================== */}
-          <HStack gap={4} position="relative">
+          <HStack gap={4} position="relative" align="center">
             <SignedIn>
-              <HStack gap={4} display={{ base: "none", md: "flex" }}>
-                {/* DROPDOWN QUẢN LÝ TIN */}
+              <HStack gap={4} display={{ base: "none", md: "flex" }} align="center">
                 <Menu.Root>
                   <Menu.Trigger asChild>
                     <Button
                       variant="ghost"
                       size="sm"
                       px={2}
-                      color="gray.700"
-                      _hover={{ color: "red.600" }}
+                      color={{ base: "gray.700", _dark: "gray.100" }}
+                      _hover={{ color: "#E65C00" }}
                     >
-                      Quản lý tin{" "}
+                      Quản lý tin
                       <LuChevronDown size={14} style={{ marginLeft: "4px" }} />
                     </Button>
                   </Menu.Trigger>
                   <Portal>
                     <Menu.Positioner>
-                      <Menu.Content>
+                      <Menu.Content bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
                         <Menu.Item value="create" as={RouterLink} to="/create-property">
                           Đăng tin mới
                         </Menu.Item>
@@ -177,13 +164,13 @@ const Navbar = () => {
                   </Portal>
                 </Menu.Root>
 
-                {/* ICON QUẢ CHUÔNG THÔNG BÁO VÀ DROPDOWN DESKTOP */}
-                <Box position="relative">
+                <Box position="relative" display="flex" align="center">
                   <IconButton
                     variant="ghost"
                     aria-label="Notifications"
                     onClick={() => setShowDropdown(!showDropdown)}
                     style={{ borderRadius: "9999px" }}
+                    color={{ base: "gray.700", _dark: "gray.100" }}
                   >
                     <LuBell size={22} />
                     {unreadCount > 0 && (
@@ -191,7 +178,7 @@ const Navbar = () => {
                         position="absolute"
                         top="-2px"
                         right="-2px"
-                        bg="red.500"
+                        bg="#E65C00"
                         color="white"
                         fontSize="10px"
                         borderRadius="full"
@@ -202,25 +189,32 @@ const Navbar = () => {
                     )}
                   </IconButton>
 
-                  {/* DROPDOWN THÔNG BÁO DESKTOP */}
                   {showDropdown && (
                     <Box
                       position="absolute"
                       top="45px"
                       right="0"
-                      bg="white"
+                      bg={{ base: "white", _dark: "gray.900" }}
                       w="340px"
                       boxShadow="xl"
                       borderRadius="lg"
                       borderWidth="1px"
-                      borderColor="gray.200"
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                       overflow="hidden"
                       zIndex="1100"
                     >
-                      <Flex justify="space-between" align="center" p={3} bg="gray.50" borderBottomWidth="1px">
-                        <Text fontWeight="bold" fontSize="sm">Thông báo cá nhân</Text>
+                      <Flex justify="space-between" align="center" p={3} bg={{ base: "gray.50", _dark: "gray.800" }} borderBottomWidth="1px">
+                        <Text fontWeight="bold" fontSize="sm" color={{ base: "gray.800", _dark: "whiteAlpha.900" }}>
+                          Thông báo cá nhân
+                        </Text>
                         {unreadCount > 0 && (
-                          <Text fontSize="xs" color="blue.600" fontWeight="500" cursor="pointer" onClick={handleMarkAllAsRead}>
+                          <Text
+                            fontSize="xs"
+                            color="#E65C00"
+                            fontWeight="500"
+                            cursor="pointer"
+                            onClick={handleMarkAllAsRead}
+                          >
                             Đọc tất cả
                           </Text>
                         )}
@@ -228,7 +222,7 @@ const Navbar = () => {
 
                       <Box maxH="320px" overflowY="auto">
                         {notifications.length === 0 ? (
-                          <Text p={4} fontSize="sm" color="gray.500" textAlign="center">
+                          <Text p={4} fontSize="sm" color={{ base: "gray.500", _dark: "gray.300" }} textAlign="center">
                             Bạn chưa có thông báo nào.
                           </Text>
                         ) : (
@@ -237,21 +231,21 @@ const Navbar = () => {
                               key={noti._id}
                               p={3}
                               borderBottomWidth="1px"
-                              borderColor="gray.100"
-                              bg={noti.isRead ? "transparent" : "red.50/30"}
-                              _hover={{ bg: "gray.50" }}
+                              borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+                              bg={noti.isRead ? "transparent" : { base: "orange.50", _dark: "orange.950" }}
+                              _hover={{ bg: { base: "gray.50", _dark: "gray.800" } }}
                               as={RouterLink}
                               to={`/properties/${noti.propertyId}`}
                               onClick={() => setShowDropdown(false)}
                               display="block"
                             >
-                              <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="sm" color="gray.800" noOfLines={1}>
+                              <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }} noOfLines={1}>
                                 {noti.title}
                               </Text>
-                              <Text fontSize="xs" color="gray.600" mt={0.5} noOfLines={2}>
+                              <Text fontSize="xs" color={{ base: "gray.600", _dark: "gray.300" }} mt={0.5} noOfLines={2}>
                                 {noti.message}
                               </Text>
-                              <Text fontSize="10px" color="gray.400" mt={1}>
+                              <Text fontSize="10px" color={{ base: "gray.400", _dark: "gray.500" }} mt={1}>
                                 {new Date(noti.createdAt).toLocaleString("vi-VN")}
                               </Text>
                             </Box>
@@ -261,41 +255,58 @@ const Navbar = () => {
                     </Box>
                   )}
                 </Box>
-              </HStack>
 
-              <Box display={{ base: "none", md: "block" }}>
-                <UserButton afterSignOutUrl="/" />
-              </Box>
+                <Flex align="center" justify="center" h="40px">
+                  <UserButton afterSignOutUrl="/" />
+                </Flex>
+
+                <IconButton
+                  variant="ghost"
+                  aria-label="Toggle Theme"
+                  onClick={toggleColorMode}
+                  style={{ borderRadius: "9999px" }}
+                  color={{ base: "gray.700", _dark: "gray.100" }}
+                >
+                  {colorMode === "light" ? <LuMoon size={20} /> : <LuSun size={20} />}
+                </IconButton>
+              </HStack>
             </SignedIn>
 
             <SignedOut>
-              <HStack gap={3} display={{ base: "none", md: "flex" }}>
+              <HStack gap={3} display={{ base: "none", md: "flex" }} align="center">
                 <SignInButton mode="modal">
-                  <Button variant="ghost" size="sm">Đăng nhập</Button>
+                  <Button variant="ghost" size="sm" color={{ base: "gray.700", _dark: "gray.100" }}>
+                    Đăng nhập
+                  </Button>
                 </SignInButton>
                 <SignInButton mode="modal">
-                  <Button bg="red.600" color="white" size="sm" _hover={{ bg: "red.700" }}>
+                  <Button bg="#E65C00" color="white" size="sm" _hover={{ bg: "#CC5200" }}>
                     Đăng ký
                   </Button>
                 </SignInButton>
+                <IconButton
+                  variant="ghost"
+                  aria-label="Toggle Theme"
+                  onClick={toggleColorMode}
+                  style={{ borderRadius: "9999px" }}
+                  color={{ base: "gray.700", _dark: "gray.100" }}
+                >
+                  {colorMode === "light" ? <LuMoon size={20} /> : <LuSun size={20} />}
+                </IconButton>
               </HStack>
             </SignedOut>
 
-            {/* ======================================================== */}
-            {/* GIAO DIỆN MOBILE MENU (HAY HAMBURGER BUTTON) */}
-            {/* ======================================================== */}
             <Box display={{ base: "block", md: "none" }}>
               <Drawer.Root alternativeTrigger={true}>
                 <Drawer.Trigger asChild>
-                  <IconButton variant="ghost" aria-label="Open Menu">
+                  <IconButton variant="ghost" aria-label="Open Menu" color={{ base: "gray.700", _dark: "gray.100" }}>
                     <LuMenu size={24} />
                   </IconButton>
                 </Drawer.Trigger>
                 <Drawer.Positioner>
-                  <Drawer.Content>
+                  <Drawer.Content bg={{ base: "white", _dark: "gray.955" }}>
                     <Drawer.Body px={4} py={6}>
                       <Flex direction="column" gap={4} h="full">
-                        {/* Các đường dẫn điều hướng chính */}
                         <VStack align="stretch" gap={1}>
                           {navLinks.map((link, index) => (
                             <Link
@@ -304,22 +315,19 @@ const Navbar = () => {
                               to={link.href}
                               fontSize="md"
                               fontWeight="600"
-                              color="gray.800"
+                              color={{ base: "gray.800", _dark: "gray.100" }}
                               py={3}
                               borderBottom="1px solid"
-                              borderColor="gray.100"
+                              borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
                             >
                               {link.label}
                             </Link>
                           ))}
                         </VStack>
 
-                        {/* Vùng xử lý Authentication & Tính năng riêng tư */}
-                        <Box pt={2}>
+                        <Box pt={2} mt="auto">
                           <SignedIn>
                             <Flex direction="column" gap={4}>
-                              
-                              {/* Cụm Quản lý Tin đăng trên Mobile */}
                               <Menu.Root>
                                 <Menu.Trigger asChild>
                                   <Button
@@ -328,7 +336,8 @@ const Navbar = () => {
                                     w="full"
                                     display="flex"
                                     justifyContent="space-between"
-                                    borderColor="gray.200"
+                                    borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                                    color={{ base: "gray.800", _dark: "gray.100" }}
                                   >
                                     <Text fontWeight="500">Quản lý tin đăng</Text>
                                     <LuChevronDown size={16} />
@@ -336,7 +345,7 @@ const Navbar = () => {
                                 </Menu.Trigger>
                                 <Portal>
                                   <Menu.Positioner>
-                                    <Menu.Content>
+                                    <Menu.Content bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
                                       <Menu.Item value="create" as={RouterLink} to="/create-property">
                                         Đăng tin mới
                                       </Menu.Item>
@@ -351,21 +360,22 @@ const Navbar = () => {
                                 </Portal>
                               </Menu.Root>
 
-                              {/* TỐI ƯU THÔNG BÁO MOBILE: Đổ dọc mượt mà trực tiếp trong Drawer */}
-                              <Box borderWidth="1px" borderColor="gray.100" borderRadius="xl" bg="gray.50/50" overflow="hidden">
+                              <Box borderWidth="1px" borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }} borderRadius="xl" bg={{ base: "gray.50/50", _dark: "gray.900" }} overflow="hidden">
                                 <Flex
                                   justify="space-between"
                                   align="center"
                                   p={3}
-                                  bg="gray.100/70"
+                                  bg={{ base: "gray.100/70", _dark: "gray.800" }}
                                   cursor="pointer"
                                   onClick={() => setShowMobileNoti(!showMobileNoti)}
                                 >
                                   <HStack gap={2}>
                                     <LuBell size={18} />
-                                    <Text fontWeight="600" fontSize="sm">Thông báo của bạn</Text>
+                                    <Text fontWeight="600" fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
+                                      Thông báo của bạn
+                                    </Text>
                                     {unreadCount > 0 && (
-                                      <Badge bg="red.500" color="white" borderRadius="full" fontSize="10px" px={2}>
+                                      <Badge bg="#E65C00" color="white" borderRadius="full" fontSize="10px" px={2}>
                                         {unreadCount} mới
                                       </Badge>
                                     )}
@@ -380,17 +390,17 @@ const Navbar = () => {
                                 </Flex>
 
                                 {showMobileNoti && (
-                                  <Box bg="white" maxH="260px" overflowY="auto">
+                                  <Box bg={{ base: "white", _dark: "gray.955" }} maxH="260px" overflowY="auto">
                                     {unreadCount > 0 && (
-                                      <Flex justify="flex-end" p={2} borderBottomWidth="1px" borderColor="gray.50">
-                                        <Button size="xs" variant="ghost" colorPalette="blue" onClick={handleMarkAllAsRead}>
+                                      <Flex justify="flex-end" p={2} borderBottomWidth="1px" borderColor={{ base: "gray.50", _dark: "whiteAlpha.200" }}>
+                                        <Button size="xs" variant="ghost" colorPalette="orange" onClick={handleMarkAllAsRead}>
                                           Đánh dấu đọc tất cả
                                         </Button>
                                       </Flex>
                                     )}
 
                                     {notifications.length === 0 ? (
-                                      <Flex direction="column" align="center" gap={1} py={6} color="gray.400">
+                                      <Flex direction="column" align="center" gap={1} py={6} color={{ base: "gray.400", _dark: "gray.500" }}>
                                         <LuBellOff size={20} />
                                         <Text fontSize="xs">Không có thông báo nào</Text>
                                       </Flex>
@@ -400,19 +410,19 @@ const Navbar = () => {
                                           key={noti._id}
                                           p={3}
                                           borderBottomWidth="1px"
-                                          borderColor="gray.50"
-                                          bg={noti.isRead ? "transparent" : "red.50/40"}
+                                          borderColor={{ base: "gray.50", _dark: "whiteAlpha.200" }}
+                                          bg={noti.isRead ? "transparent" : { base: "orange.50", _dark: "orange.950" }}
                                           as={RouterLink}
                                           to={`/properties/${noti.propertyId}`}
                                           display="block"
                                         >
-                                          <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="xs" color="gray.800" noOfLines={1}>
+                                          <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="xs" color={{ base: "gray.800", _dark: "gray.100" }} noOfLines={1}>
                                             {noti.title}
                                           </Text>
-                                          <Text fontSize="11px" color="gray.600" mt={0.5} noOfLines={2}>
+                                          <Text fontSize="11px" color={{ base: "gray.600", _dark: "gray.300" }} mt={0.5} noOfLines={2}>
                                             {noti.message}
                                           </Text>
-                                          <Text fontSize="9px" color="gray.400" mt={1}>
+                                          <Text fontSize="9px" color={{ base: "gray.400", _dark: "gray.500" }} mt={1}>
                                             {new Date(noti.createdAt).toLocaleString("vi-VN")}
                                           </Text>
                                         </Box>
@@ -422,20 +432,48 @@ const Navbar = () => {
                                 )}
                               </Box>
 
-                              {/* Thanh thông tin tài khoản cá nhân */}
-                              <HStack justify="space-between" p={3} bg="gray.50" rounded="xl" borderWidth="1px" borderColor="gray.100" mt="auto">
-                                <Text fontWeight="600" fontSize="sm" color="gray.700">Tài khoản</Text>
+                              <HStack justify="space-between" p={3} bg={{ base: "gray.50", _dark: "gray.900" }} rounded="xl" borderWidth="1px" borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}>
+                                <HStack gap={2}>
+                                  <IconButton
+                                    variant="ghost"
+                                    aria-label="Toggle Theme"
+                                    onClick={toggleColorMode}
+                                    style={{ borderRadius: "9999px" }}
+                                    color={{ base: "gray.700", _dark: "gray.100" }}
+                                    size="sm"
+                                  >
+                                    {colorMode === "light" ? <LuMoon size={18} /> : <LuSun size={18} />}
+                                  </IconButton>
+                                  <Text fontWeight="600" fontSize="sm" color={{ base: "gray.700", _dark: "gray.100" }}>
+                                    Giao diện
+                                  </Text>
+                                </HStack>
                                 <UserButton afterSignOutUrl="/" />
                               </HStack>
                             </Flex>
                           </SignedIn>
 
                           <SignedOut>
-                            <SignInButton mode="modal">
-                              <Button colorPalette="red" w="full" size="md" mt={2}>
-                                Đăng nhập / Đăng ký
-                              </Button>
-                            </SignInButton>
+                            <Flex direction="column" gap={2}>
+                              <HStack justify="space-between" mb={2} px={1}>
+                                <Text fontSize="sm" color="fg.muted">Chuyển chế độ màu:</Text>
+                                <IconButton
+                                  variant="ghost"
+                                  aria-label="Toggle Theme"
+                                  onClick={toggleColorMode}
+                                  style={{ borderRadius: "9999px" }}
+                                  color={{ base: "gray.700", _dark: "gray.100" }}
+                                  size="sm"
+                                >
+                                  {colorMode === "light" ? <LuMoon size={18} /> : <LuSun size={18} />}
+                                </IconButton>
+                              </HStack>
+                              <SignInButton mode="modal">
+                                <Button bg="#E65C00" color="white" w="full" size="md" _hover={{ bg: "#CC5200" }}>
+                                  Đăng nhập / Đăng ký
+                                </Button>
+                              </SignInButton>
+                            </Flex>
                           </SignedOut>
                         </Box>
                       </Flex>

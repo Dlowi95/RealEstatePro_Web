@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
 import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
-import {
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Input,
-  InputGroup,
-  NativeSelect,
-} from "@chakra-ui/react";
-
+import { Button, Card, Flex, Grid, Input, InputGroup, NativeSelect } from "@chakra-ui/react";
 import { FiSearch } from "react-icons/fi";
 
 export default function SearchBar({
@@ -100,20 +91,16 @@ export default function SearchBar({
   };
 
   return (
-    <Card.Root p="6" mb="10">
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(2,1fr)",
-          lg: "repeat(5,1fr)",
-        }}
-        gap="4"
-      >
+    <Card.Root p="6" mb="10" bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(5,1fr)" }} gap="4">
         <InputGroup startElement={<FiSearch />}>
           <Input
             placeholder="Tìm kiếm..."
             value={keywordState}
             onChange={(e) => handleKeywordChange(e.target.value)}
+            bg={{ base: "white", _dark: "gray.800" }}
+            color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+            borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
           />
         </InputGroup>
 
@@ -121,6 +108,9 @@ export default function SearchBar({
           <NativeSelect.Field
             value={locationState}
             onChange={(e) => handleLocationChange(e.target.value)}
+            bg={{ base: "white", _dark: "gray.800" }}
+            color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+            borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
           >
             <option value="">Tất cả khu vực</option>
             {provinces.map((province) => (
@@ -135,6 +125,9 @@ export default function SearchBar({
           <NativeSelect.Field
             value={propertyTypeState}
             onChange={(e) => handleTypeChange(e.target.value)}
+            bg={{ base: "white", _dark: "gray.800" }}
+            color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+            borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
           >
             <option value="">Tất cả loại hình</option>
             <option value="Apartment">Căn hộ</option>
@@ -148,6 +141,9 @@ export default function SearchBar({
           type="number"
           value={maxPriceState}
           onChange={(e) => handleMaxPriceChange(e.target.value)}
+          bg={{ base: "white", _dark: "gray.800" }}
+          color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
         />
 
         <Input
@@ -155,14 +151,17 @@ export default function SearchBar({
           type="number"
           value={minAreaState}
           onChange={(e) => handleMinAreaChange(e.target.value)}
+          bg={{ base: "white", _dark: "gray.800" }}
+          color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
         />
       </Grid>
 
       <Flex justify="flex-end" mt="4" gap="2">
-        <Button variant="outline" onClick={handleClearClick}>
+        <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
           Xóa
         </Button>
-        <Button colorScheme="blue" onClick={handleSearchClick}>
+        <Button bg="#E65C00" color="white" _hover={{ bg: "#CC5200" }} onClick={handleSearchClick}>
           Tìm kiếm
         </Button>
       </Flex>

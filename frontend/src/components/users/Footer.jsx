@@ -12,7 +12,7 @@ import {
 
 function Footer() {
   return (
-    <Box bg="gray.100" pt={10} pb={6}>
+    <Box bg={{ base: "gray.100", _dark: "gray.950" }} pt={10} pb={6}>
       <Container maxW="container.xl">
         <Grid
           templateColumns={{
@@ -21,76 +21,62 @@ function Footer() {
           }}
           gap={10}
         >
-          {/* LEFT */}
           <GridItem>
             <VStack align="start" spacing={4}>
-              <Image
-                src="/imgs/logo.png"
-                alt="RealEstate Pro"
-                w="220px"
-                objectFit="contain"
-              />
+              <Image src="/imgs/logo.png" alt="RealEstate Pro" w="220px" objectFit="contain" />
 
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                 CÔNG TY TNHH REALESTATEPRO
               </Text>
 
-              <Text color="gray.700">
+              <Text color={{ base: "gray.700", _dark: "gray.300" }}>
                 Địa chỉ: 11 Nguyễn Đình Chiểu, Phường Sài Gòn, TP.HCM
               </Text>
 
-              <Text color="gray.700">
+              <Text color={{ base: "gray.700", _dark: "gray.300" }}>
                 Email hỗ trợ: support@realestatepro.com
               </Text>
 
-              <Text color="gray.700">
+              <Text color={{ base: "gray.700", _dark: "gray.300" }}>
                 Hotline: 1900 9999
               </Text>
             </VStack>
           </GridItem>
 
-          {/* CENTER */}
           <GridItem>
             <VStack align="start" spacing={3}>
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                 HƯỚNG DẪN
               </Text>
 
-              <Link href="#">Về chúng tôi</Link>
-              <Link href="#">Báo giá và hỗ trợ</Link>
-              <Link href="#">Câu hỏi thường gặp</Link>
-              <Link href="#">Liên hệ</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Về chúng tôi</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Báo giá và hỗ trợ</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Câu hỏi thường gặp</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Liên hệ</Link>
             </VStack>
           </GridItem>
 
-          {/* RIGHT */}
           <GridItem>
             <VStack align="start" spacing={3}>
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                 QUY ĐỊNH
               </Text>
 
-              <Link href="#">Điều khoản sử dụng</Link>
-              <Link href="#">Chính sách bảo mật</Link>
-              <Link href="#">Quy chế hoạt động</Link>
-              <Link href="#">Giải quyết khiếu nại</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Điều khoản sử dụng</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Chính sách bảo mật</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Quy chế hoạt động</Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Giải quyết khiếu nại</Link>
             </VStack>
           </GridItem>
         </Grid>
 
-        {/* BOTTOM */}
-        <Box
-          mt={10}
-          pt={5}
-          borderTop="1px solid"
-          borderColor="gray.300"
-        >
+        <Box mt={10} pt={5} borderTop="1px solid" borderColor={{ base: "gray.300", _dark: "whiteAlpha.200" }}>
           <HStack justify="space-between" flexWrap="wrap">
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }}>
               © 2026 RealEstatePro. All rights reserved.
             </Text>
 
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }}>
               Made with ❤️ by RealEstatePro
             </Text>
           </HStack>

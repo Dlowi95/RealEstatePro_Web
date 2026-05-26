@@ -1,29 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Grid,
-  Image,
-  Text,
-  Badge,
-  Flex,
-  Spinner,
-  Container,
-} from "@chakra-ui/react";
+import { Box, Grid, Image, Text, Badge, Flex, Spinner, Container } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-export default function PropertyList({
-  keyword,
-  location,
-  type,
-  propertyType,
-  maxPrice,
-  minArea,
-  hasSearched,
-}) {
+export default function PropertyList({ keyword, location, type, propertyType, maxPrice, minArea, hasSearched }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,6 +15,7 @@ export default function PropertyList({
       try {
         setLoading(true);
         const res = await axios.get(`${API_BASE_URL}/api/properties`);
+
         if (res.data?.success) {
           setProperties(res.data.data || []);
         } else {
@@ -64,44 +47,20 @@ export default function PropertyList({
       const description = property.description?.toLowerCase() || "";
       const propertySaleType = property.type?.toLowerCase() || "";
       const propertyTypeValue = property.propertyType?.toLowerCase() || "";
-      const propertyLocation =
-        `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
+      const propertyLocation = `${property.location?.province || ""} ${property.location?.ward || ""} ${property.location?.address || ""}`.toLowerCase();
       const price = Number(property.price) || 0;
       const area = Number(property.area) || 0;
 
-      const matchesKeyword =
-        !normalizedKeyword ||
-        title.includes(normalizedKeyword) ||
-        description.includes(normalizedKeyword);
-      const matchesLocation =
-        !normalizedLocation || propertyLocation.includes(normalizedLocation);
-      const matchesType =
-        !normalizedType || propertySaleType.includes(normalizedType);
-      const matchesPropertyType =
-        !normalizedPropertyType ||
-        propertyTypeValue.includes(normalizedPropertyType);
+      const matchesKeyword = !normalizedKeyword || title.includes(normalizedKeyword) || description.includes(normalizedKeyword);
+      const matchesLocation = !normalizedLocation || propertyLocation.includes(normalizedLocation);
+      const matchesType = !normalizedType || propertySaleType.includes(normalizedType);
+      const matchesPropertyType = !normalizedPropertyType || propertyTypeValue.includes(normalizedPropertyType);
       const matchesMaxPrice = price <= maxPriceNumber;
       const matchesMinArea = area >= minAreaNumber;
 
-      return (
-        matchesKeyword &&
-        matchesLocation &&
-        matchesType &&
-        matchesPropertyType &&
-        matchesMaxPrice &&
-        matchesMinArea
-      );
+      return matchesKeyword && matchesLocation && matchesType && matchesPropertyType && matchesMaxPrice && matchesMinArea;
     });
-  }, [
-    hasSearched,
-    keyword,
-    location,
-    type,
-    propertyType,
-    maxPrice,
-    minArea,
-    properties,
-  ]);
+  }, [hasSearched, keyword, location, type, propertyType, maxPrice, minArea, properties]);
 
   if (!hasSearched) {
     return null;
@@ -110,7 +69,7 @@ export default function PropertyList({
   if (loading) {
     return (
       <Flex align="center" justify="center" py="6">
-        <Spinner />
+        <Spinner color="#E65C00" />
       </Flex>
     );
   }
@@ -118,7 +77,7 @@ export default function PropertyList({
   if (error) {
     return (
       <Box py="4">
-        <Text color="red.500">{error}</Text>
+        <Text color="#E65C00">{error}</Text>
       </Box>
     );
   }
@@ -126,64 +85,44 @@ export default function PropertyList({
   return (
     <Container maxW="container.lg">
       <Box mb="6">
-        <Text fontSize="md" fontWeight="semibold" mb="4">
+        <Text fontSize="md" fontWeight="semibold" mb="4" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
           Tìm thấy {filteredProperties.length} bất động sản
         </Text>
         {filteredProperties.length === 0 ? (
-          <Text color="gray.500">Không tìm thấy bất động sản phù hợp.</Text>
+          <Text color={{ base: "gray.500", _dark: "gray.300" }}>Không tìm thấy bất động sản phù hợp.</Text>
         ) : (
-          <Grid
-            templateColumns={{
-              base: "1fr",
-              md: "repeat(2,1fr)",
-              lg: "repeat(4,1fr)",
-            }}
-            gap="4"
-          >
+          <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4">
             {filteredProperties.map((property) => (
               <Box
                 key={property._id}
-                as={Link} // Thêm as={Link}
-                to={`/property/${property._id}`} // Đường dẫn tới trang chi tiết
+                as={Link}
+                to={`/property/${property._id}`}
                 borderWidth="1px"
+                borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
                 borderRadius="md"
                 overflow="hidden"
-                bg="white"
+                bg={{ base: "white", _dark: "gray.900" }}
                 transition="0.3s"
-                _hover={{
-                  shadow: "lg",
-                  transform: "translateY(-4px)",
-                  cursor: "pointer",
-                }}
+                _hover={{ shadow: "lg", transform: "translateY(-4px)", cursor: "pointer" }}
               >
                 {property.images && property.images.length > 0 ? (
-                  <Image
-                    src={property.images[0]}
-                    alt={property.title}
-                    objectFit="cover"
-                    h="160px"
-                    w="100%"
-                  />
+                  <Image src={property.images[0]} alt={property.title} objectFit="cover" h="160px" w="100%" />
                 ) : (
-                  <Box h="160px" bg="gray.100" />
+                  <Box h="160px" bg={{ base: "gray.100", _dark: "gray.800" }} />
                 )}
                 <Box p="3">
                   <Flex justify="space-between" align="center" mb="2">
-                    <Text fontWeight="bold" noOfLines={1}>
+                    <Text fontWeight="bold" noOfLines={1} color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                       {property.title}
                     </Text>
-                    <Badge colorScheme="green">{property.type}</Badge>
+                    <Badge colorPalette="orange">{property.type}</Badge>
                   </Flex>
-                  <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
-                    {property.location?.address},{" "}
-                    {property.location?.ward || "Chưa cập nhật"},{" "}
-                    {property.location?.province}
+                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }} mb="1" noOfLines={1}>
+                    {property.location?.address}, {property.location?.ward || "Chưa cập nhật"}, {property.location?.province}
                   </Text>
-                  <Text fontSize="sm" fontWeight="semibold">
-                    Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ •{" "}
-                    {property.area} m²
+                  <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+                    Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ • {property.area} m²
                   </Text>
-                  
                 </Box>
               </Box>
             ))}
