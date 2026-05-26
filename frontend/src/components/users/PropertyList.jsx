@@ -1,6 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import axios from "axios";
-import { Box, Grid, Image, Text, Badge, Flex, Spinner, Container } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  Image,
+  Text,
+  Badge,
+  Flex,
+  Spinner,
+  Container,
+  Button,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -9,6 +20,12 @@ export default function PropertyList({ keyword, location, type, propertyType, ma
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -32,8 +49,23 @@ export default function PropertyList({ keyword, location, type, propertyType, ma
     fetch();
   }, []);
 
+  useEffect(() => {
+    // Reset trang khi điều kiện lọc thay đổi
+    setCurrentPage(1);
+  }, [
+    keyword,
+    location,
+    type,
+    propertyType,
+    maxPrice,
+    minArea,
+    hasSearched,
+  ]);
+
+
   const filteredProperties = useMemo(() => {
     if (!hasSearched) return [];
+
 
     const normalizedKeyword = (keyword || "").trim().toLowerCase();
     const normalizedLocation = (location || "").trim().toLowerCase();
@@ -82,17 +114,54 @@ export default function PropertyList({ keyword, location, type, propertyType, ma
     );
   }
 
+  const totalPages = Math.max(1, Math.ceil(filteredProperties.length / itemsPerPage));
+  const pagedProperties = filteredProperties.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Container maxW="container.lg">
+
       <Box mb="6">
-        <Text fontSize="md" fontWeight="semibold" mb="4" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
-          Tìm thấy {filteredProperties.length} bất động sản
-        </Text>
+        
+
+        {totalPages > 1 && (
+          <Flex justify="space-between" align="center" mb="4" wrap="wrap" gap="3">
+            <Text fontSize="md" fontWeight="semibold">
+              Tìm thấy {filteredProperties.length} bất động sản
+            </Text>
+            <Flex gap="2">
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} isDisabled={currentPage === 1}>
+                Trước
+              </Button>
+              <Text fontSize="sm" color="gray.600" alignSelf="center">
+                Trang {currentPage}/{totalPages}
+              </Text>
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} isDisabled={currentPage === totalPages}>
+                Sau
+              </Button>
+            </Flex>
+          </Flex>
+        )}
+
+        {totalPages <= 1 && (
+          <Text fontSize="md" fontWeight="semibold" mb="4">
+            Tìm thấy {filteredProperties.length} bất động sản
+          </Text>
+        )}
         {filteredProperties.length === 0 ? (
           <Text color={{ base: "gray.500", _dark: "gray.300" }}>Không tìm thấy bất động sản phù hợp.</Text>
         ) : (
-          <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4">
-            {filteredProperties.map((property) => (
+          <Grid
+            templateColumns={{
+              base: "1fr",
+              md: "repeat(2,1fr)",
+              lg: "repeat(4,1fr)",
+            }}
+            gap="4"
+          >
+            {pagedProperties.map((property) => (
               <Box
                 key={property._id}
                 as={Link}

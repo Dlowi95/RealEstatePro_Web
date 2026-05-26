@@ -1,6 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import axios from "axios";
-import { Box, Grid, Image, Text, Badge, Flex, Spinner, Container } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  Image,
+  Text,
+  Badge,
+  Flex,
+  Spinner,
+  Container,
+  Button,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -59,10 +70,17 @@ export default function FeaturedProperties({ limit = 6 }) {
   return (
     <Container maxW="container.lg">
       <Box mb="6">
-        <Text fontSize="xl" fontWeight="semibold" mb="4" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+        <Text fontSize="xl" fontWeight="semibold" mb="4">
           Tin mới nhất
         </Text>
-        <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(3,1fr)" }} gap="4">
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            md: "repeat(2,1fr)",
+            lg: "repeat(3,1fr)",
+          }}
+          gap="4"
+        >
           {properties.map((p) => (
             <Box
               key={p._id}
@@ -98,6 +116,20 @@ export default function FeaturedProperties({ limit = 6 }) {
             </Box>
           ))}
         </Grid>
+
+        
+        <Box mb="4" display="flex" justifyContent="center">
+          <Button
+            as={Link}
+            to="/list-properties"
+            variant="outline"
+            colorScheme="orange"
+            size="xl"
+            color="orange.600"
+          >
+            Xem thêm
+          </Button>
+        </Box>
       </Box>
     </Container>
   );
