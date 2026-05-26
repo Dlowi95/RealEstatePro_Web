@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Box, Heading, VStack, HStack, Text, Avatar, Button, SimpleGrid, Card, Input, Stack } from '@chakra-ui/react';
 import { useAuthContext } from '../../context/AuthContext';
 import { toaster } from '../../components/ui/toaster';
-import { FaSave, FaArrowLeft } from 'react-icons/fa';
+import { FaSave, FaArrowLeft, FaSun, FaMoon } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useColorMode } from '../../components/ui/color-mode';
 
 export default function AdminSettings() {
   const { authAxios, user: currentUser, fetchCurrentUser } = useAuthContext();
@@ -11,6 +12,7 @@ export default function AdminSettings() {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
     if (currentUser) {
@@ -30,7 +32,7 @@ export default function AdminSettings() {
       });
       toaster.create({ title: 'Cập nhật thành công!', type: 'success' });
       if (fetchCurrentUser) await fetchCurrentUser();
-      else setTimeout(() => window.location.reload(), 2000); // sửa lỗi reload
+      else setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
       toaster.create({ title: 'Lỗi cập nhật', description: err.response?.data?.message || err.message, type: 'error' });
     } finally {
@@ -39,12 +41,12 @@ export default function AdminSettings() {
   };
 
   return (
-    <Box>
-      <Heading size="lg" mb={6}>⚙️ Cài đặt tài khoản</Heading>
+    <Box color="fg.default">
+      <Heading size="lg" mb={6} color="fg.default">⚙️ Cài đặt tài khoản</Heading>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} gap={6}>
-        <Card.Root>
+        <Card.Root bg="bg.panel" borderColor="border.default">
           <Card.Header>
-            <Heading size="md">Thông tin cá nhân</Heading>
+            <Heading size="md" color="fg.default">Thông tin cá nhân</Heading>
           </Card.Header>
           <Card.Body>
             <VStack align="stretch" spacing={4}>
@@ -54,8 +56,8 @@ export default function AdminSettings() {
                   <Avatar.Image src={currentUser?.avatar} />
                 </Avatar.Root>
                 <Box>
-                  <Text fontWeight="bold" fontSize="lg">{currentUser?.fullName}</Text>
-                  <Text color="gray.500">{currentUser?.email}</Text>
+                  <Text fontWeight="bold" fontSize="lg" color="fg.default">{currentUser?.fullName}</Text>
+                  <Text color="fg.muted">{currentUser?.email}</Text>
                 </Box>
               </HStack>
               <Stack spacing={3}>
@@ -63,26 +65,43 @@ export default function AdminSettings() {
                   placeholder="Họ và tên"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  bg="bg.muted"
+                  color="fg.default"
+                  borderColor="border.default"
                 />
                 <Input
                   placeholder="Số điện thoại"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
+                  bg="bg.muted"
+                  color="fg.default"
+                  borderColor="border.default"
                 />
               </Stack>
-              <Button leftIcon={<FaSave />} colorScheme="blue" onClick={handleUpdate} loading={loading}>
+              <Button colorPalette="blue" onClick={handleUpdate} loading={loading}>
+                <FaSave style={{ marginRight: '8px' }} />
                 Cập nhật thông tin
               </Button>
             </VStack>
           </Card.Body>
         </Card.Root>
-        <Card.Root>
+
+        <Card.Root bg="bg.panel" borderColor="border.default">
           <Card.Header>
-            <Heading size="md">Hành động</Heading>
+            <Heading size="md" color="fg.default">Hành động</Heading>
           </Card.Header>
           <Card.Body>
             <VStack align="stretch" spacing={4}>
-              <Button leftIcon={<FaArrowLeft />} variant="ghost" onClick={() => navigate('/')}>
+              <Button 
+                colorPalette={colorMode === 'dark' ? 'orange' : 'purple'} 
+                variant="solid" 
+                onClick={toggleColorMode}
+              >
+                {colorMode === 'dark' ? <FaSun style={{ marginRight: '8px' }} /> : <FaMoon style={{ marginRight: '8px' }} />}
+                {colorMode === 'dark' ? 'Chuyển sang Chế độ sáng' : 'Chuyển sang Chế độ tối'}
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/')} color="fg.default" _hover={{ bg: "bg.muted" }}>
+                <FaArrowLeft style={{ marginRight: '8px' }} />
                 Về trang chủ
               </Button>
             </VStack>

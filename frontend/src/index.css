@@ -122,3 +122,26 @@ body {
     font-size: 2rem;
   }
 }
+
+:root[data-theme="dark"] {
+  --chakra-colors-bg-panel: #1a202c;
+  --chakra-colors-fg-default: #ffffff;
+  --chakra-colors-fg-muted: #a0aec0;
+  --chakra-colors-bg-muted: #2d3748;
+}
+
+:root[data-theme="dark"] body {
+  background-color: #121620 !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .chakra-card__root {
+  background-color: #1a202c !important;
+  border-color: #2d3748 !important;
+}
+
+:root[data-theme="dark"] input {
+  background-color: #2d3748 !important;
+  color: #ffffff !important;
+  border-color: #4a5568 !important;
+}

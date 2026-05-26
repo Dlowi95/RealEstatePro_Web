@@ -2,20 +2,69 @@ import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, Input, VStack, HStack, Text, Flex, Spinner } from "@chakra-ui/react";
 import { LuMessageSquare, LuX, LuSend } from "react-icons/lu";
 import axios from "axios";
+import { useAuthContext } from "../../context/AuthContext";
 
 const ChatbotWidget = () => {
+    const { user: dbUser } = useAuthContext();
     const [isOpen, setIsOpen] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
     const [messages, setMessages] = useState([
         { sender: "ai", text: "Xin chào! Tôi là trợ lý ảo RealEstatePro. Tôi có thể giúp bạn tìm kiếm nhà đất phù hợp hoặc soạn thảo bài đăng BĐS nhanh chóng. Bạn cần hỗ trợ gì ạ?" }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const lastUserRef = useRef(null);
 
-    // Tự động cuộn xuống tin nhắn mới nhất
+    const quickReplies = [
+        "Tôi muốn tìm nhà đất ở Hồ Chí Minh",
+        "Tôi muốn tìm nhà đất ở Hà Nội",
+        "Khu vực nào đang có nhiều nhà đất nhất?",
+        "Tôi muốn tìm nhà đất giá dưới 2 tỷ",
+        "Hướng dẫn tôi cách đăng tin"
+    ];
+
+    useEffect(() => {
+        const currentUserId = dbUser?._id || dbUser?.id || "guest";
+
+        if (currentUserId !== lastUserRef.current) {
+            lastUserRef.current = currentUserId;
+            setShowTooltip(true);
+            const timer = setTimeout(() => {
+                setShowTooltip(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [dbUser]);
+
+    useEffect(() => {
+        if (isOpen) {
+            setShowTooltip(false);
+        }
+    }, [isOpen]);
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, isOpen]);
+
+    const sendMessageToServer = async (userMessage, currentMessages) => {
+        setIsLoading(true);
+        try {
+            const response = await axios.post("http://localhost:5000/api/ai/chat-assistant", {
+                message: userMessage,
+                history: currentMessages
+            });
+
+            if (response.data.success) {
+                setMessages([...currentMessages, { sender: "ai", text: response.data.reply }]);
+            }
+        } catch (error) {
+            console.error("Error connecting to chatbot API:", error);
+            setMessages([...currentMessages, { sender: "ai", text: "Rất tiếc, kết nối của tôi đang bị gián đoạn. Bạn thử lại nhé!" }]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -24,32 +73,64 @@ const ChatbotWidget = () => {
         const userMessage = input.trim();
         setInput("");
         
-        // Cập nhật tin nhắn của người dùng lên màn hình ngay lập tức
         const updatedMessages = [...messages, { sender: "user", text: userMessage }];
         setMessages(updatedMessages);
-        setIsLoading(true);
+        await sendMessageToServer(userMessage, updatedMessages);
+    };
 
-        try {
-            // Gửi cả tin nhắn mới kèm lịch sử chat để AI hiểu ngữ cảnh cuộc hội thoại
-            const response = await axios.post("http://localhost:5000/api/ai/chat-assistant", {
-                message: userMessage,
-                history: messages
-            });
-
-            if (response.data.success) {
-                setMessages([...updatedMessages, { sender: "ai", text: response.data.reply }]);
-            }
-        } catch (error) {
-            console.error("Error connecting to chatbot API:", error);
-            setMessages([...updatedMessages, { sender: "ai", text: "Rất tiếc, kết nối của tôi đang bị gián đoạn. Bạn thử lại nhé!" }]);
-        } finally {
-            setIsLoading(false);
-        }
+    const handleQuickReply = async (replyText) => {
+        if (isLoading) return;
+        const updatedMessages = [...messages, { sender: "user", text: replyText }];
+        setMessages(updatedMessages);
+        await sendMessageToServer(replyText, updatedMessages);
     };
 
     return (
-        <Box position="fixed" bottom="20px" right="20px" zIndex="2000">
-            {/* NÚT BÓNG CHAT TRÒN */}
+        <Box position="fixed" bottom="20px" right="20px" zIndex="2000" display="flex" flexDirection="column" alignItems="flex-end" gap={3}>
+            {!isOpen && showTooltip && (
+                <Box
+                    bg="white"
+                    p={3}
+                    borderRadius="lg"
+                    boxShadow="2xl"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    maxW="280px"
+                    position="relative"
+                    animation="fadeIn 0.3s ease-out"
+                    color="gray.800"
+                >
+                    <Flex justify="space-between" align="start" mb={1}>
+                        <Text fontWeight="bold" fontSize="xs" color="red.600">🤖 Trợ lý RealEstatePro</Text>
+                        <LuX cursor="pointer" size={14} onClick={() => setShowTooltip(false)} />
+                    </Flex>
+                    <Text fontSize="xs" lineHeight="short">
+                        Bấm vào đây để tôi hỗ trợ bạn tìm kiếm nhà đất nhanh chóng nhé!
+                    </Text>
+                    <Box
+                        position="absolute"
+                        bottom="0"
+                        left="0"
+                        h="3px"
+                        bg="red.500"
+                        w="100%"
+                        style={{
+                            animation: "shrinkWidth 5s linear forwards"
+                        }}
+                    />
+                    <style>{`
+                        @keyframes shrinkWidth {
+                            from { width: 100%; }
+                            to { width: 0%; }
+                        }
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(10px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                    `}</style>
+                </Box>
+            )}
+
             {!isOpen && (
                 <Button
                     onClick={() => setIsOpen(true)}
@@ -65,7 +146,6 @@ const ChatbotWidget = () => {
                 </Button>
             )}
 
-            {/* CỬA SỔ KHUNG CHAT KHI MỞ */}
             {isOpen && (
                 <Box
                     w={{ base: "320px", sm: "380px" }}
@@ -79,7 +159,6 @@ const ChatbotWidget = () => {
                     flexDirection="column"
                     overflow="hidden"
                 >
-                    {/* Header Khung Chat */}
                     <Flex bg="red.600" p={4} color="white" align="center" justify="space-between">
                         <HStack gap={2}>
                             <Box w="8px" h="8px" bg="green.400" borderRadius="full" />
@@ -88,7 +167,6 @@ const ChatbotWidget = () => {
                         <LuX cursor="pointer" size={20} onClick={() => setIsOpen(false)} />
                     </Flex>
 
-                    {/* Vùng hiển thị nội dung các Tin nhắn */}
                     <VStack flex={1} p={4} overflowY="auto" align="stretch" gap={3} bg="gray.50">
                         {messages.map((msg, index) => (
                             <Flex key={index} justify={msg.sender === "user" ? "flex-end" : "flex-start"}>
@@ -101,12 +179,32 @@ const ChatbotWidget = () => {
                                     borderRadius="lg"
                                     boxShadow="sm"
                                     fontSize="sm"
-                                    whiteSpace="pre-line" // Giúp giữ định dạng xuống dòng của Markdown từ AI
+                                    whiteSpace="pre-line"
                                 >
                                     <Text>{msg.text}</Text>
                                 </Box>
                             </Flex>
                         ))}
+
+                        {messages.length === 1 && (
+                            <VStack align="flex-start" gap={2} mt={2} pl={2}>
+                                {quickReplies.map((reply, idx) => (
+                                    <Button
+                                        key={idx}
+                                        size="xs"
+                                        colorPalette="red"
+                                        variant="outline"
+                                        borderRadius="full"
+                                        onClick={() => handleQuickReply(reply)}
+                                        isDisabled={isLoading}
+                                        _hover={{ bg: "red.50" }}
+                                    >
+                                        {reply}
+                                    </Button>
+                                ))}
+                            </VStack>
+                        )}
+
                         {isLoading && (
                             <Flex justify="flex-start" align="center" gap={2}>
                                 <Box bg="white" px={4} py={2} borderRadius="lg" boxShadow="sm">
@@ -117,8 +215,7 @@ const ChatbotWidget = () => {
                         <div ref={messagesEndRef} />
                     </VStack>
 
-                    {/* Ô Nhập Nội Dung Chat */}
-                    <Box p={3} bg="white" borderTop="1px solid" borderColor="gray.150">
+                    <Box p={3} bg="white" borderTop="1px solid" borderColor="gray.200">
                         <form onSubmit={handleSend}>
                             <HStack gap={2}>
                                 <Input
@@ -128,6 +225,7 @@ const ChatbotWidget = () => {
                                     size="sm"
                                     focusBorderColor="red.500"
                                     borderRadius="md"
+                                    color="gray.800"
                                 />
                                 <Button type="submit" colorPalette="red" size="sm" p={2} isDisabled={isLoading}>
                                     <LuSend size={16} />

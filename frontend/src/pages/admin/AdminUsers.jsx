@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Heading, Badge, Button, Spinner, Table, Avatar,
   Stack, Dialog, Portal, Input, Field, HStack, Card, Text,
-  IconButton, Select
+  IconButton, Select, InputElement
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import { toaster } from '../../components/ui/toaster';
 import { Tooltip } from '../../components/ui/tooltip';
-import { FaLock, FaLockOpen, FaUserShield, FaEdit, FaTrash, FaUserEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaLock, FaLockOpen, FaUserShield, FaEdit, FaTrash, FaUserEdit, FaChevronLeft, FaChevronRight, FaSearch} from 'react-icons/fa';
 
 export default function AdminUsers() {
   const { authAxios, isAdmin, user: currentUser } = useAuthContext();
@@ -18,10 +18,10 @@ export default function AdminUsers() {
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // số item mỗi trang
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -39,12 +39,10 @@ export default function AdminUsers() {
     if (isAdmin) fetchUsers();
   }, [isAdmin, fetchUsers]);
 
-  // Reset về trang 1 khi có dữ liệu mới (ví dụ sau khi thêm/xóa user)
   useEffect(() => {
     setCurrentPage(1);
-  }, [users.length]);
+  }, [users.length, searchQuery]);
 
-  // Các hàm xử lý (giữ nguyên)
   const openEditModal = (user) => {
     setEditingUser(user);
     setEditName(user.fullName);
@@ -103,11 +101,14 @@ export default function AdminUsers() {
     }
   };
 
-  // Phân trang
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const filteredUsers = users.filter((user) =>
+    user.fullName?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentUsers = users.slice(startIndex, endIndex);
+  const currentUsers = filteredUsers.slice(startIndex, endIndex);
 
   const goToPage = (page) => {
     setCurrentPage(Math.min(Math.max(1, page), totalPages));
@@ -116,22 +117,44 @@ export default function AdminUsers() {
   if (loading) return <Spinner size="xl" mt={10} />;
 
   return (
-    <Box>
-      <Heading size="lg" mb={6} display="flex" alignItems="center" gap={2}>
+    <Box color="fg.default">
+      <Heading size="lg" mb={6} display="flex" alignItems="center" gap={2} color="fg.default">
         <span>👥</span> Quản lý người dùng
       </Heading>
 
-      <Card.Root variant="outline" overflowX="auto">
+      <Box mb={4} maxW="400px" position="relative">
+        <InputElement 
+          pointerEvents="none" 
+          position="absolute" 
+          top="50%" 
+          left="3" 
+          transform="translateY(-50%)"
+          zIndex={1}
+        >
+          <FaSearch color="gray.400" />
+        </InputElement>
+        <Input
+          placeholder="Tìm kiếm theo họ tên..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          bg="bg.muted"
+          color="fg.default"
+          borderColor="border.default"
+          pl="10"
+        />
+      </Box>
+
+      <Card.Root variant="outline" overflowX="auto" bg="bg.panel" borderColor="border.default">
         <Table.Root variant="line" size="sm">
           <Table.Header>
-            <Table.Row bg="gray.50">
-              <Table.ColumnHeader py={3} px={4}>Avatar</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4}>Họ tên</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4}>Email</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4}>Số điện thoại</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4}>Vai trò</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4}>Trạng thái</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} px={4} textAlign="center">Hành động</Table.ColumnHeader>
+            <Table.Row bg="bg.muted" borderColor="border.default">
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Avatar</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Họ tên</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Email</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Số điện thoại</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Vai trò</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} color="fg.muted">Trạng thái</Table.ColumnHeader>
+              <Table.ColumnHeader py={3} px={4} textAlign="center" color="fg.muted">Hành động</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -143,24 +166,24 @@ export default function AdminUsers() {
               const canDelete = !isCurrentUser && user.role !== 'admin';
 
               return (
-                <Table.Row key={user._id} _hover={{ bg: 'gray.50' }} transition="background 0.2s">
+                <Table.Row key={user._id} _hover={{ bg: 'bg.muted' }} borderColor="border.default" transition="background 0.2s">
                   <Table.Cell px={4} py={2}>
                     <Avatar.Root size="sm">
                       <Avatar.Fallback name={user.fullName} />
                       <Avatar.Image src={user.avatar} />
                     </Avatar.Root>
                   </Table.Cell>
-                  <Table.Cell px={4} py={2} fontWeight="medium">{user.fullName}</Table.Cell>
-                  <Table.Cell px={4} py={2}>{user.email}</Table.Cell>
-                  <Table.Cell px={4} py={2}>{user.phoneNumber || '—'}</Table.Cell>
+                  <Table.Cell px={4} py={2} fontWeight="medium" color="fg.default">{user.fullName}</Table.Cell>
+                  <Table.Cell px={4} py={2} color="fg.default">{user.email}</Table.Cell>
+                  <Table.Cell px={4} py={2} color="fg.default">{user.phoneNumber || '—'}</Table.Cell>
                   <Table.Cell px={4} py={2}>
-                    <Badge colorScheme={user.role === 'admin' ? 'purple' : 'gray'} variant="solid" borderRadius="full" px={2}>
+                    <Badge colorPalette={user.role === 'admin' ? 'purple' : 'gray'} variant="solid" borderRadius="full" px={2}>
                       {user.role === 'admin' ? 'Admin' : 'User'}
                     </Badge>
                   </Table.Cell>
                   <Table.Cell px={4} py={2}>
                     <Badge
-                      colorScheme={user.isBlocked ? 'red' : 'green'}
+                      colorPalette={user.isBlocked ? 'red' : 'green'}
                       variant="subtle"
                       borderRadius="full"
                       px={3}
@@ -223,19 +246,18 @@ export default function AdminUsers() {
         </Table.Root>
       </Card.Root>
 
-      {/* Phân trang */}
-      {users.length > itemsPerPage && (
-        <HStack justify="space-between" mt={6} wrap="wrap" gap={4}>
+      {filteredUsers.length > itemsPerPage && (
+        <HStack justify="space-between" my={6} wrap="wrap" gap={4}>
           <HStack gap={2}>
             <HStack gap={2}>
-              <Text fontSize="sm">Hiển thị</Text>
+              <Text fontSize="sm" color="fg.muted">Hiển thị</Text>
               <HStack gap={1}>
                 {[5, 10, 20].map((num) => (
                   <Button
                     key={num}
                     size="xs"
                     variant={itemsPerPage === num ? 'solid' : 'outline'}
-                    colorScheme={itemsPerPage === num ? 'blue' : 'gray'}
+                    colorPalette={itemsPerPage === num ? 'blue' : 'gray'}
                     onClick={() => {
                       setItemsPerPage(num);
                       setCurrentPage(1);
@@ -245,7 +267,7 @@ export default function AdminUsers() {
                   </Button>
                 ))}
               </HStack>
-              <Text fontSize="sm">mỗi trang</Text>
+              <Text fontSize="sm" color="fg.muted">mỗi trang</Text>
             </HStack>
           </HStack>
 
@@ -253,11 +275,11 @@ export default function AdminUsers() {
             <Button
               size="sm"
               variant="ghost"
-              leftIcon={<FaChevronLeft />}
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
+              color="fg.default"
             >
-              Trước
+              <FaChevronLeft style={{ marginRight: '4px' }} /> Trước
             </Button>
             <HStack gap={1}>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -265,7 +287,7 @@ export default function AdminUsers() {
                   key={page}
                   size="sm"
                   variant={currentPage === page ? 'solid' : 'ghost'}
-                  colorScheme={currentPage === page ? 'blue' : 'gray'}
+                  colorPalette={currentPage === page ? 'blue' : 'gray'}
                   onClick={() => goToPage(page)}
                 >
                   {page}
@@ -275,37 +297,37 @@ export default function AdminUsers() {
             <Button
               size="sm"
               variant="ghost"
-              rightIcon={<FaChevronRight />}
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
+              color="fg.default"
             >
-              Sau
+              Sau <FaChevronRight style={{ marginLeft: '4px' }} />
             </Button>
           </HStack>
         </HStack>
       )}
-      {/* Modal chỉnh sửa giữ nguyên */}
+
       <Dialog.Root open={isEditOpen} onOpenChange={(e) => setIsEditOpen(e.open)}>
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.Header>Chỉnh sửa người dùng</Dialog.Header>
-              <Dialog.Body>
-                <Stack spacing={4}>
+            <Dialog.Content bg="bg.panel" borderColor="border.default" color="fg.default">
+              <Dialog.Header color="fg.default">Chỉnh sửa người dùng</Dialog.Header>
+              <Dialog.Body color="fg.default">
+                <Stack gap={4}>
                   <Field.Root>
-                    <Field.Label>Họ và tên</Field.Label>
-                    <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+                    <Field.Label color="fg.default">Họ và tên</Field.Label>
+                    <Input value={editName} onChange={(e) => setEditName(e.target.value)} bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label>Số điện thoại</Field.Label>
-                    <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+84" />
+                    <Field.Label color="fg.default">Số điện thoại</Field.Label>
+                    <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+84" bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                 </Stack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button variant="ghost" onClick={() => setIsEditOpen(false)}>Hủy</Button>
-                <Button colorScheme="blue" onClick={handleSaveEdit}>Lưu</Button>
+                <Button variant="ghost" onClick={() => setIsEditOpen(false)} color="fg.default">Hủy</Button>
+                <Button colorPalette="blue" onClick={handleSaveEdit}>Lưu</Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger />
             </Dialog.Content>

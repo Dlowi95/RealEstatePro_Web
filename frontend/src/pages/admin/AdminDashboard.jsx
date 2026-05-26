@@ -17,6 +17,7 @@ import {
 
 import { useAuthContext } from '../../context/AuthContext';
 import { toaster } from '../../components/ui/toaster';
+import { useColorMode } from '../../components/ui/color-mode';
 import {
   BarChart,
   Bar,
@@ -38,6 +39,7 @@ const formatMoney = (v) => {
 
 export default function AdminDashboard() {
   const { isAdmin, authAxios } = useAuthContext();
+  const { colorMode } = useColorMode();
 
   const [stats, setStats] = useState({ totalUsers: 0, adminCount: 0, userCount: 0 });
   const [areaStats, setAreaStats] = useState([]);
@@ -45,11 +47,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // current approved properties
   const [currentProps, setCurrentProps] = useState([]);
   const [propsLoading, setPropsLoading] = useState(true);
 
-  // edit dialog
   const [editingProp, setEditingProp] = useState(null);
   const [editForm, setEditForm] = useState({
     title: '',
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
   });
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const COLORS = ['#3182CE', '#63B3ED'];
+  const COLORS = ['#E65C00', '#FF944D'];
 
   const pieData = useMemo(
     () => [
@@ -151,81 +151,84 @@ export default function AdminDashboard() {
   if (loading) return <Spinner size="xl" mt={10} />;
   if (error) return <Text color="red.500">Lỗi: {error}</Text>;
 
+  const chartTooltipContentStyle = {
+    backgroundColor: colorMode === 'dark' ? '#2d3748' : '#ffffff',
+    borderColor: colorMode === 'dark' ? '#4a5568' : '#e2e8f0',
+    color: colorMode === 'dark' ? '#ffffff' : '#000000',
+  };
+
   return (
-    <Box>
+    <Box color="fg.default">
       <Flex align="center" justify="space-between" mb={6}>
-        <Heading size="lg">📌 Tổng quan</Heading>
+        <Heading size="lg" color="fg.default">📌 Tổng quan</Heading>
       </Flex>
 
       <SimpleGrid gap={4} columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
-        <Box p={5} bg="white" borderRadius="lg" shadow="sm">
-          <Text fontSize="sm" color="gray.500">Tổng người dùng</Text>
-          <Heading size="2xl">{stats.totalUsers}</Heading>
-          <Text fontSize="sm">Admin: {stats.adminCount} | User: {stats.userCount}</Text>
+        <Box p={5} bg="bg.panel" borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+          <Text fontSize="sm" color="fg.muted">Tổng người dùng</Text>
+          <Heading size="2xl" color="fg.default">{stats.totalUsers}</Heading>
+          <Text fontSize="sm" color="fg.muted">Admin: {stats.adminCount} | User: {stats.userCount}</Text>
         </Box>
 
-        <Box p={5} bg="white" borderRadius="lg" shadow="sm">
-          <Text fontSize="sm" color="gray.500">Tin đã duyệt</Text>
+        <Box p={5} bg="bg.panel" borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+          <Text fontSize="sm" color="fg.muted">Tin đã duyệt</Text>
           <Heading size="2xl" color="green.500">{areaStats.reduce((s, i) => s + i.count, 0)}</Heading>
         </Box>
 
-        <Box p={5} bg="white" borderRadius="lg" shadow="sm">
-          <Text fontSize="sm" color="gray.500">Khu vực nhiều tin nhất</Text>
-          <Heading size="md" mt={2}>{areaStats[0]?._id || '---'}</Heading>
-          <Text fontSize="sm">{areaStats[0]?.count || 0} tin</Text>
+        <Box p={5} bg="bg.panel" borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+          <Text fontSize="sm" color="fg.muted">Khu vực nhiều tin nhất</Text>
+          <Heading size="md" mt={2} color="fg.default">{areaStats[0]?._id || '---'}</Heading>
+          <Text fontSize="sm" color="fg.muted">{areaStats[0]?.count || 0} tin</Text>
         </Box>
       </SimpleGrid>
 
       <SimpleGrid gap={6} columns={{ base: 1, md: 2 }} spacing={6}>
-        <Box bg="white" p={4} borderRadius="lg" shadow="sm">
-          <Heading size="md" mb={4}>📊 Số lượng tin theo tỉnh/thành</Heading>
+        <Box bg="bg.panel" p={4} borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+          <Heading size="md" mb={4} color="fg.default">📊 Số lượng tin theo tỉnh/thành</Heading>
           <BarChart width={450} height={300} data={areaStats}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="_id" />
-            <YAxis />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke={colorMode === 'dark' ? '#4a5568' : '#e2e8f0'} />
+            <XAxis dataKey="_id" stroke={colorMode === 'dark' ? '#a0aec0' : '#4a5568'} />
+            <YAxis stroke={colorMode === 'dark' ? '#a0aec0' : '#4a5568'} />
+            <Tooltip contentStyle={chartTooltipContentStyle} />
             <Legend />
-            <Bar dataKey="count" fill="#3182CE" />
+            <Bar dataKey="count" fill="#E65C00" />
           </BarChart>
         </Box>
 
-        <Box bg="white" p={4} borderRadius="lg" shadow="sm">
-          <Heading size="md" mb={4}>🥧 Tỉ lệ người dùng</Heading>
+        <Box bg="bg.panel" p={4} borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+          <Heading size="md" mb={4} color="fg.default">🥧 Tỉ lệ người dùng</Heading>
           <PieChart width={400} height={300}>
             <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label>
               {pieData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip contentStyle={chartTooltipContentStyle} />
           </PieChart>
         </Box>
       </SimpleGrid>
 
-      <Box my={8} bg="white" p={4} borderRadius="lg" shadow="sm">
-        <Heading size="md" mb={4}>🏆 Top khu vực nhiều tin</Heading>
-        <Table.Root variant="simple">
+      <Box my={8} bg="bg.panel" p={4} borderRadius="lg" shadow="sm" borderColor="border.default" borderWidth="1px">
+        <Heading size="md" mb={4} color="fg.default">🏆 Top khu vực nhiều tin</Heading>
+        <Table.Root variant="simple" size="sm">
           <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader padding="3">Khu vực</Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="right" padding="3">Số lượng tin</Table.ColumnHeader>
+            <Table.Row borderColor="border.default">
+              <Table.ColumnHeader padding="3" color="fg.muted">Khu vực</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="right" padding="3" color="fg.muted">Số lượng tin</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {areaStats.map((area) => (
-              <Table.Row key={area._id}>
+              <Table.Row key={area._id} borderColor="border.default" _hover={{ bg: 'bg.muted' }}>
                 <Table.Cell padding="3">
-                  <Badge colorScheme="blue">{area._id}</Badge>
+                  <Badge colorPalette="orange" variant="solid">{area._id}</Badge>
                 </Table.Cell>
-                <Table.Cell textAlign="right" padding="3">{area.count}</Table.Cell>
+                <Table.Cell textAlign="right" padding="3" color="fg.default">{area.count}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
         </Table.Root>
       </Box>
-
-
     </Box>
   );
 }
-

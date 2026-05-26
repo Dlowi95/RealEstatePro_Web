@@ -1,6 +1,7 @@
 import { Box, VStack, HStack, Text, Icon, Link as ChakraLink, Image, Menu, Portal, Avatar } from '@chakra-ui/react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaHome, FaChartLine, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { useColorMode } from '../../components/ui/color-mode';
 
 const navItems = [
   { name: 'Tổng quan', path: '/admin', icon: FaTachometerAlt },
@@ -9,9 +10,17 @@ const navItems = [
   { name: 'Thống kê', path: '/admin/stats', icon: FaChartLine },
 ];
 
-export default function AdminSidebar({ displayName, shortName, dbUser, handleLogout, activeBg, activeColor, normalColor, hoverBg, borderColor, sidebarBg }) {
+export default function AdminSidebar({ displayName, shortName, dbUser, handleLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
+
+  const sidebarBg = colorMode === 'dark' ? 'bg.panel' : 'white';
+  const borderColor = colorMode === 'dark' ? '#2d3748' : '#e2e8f0';
+  const activeBg = colorMode === 'dark' ? 'rgba(229, 62, 62, 0.2)' : '#fed7d7';
+  const activeColor = '#e53e3e';
+  const normalColor = colorMode === 'dark' ? 'fg.muted' : '#4a5568';
+  const hoverBg = colorMode === 'dark' ? 'bg.muted' : '#f7fafc';
 
   return (
     <Box
@@ -29,7 +38,7 @@ export default function AdminSidebar({ displayName, shortName, dbUser, handleLog
       zIndex={100}
     >
       <Box mb={6} textAlign="center">
-        <Link to="/">
+        <Link to="/admin">
           <Image
             src="/imgs/logo.png"
             alt="RealEstate Pro"
@@ -40,7 +49,7 @@ export default function AdminSidebar({ displayName, shortName, dbUser, handleLog
           />
         </Link>
       </Box>
-      <Box borderBottom="1px solid" borderColor="gray.200" mb={4} />
+      <Box borderBottom="1px solid" borderColor={colorMode === 'dark' ? '#2d3748' : '#e2e8f0'} mb={4} />
 
       <VStack align="stretch" spacing={1} flex="1">
         {navItems.map((item) => {
@@ -68,7 +77,7 @@ export default function AdminSidebar({ displayName, shortName, dbUser, handleLog
         })}
       </VStack>
 
-      <Box mt="auto" pt={3} borderTop="1px solid" borderColor="gray.200">
+      <Box mt="auto" pt={3} borderTop="1px solid" borderColor={colorMode === 'dark' ? '#2d3748' : '#e2e8f0'}>
         <Menu.Root>
           <Menu.Trigger asChild>
             <HStack spacing={2} p={1.5} borderRadius="md" cursor="pointer" _hover={{ bg: hoverBg }} transition="all 0.2s">
@@ -76,7 +85,7 @@ export default function AdminSidebar({ displayName, shortName, dbUser, handleLog
                 <Avatar.Fallback name={displayName} />
                 <Avatar.Image src={dbUser?.avatar} />
               </Avatar.Root>
-              <Text fontSize="xs" fontWeight="medium" noOfLines={1} maxW="140px">
+              <Text fontSize="xs" fontWeight="medium" noOfLines={1} maxW="140px" color="fg.default">
                 {shortName}
               </Text>
               <Icon as={FaCog} fontSize="xs" color="gray.400" ml="auto" />

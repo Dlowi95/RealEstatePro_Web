@@ -148,19 +148,18 @@ export default function AdminProperties() {
   ];
 
   return (
-    <Box>
-      <Heading size="lg" mb={4}>Quản lý tin đăng</Heading>
+    <Box color="fg.default">
+      <Heading size="lg" mb={4} color="fg.default">Quản lý tin đăng</Heading>
       
-      {/* CẬP NHẬT: Sử dụng Tabs chuẩn v3 */}
       <Tabs.Root
         value={selectedTab}
         onValueChange={(e) => setSelectedTab(e.value)}
         colorPalette="blue"
         mb={4}
       >
-        <Tabs.List>
+        <Tabs.List borderColor="border.default">
           {tabItems.map((item) => (
-            <Tabs.Trigger key={item.key} value={item.key}>
+            <Tabs.Trigger key={item.key} value={item.key} color="fg.default">
               {item.label}
             </Tabs.Trigger>
           ))}
@@ -168,46 +167,46 @@ export default function AdminProperties() {
       </Tabs.Root>
 
       <Box mb={4}>
-        <Text fontSize="md" fontWeight="semibold">
+        <Text fontSize="md" fontWeight="semibold" color="fg.default">
           {tabConfig[selectedTab].label} ({properties.length})
         </Text>
       </Box>
 
       {properties.length === 0 ? (
-        <Box p={4} bg="green.50" borderRadius="md" color="green.800">
+        <Box p={4} bg="bg.muted" borderRadius="md" color="fg.default" borderWidth="1px" borderColor="border.default">
           Không có bài đăng trong mục này.
         </Box>
       ) : (
-        <Card.Root variant="outline" overflowX="auto">
+        <Card.Root variant="outline" overflowX="auto" bg="bg.panel" borderColor="border.default">
           <Table.Root variant="line" size="sm">
             <Table.Header>
-              <Table.Row bg="gray.50">
-                <Table.ColumnHeader py={3} px={4}>Tiêu đề</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Loại</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Giá</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Diện tích</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4}>Người đăng</Table.ColumnHeader>
-                <Table.ColumnHeader py={3} px={4} textAlign="center">Hành động</Table.ColumnHeader>
+              <Table.Row bg="bg.muted" borderColor="border.default">
+                <Table.ColumnHeader py={3} px={4} color="fg.muted">Tiêu đề</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} color="fg.muted">Loại</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} color="fg.muted">Giá</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} color="fg.muted">Diện tích</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} color="fg.muted">Người đăng</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} textAlign="center" color="fg.muted">Hành động</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {currentProperties.map((prop) => (
-                <Table.Row key={prop._id} _hover={{ bg: 'gray.50' }} transition="background 0.2s">
-                  <Table.Cell px={4} py={2} fontWeight="medium">{prop.title}</Table.Cell>
+                <Table.Row key={prop._id} _hover={{ bg: 'bg.muted' }} borderColor="border.default" transition="background 0.2s">
+                  <Table.Cell px={4} py={2} fontWeight="medium" color="fg.default">{prop.title}</Table.Cell>
                   <Table.Cell px={4} py={2}>
                     <Badge colorPalette={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
                       {prop.type === 'Buy' ? 'Mua' : 'Thuê'}
                     </Badge>
                   </Table.Cell>
-                  <Table.Cell px={4} py={2}>{prop.price.toLocaleString()} VNĐ</Table.Cell>
-                  <Table.Cell px={4} py={2}>{prop.area} m²</Table.Cell>
+                  <Table.Cell px={4} py={2} color="fg.default">{prop.price.toLocaleString()} VNĐ</Table.Cell>
+                  <Table.Cell px={4} py={2} color="fg.default">{prop.area} m²</Table.Cell>
                   <Table.Cell px={4} py={2}>
                     <HStack gap={2}>
                       <Avatar.Root size="xs">
                         <Avatar.Fallback name={getDisplayName(prop)} />
                         <Avatar.Image src={getUserAvatarSrc(prop)} />
                       </Avatar.Root>
-                      <Text fontSize="sm" noOfLines={1} maxW="180px">{getDisplayName(prop)}</Text>
+                      <Text fontSize="sm" noOfLines={1} maxW="180px" color="fg.default">{getDisplayName(prop)}</Text>
                     </HStack>
                   </Table.Cell>
                   <Table.Cell px={4} py={2}>
@@ -253,10 +252,10 @@ export default function AdminProperties() {
       )}
 
       {properties.length > itemsPerPage && (
-        <HStack justify="space-between" mt={6} wrap="wrap" gap={4}>
+        <HStack justify="space-between" my={6} wrap="wrap" gap={4}>
           <HStack gap={2}>
             <HStack gap={2}>
-              <Text fontSize="sm">Hiển thị</Text>
+              <Text fontSize="sm" color="fg.muted">Hiển thị</Text>
               <HStack gap={1}>
                 {[5, 10, 20].map((num) => (
                   <Button
@@ -273,19 +272,19 @@ export default function AdminProperties() {
                   </Button>
                 ))}
               </HStack>
-              <Text fontSize="sm">mỗi trang</Text>
+              <Text fontSize="sm" color="fg.muted">mỗi trang</Text>
             </HStack>
           </HStack>
 
           <HStack gap={2}>
-            {/* CẬP NHẬT: Sửa đổi cách đặt Icon và đổi colorScheme thành colorPalette */}
             <Button
               size="sm"
               variant="ghost"
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
+              color="fg.default"
             >
-              <FaChevronLeft /> Trước
+              <FaChevronLeft style={{ marginRight: '4px' }} /> Trước
             </Button>
             <HStack gap={1}>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -305,21 +304,21 @@ export default function AdminProperties() {
               variant="ghost"
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
+              color="fg.default"
             >
-              Sau <FaChevronRight />
+              Sau <FaChevronRight style={{ marginLeft: '4px' }} />
             </Button>
           </HStack>
         </HStack>
       )}
 
-      {/* Cấu trúc Dialog bên dưới đã chuẩn v3 sẵn nên giữ nguyên */}
       <Dialog.Root open={isViewOpen} onOpenChange={(e) => setIsViewOpen(e.open)} size="lg">
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.Header>Chi tiết tin đăng</Dialog.Header>
-              <Dialog.Body>
+            <Dialog.Content bg="bg.panel" borderColor="border.default" color="fg.default">
+              <Dialog.Header color="fg.default">Chi tiết tin đăng</Dialog.Header>
+              <Dialog.Body color="fg.default">
                 {viewingProperty && (
                   <Stack gap={3}>
                     <Text dangerouslySetInnerHTML={{ __html: `<strong>Tiêu đề:</strong> ${viewingProperty.title}` }} />
@@ -346,7 +345,7 @@ export default function AdminProperties() {
                 )}
               </Dialog.Body>
               <Dialog.Footer>
-                <Button variant="ghost" onClick={() => setIsViewOpen(false)}>Đóng</Button>
+                <Button variant="ghost" onClick={() => setIsViewOpen(false)} color="fg.default">Đóng</Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger />
             </Dialog.Content>
@@ -358,30 +357,30 @@ export default function AdminProperties() {
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content>
-              <Dialog.Header>Chỉnh sửa tin đăng</Dialog.Header>
-              <Dialog.Body>
+            <Dialog.Content bg="bg.panel" borderColor="border.default" color="fg.default">
+              <Dialog.Header color="fg.default">Chỉnh sửa tin đăng</Dialog.Header>
+              <Dialog.Body color="fg.default">
                 <Stack gap={4}>
                   <Field.Root>
-                    <Field.Label>Tiêu đề</Field.Label>
-                    <Input value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} />
+                    <Field.Label color="fg.default">Tiêu đề</Field.Label>
+                    <Input value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label>Giá (VNĐ)</Field.Label>
-                    <Input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} />
+                    <Field.Label color="fg.default">Giá (VNĐ)</Field.Label>
+                    <Input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label>Diện tích (m²)</Field.Label>
-                    <Input type="number" value={editForm.area} onChange={(e) => setEditForm({ ...editForm, area: e.target.value })} />
+                    <Field.Label color="fg.default">Diện tích (m²)</Field.Label>
+                    <Input type="number" value={editForm.area} onChange={(e) => setEditForm({ ...editForm, area: e.target.value })} bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label>Số điện thoại liên hệ</Field.Label>
-                    <Input value={editForm.contactPhone} onChange={(e) => setEditForm({ ...editForm, contactPhone: e.target.value })} />
+                    <Field.Label color="fg.default">Số điện thoại liên hệ</Field.Label>
+                    <Input value={editForm.contactPhone} onChange={(e) => setEditForm({ ...editForm, contactPhone: e.target.value })} bg="bg.muted" color="fg.default" borderColor="border.default" />
                   </Field.Root>
                 </Stack>
               </Dialog.Body>
               <Dialog.Footer>
-                <Button variant="ghost" onClick={() => setIsEditOpen(false)}>Hủy</Button>
+                <Button variant="ghost" onClick={() => setIsEditOpen(false)} color="fg.default">Hủy</Button>
                 <Button colorPalette="blue" onClick={handleEdit}>Lưu</Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger />
