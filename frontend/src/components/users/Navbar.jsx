@@ -32,7 +32,9 @@ import { toaster } from "@/components/ui/toaster";
 const navLinks = [
   { label: "Nhà đất bán", href: "/sell" },
   { label: "Nhà đất cho thuê", href: "/rent" },
+  { label: "Về chúng tôi", href: "/about" },
 ];
+
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 

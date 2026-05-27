@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
-import { Box, Container, Spinner, Text, Grid, Image, Badge, Flex, Button } from "@chakra-ui/react";
+
+import {
+  Box,
+  Container,
+  Spinner,
+  Text,
+  Grid,
+  Image,
+  Badge,
+  Flex,
+  Button,
+  HStack,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -9,6 +22,10 @@ export default function ListPropertiesPage() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -63,55 +80,95 @@ export default function ListPropertiesPage() {
       {properties.length === 0 ? (
         <Text color="gray.500">Không có bất động sản.</Text>
       ) : (
-        <Grid
-          templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }}
-          gap="4"
-        >
-          {properties.map((property) => (
-            <Box
-              key={property._id}
-              as={Link}
-              to={`/property/${property._id}`}
-              borderWidth="1px"
-              borderRadius="md"
-              overflow="hidden"
-              bg="white"
-              transition="0.3s"
-              _hover={{
-                shadow: "lg",
-                transform: "translateY(-4px)",
-                cursor: "pointer",
-              }}
-            >
-              {property.images && property.images.length > 0 ? (
-                <Image
-                  src={property.images[0]}
-                  alt={property.title}
-                  objectFit="cover"
-                  h="160px"
-                  w="100%"
-                />
-              ) : (
-                <Box h="160px" bg="gray.100" />
-              )}
-              <Box p="3">
-                <Flex justify="space-between" align="center" mb="2">
-                  <Text fontWeight="bold" noOfLines={1}>
-                    {property.title}
+        (() => {
+          const totalPages = Math.max(1, Math.ceil(properties.length / itemsPerPage));
+          const pagedProperties = properties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+          return (
+            <>
+              {totalPages > 1 && (
+                <Flex justify="space-between" align="center" mb="4" wrap="wrap" gap="3">
+                  <Text fontSize="md" fontWeight="semibold">
+                    Trang {currentPage}/{totalPages}
                   </Text>
-                  <Badge colorScheme="green">{property.type}</Badge>
+                  <HStack spacing="2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      isDisabled={currentPage === 1}
+                    >
+                      Trước
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      isDisabled={currentPage === totalPages}
+                    >
+                      Sau
+                    </Button>
+                  </HStack>
                 </Flex>
-                <Text fontSize="sm" color="gray.600" mb="1" noOfLines={1}>
-                  {property.location?.address}, {property.location?.ward || "Chưa cập nhật"},{" "}
-                  {property.location?.province}
-                </Text>
-                <Text fontSize="sm" fontWeight="semibold">
-                  Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ • {property.area} m²
-                </Text>
-              </Box>
-            </Box>
-          ))}
-        </Grid>
+              )}
+
+              <Grid
+                templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }}
+                gap="4"
+              >
+                {pagedProperties.map((property) => (
+                  <Box
+                    key={property._id}
+                    as={Link}
+                    to={`/property/${property._id}`}
+                    borderWidth="1px"
+                    borderRadius="md"
+                    overflow="hidden"
+                    bg={{ base: "white", _dark: "gray.800" }}
+                    transition="0.3s"
+                    _hover={{
+                      shadow: "lg",
+                      transform: "translateY(-4px)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {property.images && property.images.length > 0 ? (
+                      <Image
+                        src={property.images[0]}
+                        alt={property.title}
+                        objectFit="cover"
+                        h="160px"
+                        w="100%"
+                      />
+                    ) : (
+                      <Box h="160px" bg={{ base: "gray.100", _dark: "gray.700" }} />
+                    )}
+                    <Box p="3">
+                      <Flex justify="space-between" align="center" mb="2">
+                        <Text fontWeight="bold" noOfLines={1} color={{ base: "gray.900", _dark: "white" }}>
+                          {property.title}
+                        </Text>
+                        <Badge colorScheme="green">{property.type}</Badge>
+                      </Flex>
+                      <Text
+                        fontSize="sm"
+                        color={{ base: "gray.600", _dark: "gray.300" }}
+                        mb="1"
+                        noOfLines={1}
+                      >
+                        {property.location?.address}, {property.location?.ward || "Chưa cập nhật"}{" "}
+                        {property.location?.province}
+                      </Text>
+                      <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.900", _dark: "white" }}>
+                        Giá: {Number(property.price).toLocaleString("vi-VN")} VNĐ • {property.area} m²
+                      </Text>
+                    </Box>
+                  </Box>
+                ))}
+              </Grid>
+            </>
+          );
+        })()
       )}
 
       <Box mt="8">
@@ -122,4 +179,5 @@ export default function ListPropertiesPage() {
     </Container>
   );
 }
+
 

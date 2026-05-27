@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -19,16 +18,20 @@ import UserLayout from "./layouts/UserLayout";
 import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
 import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
+import AboutUsPage from "./pages/users/AboutUsPage";
 
 
 function App() {
+
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<UserLayout><AboutUsPage /></UserLayout>} />
         <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
+
         <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
         <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
         <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
