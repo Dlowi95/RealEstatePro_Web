@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useClerk } from "@clerk/clerk-react";
 import axios from "axios";
 import { LucideHeart, LucideUser, LucidePhone } from "lucide-react";
 import { Box, Flex, Grid, HStack, Image, Text, Button, Spinner, Center, Container, VStack } from "@chakra-ui/react";
@@ -10,6 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000
 export default function PropertyDetailsPage() {
   const { id } = useParams();
   const { userId } = useAuth();
+  const { openSignIn } = useClerk();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState("");
@@ -51,8 +52,23 @@ export default function PropertyDetailsPage() {
     checkFavoriteStatus();
   }, [property?._id, userId]);
 
+  const handleCallAction = () => {
+    if (!userId) {
+      openSignIn();
+      return;
+    }
+    if (property?.contactPhone) {
+      window.open(`tel:${property.contactPhone}`, "_self");
+    }
+  };
+
   const handleToggleFavorite = async () => {
-    if (!userId || !property?._id) return;
+    if (!userId) {
+      openSignIn();
+      return;
+    }
+
+    if (!property?._id) return;
 
     try {
       setFavLoading(true);
@@ -239,7 +255,7 @@ export default function PropertyDetailsPage() {
                 </Flex>
 
                 <VStack gap={3} mt={4} w="full">
-                  <Button bg="#E65C00" color="white" size="lg" w="full" fontWeight="bold" _hover={{ bg: "#CC5200" }}>
+                  <Button bg="#E65C00" color="white" size="lg" w="full" fontWeight="bold" _hover={{ bg: "#CC5200" }} onClick={handleCallAction}>
                     <LucidePhone size={18} style={{ marginRight: "6px" }} />
                     Gọi: {property.contactPhone}
                   </Button>
@@ -259,12 +275,23 @@ export default function PropertyDetailsPage() {
               </Box>
 
               <Box bg={{ base: "orange.50", _dark: "orange.950" }} p={4} borderRadius="xl" borderWidth="1px" borderColor={{ base: "orange.100", _dark: "orange.900" }}>
-                <Text fontSize="xs" fontWeight="bold" color={{ base: "orange.700", _dark: "orange.200" }}>
-                  💡 Mẹo an toàn:
+                <Text fontSize="xs" fontWeight="bold" color={{ base: "orange.700", _dark: "orange.200" }} display="flex" alignItems="center" gap={1}>
+                  💡 Mẹo giao dịch an toàn cho bạn:
                 </Text>
-                <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} mt={1} lineHeight="1.5">
-                  Không nên đặt cọc, chuyển tiền trước khi xem trực tiếp bất động sản và giấy tờ pháp lý liên quan.
-                </Text>
+                <VStack align="stretch" gap={2} mt={2.5}>
+                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">
+                    • <strong>Kiểm tra thực tế:</strong> Tuyệt đối không đặt cọc, chuyển tiền trước khi xem trực tiếp bất động sản và gặp chính chủ.
+                  </Text>
+                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">
+                    • <strong>Xác minh pháp lý:</strong> Yêu cầu kiểm tra kỹ sổ đỏ/sổ hồng bản gốc, căn cước công dân của người ký hợp đồng để tránh lừa đảo.
+                  </Text>
+                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">
+                    • <strong>Cẩn trọng giá rẻ:</strong> Hãy khảo sát giá khu vực xung quanh nếu thấy tin đăng có mức giá rẻ bất thường so với thị trường.
+                  </Text>
+                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">
+                    • <strong>Hợp đồng rõ ràng:</strong> Mọi giao dịch đặt cọc hoặc thanh toán nên có biên nhận rõ ràng, tốt nhất là thực hiện tại phòng công chứng.
+                  </Text>
+                </VStack>
               </Box>
             </VStack>
           </Box>

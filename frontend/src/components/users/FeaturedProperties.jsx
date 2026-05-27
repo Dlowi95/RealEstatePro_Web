@@ -118,7 +118,7 @@ export default function FeaturedProperties({ limit = 6 }) {
         </Grid>
 
         
-        <Box mb="4" display="flex" justifyContent="center">
+        <Box my="4" display="flex" justifyContent="center">
           <Button
             as={Link}
             to="/list-properties"
