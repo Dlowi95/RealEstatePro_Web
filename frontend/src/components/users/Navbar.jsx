@@ -110,7 +110,17 @@ const Navbar = () => {
           <HStack gap={8}>
             <Link as={RouterLink} to="/" _hover={{ textDecoration: "none" }}>
               <HStack gap={2} align="center">
-                <Image src="/imgs/logo.png" alt="RealEstate Pro" w="150px" objectFit="contain" />
+                <Image
+                  src="/imgs/logo.png"
+                  alt="RealEstate Pro"
+                  w="150px"
+                  objectFit="contain"
+                  style={{
+                    filter: colorMode === "dark" ? "invert(1) brightness(1.2)" : "none",
+                    transition: "filter 0.2s ease",
+                  }}
+                />
+                
               </HStack>
             </Link>
 
@@ -122,7 +132,7 @@ const Navbar = () => {
                   to={link.href}
                   fontSize="sm"
                   fontWeight="500"
-                  color={{ base: "gray.700", _dark: "gray.100" }}
+                  color={{ base: "gray.700", _dark: "white" }}
                   _hover={{ color: "#E65C00", textDecoration: "none" }}
                 >
                   {link.label}
@@ -140,7 +150,7 @@ const Navbar = () => {
                       variant="ghost"
                       size="sm"
                       px={2}
-                      color={{ base: "gray.700", _dark: "gray.100" }}
+                      color={{ base: "gray.700", _dark: "white" }}
                       _hover={{ color: "#E65C00" }}
                     >
                       Quản lý tin

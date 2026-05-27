@@ -23,7 +23,14 @@ function Footer() {
         >
           <GridItem>
             <VStack align="start" spacing={4}>
-              <Image src="/imgs/logo.png" alt="RealEstate Pro" w="220px" objectFit="contain" />
+              <Image
+                src="/imgs/logo.png"
+                alt="RealEstate Pro"
+                w="220px"
+                objectFit="contain"
+                // Chuyển màu theo chế độ light/dark (tránh logo bị “mảng” trắng khi dark)
+                filter={{ base: "none", _dark: "invert(1)" }}
+              />
 
               <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                 CÔNG TY TNHH REALESTATEPRO
