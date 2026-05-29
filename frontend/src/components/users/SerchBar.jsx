@@ -16,6 +16,7 @@ export default function SearchBar({
   setMinArea,
   onSearch,
   onClear,
+  hideButtons = false,
 }) {
   const [keywordState, setKeywordState] = useState(keyword || "");
   const [locationState, setLocationState] = useState(location || "");
@@ -157,14 +158,16 @@ export default function SearchBar({
         />
       </Grid>
 
-      <Flex justify="flex-end" mt="4" gap="2">
-        <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
-          Xóa
-        </Button>
-        <Button bg="#E65C00" color="white" _hover={{ bg: "#CC5200" }} onClick={handleSearchClick}>
-          Tìm kiếm
-        </Button>
-      </Flex>
+      {!hideButtons && (
+        <Flex justify="flex-end" mt="4" gap="2">
+          <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
+            Xóa
+          </Button>
+          <Button bg="#E65C00" color="white" _hover={{ bg: "#CC5200" }} onClick={handleSearchClick}>
+            Tìm kiếm
+          </Button>
+        </Flex>
+      )}
     </Card.Root>
   );
 }

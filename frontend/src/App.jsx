@@ -19,8 +19,9 @@ import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
 import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
-import ContactPage from "./pages/users/ContactPage";  
-import MyTermPage from "./pages/users/TermPage";
+
+import MyPolicyPage from "./pages/users/policypage";
+
 function App() {
 
 

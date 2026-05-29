@@ -42,6 +42,7 @@ const calculatePropertyScore = (data) => {
     return Math.max(0, Math.min(score, 100));
 };
 
+// 1. ĐĂNG TIN MỚI
 const createProperty = async (req, res) => {
     try {
         const {
@@ -64,7 +65,6 @@ const createProperty = async (req, res) => {
             });
         }
 
-        // Tự động chấm điểm chất lượng tin trước khi tạo mới
         const calculatedScore = calculatePropertyScore({
             title,
             description,
@@ -89,7 +89,9 @@ const createProperty = async (req, res) => {
             contactPhone,
             images,
             userId,
-            score: calculatedScore // Lưu điểm số vào DB
+            score: calculatedScore,
+            views: 0,
+            viewedUsers: [] // Khởi tạo mảng rỗng chưa có ai xem
         });
 
         const savedProperty = await newProperty.save();
@@ -105,14 +107,15 @@ const createProperty = async (req, res) => {
             success: false,
             message: "Server error, please try again later",
             error: error.message
-        })
+        });
     }
-}
+};
 
+// 2. LẤY DANH SÁCH TIN ĐÃ DUYỆT (Ưu tiên xếp bài nhiều VIEW nhất lên đầu làm TIN NỔI BẬT)
 const getApprovedProperties = async (req, res) => {
     try {
-        // TỐI ƯU: Sắp xếp theo điểm số cao nhất lên trước (Làm tin nổi bật), sau đó mới đến tin mới nhất
-        const properties = await Property.find({ status: 'approved' }).sort({ score: -1, createdAt: -1 });
+        // Sắp xếp theo views nhiều nhất (-1), rồi đến score chất lượng, cuối cùng là mới nhất
+        const properties = await Property.find({ status: 'approved' }).sort({ views: -1, score: -1, createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -125,15 +128,40 @@ const getApprovedProperties = async (req, res) => {
             success: false,
             message: "Server error, please try again later",
             error: error.message
-        })
+        });
     }
-}
+};
 
+// 3. XEM CHI TIẾT TIN ĐĂNG (Chống Spam View - Mỗi tài khoản tăng 1 lần duy nhất)
 const getPropertyById = async (req, res) => {
     try {
         const { id } = req.params;
-        
-        const property = await Property.findById(id).lean(); 
+        const { userId } = req.query; // Nhận userId truyền từ frontend lên qua url ?userId=...
+
+        let property;
+
+        if (userId) {
+            // Kiểm tra xem userId này đã từng xem bài viết này chưa
+            const hasViewed = await Property.findOne({ _id: id, viewedUsers: userId });
+
+            if (!hasViewed) {
+                // Nếu chưa xem: tăng views lên 1 và đẩy userId vào mảng viewedUsers để khóa lại
+                property = await Property.findByIdAndUpdate(
+                    id,
+                    { 
+                        $inc: { views: 1 },
+                        $push: { viewedUsers: userId }
+                    },
+                    { new: true }
+                ).lean();
+            } else {
+                // Nếu đã xem rồi: giữ nguyên views, chỉ đọc dữ liệu
+                property = await Property.findById(id).lean();
+            }
+        } else {
+            // Khách vãng lai chưa đăng nhập: chỉ xem, không tăng view để tránh bot cào dữ liệu phá hoại số liệu
+            property = await Property.findById(id).lean();
+        }
 
         if (!property) {
             return res.status(404).json({ success: false, message: "Property not found" });
@@ -171,10 +199,10 @@ const getPropertyById = async (req, res) => {
     }
 };
 
+// 4. LẤY TIN ĐĂNG CỦA RIÊNG MỘT USER
 const getUserProperties = async (req, res) => {
     try {
         const { userId } = req.params;
-
         const properties = await Property.find({ userId }).sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -188,10 +216,11 @@ const getUserProperties = async (req, res) => {
             success: false,
             message: "Server error, please try again later",
             error: error.message
-        })
+        });
     }
-}
+};
 
+// 5. XÓA TIN ĐĂNG
 const deleteProperty = async (req, res) => {
     try {
         const { id } = req.params;
@@ -207,18 +236,17 @@ const deleteProperty = async (req, res) => {
     }
 };
 
+// 6. CẬP NHẬT TIN ĐĂNG VÀ TÍNH LẠI ĐIỂM SỐ
 const updateProperty = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
 
-        // Lấy dữ liệu tin đăng cũ để merge tính toán lại điểm số chuẩn xác nhất
         const currentProperty = await Property.findById(id);
         if (!currentProperty) {
             return res.status(404).json({ success: false, message: "Không tìm thấy bài đăng" });
         }
 
-        // Trộn thông tin cũ và thông tin cập nhật mới để tránh mất trường khi tính điểm
         const mergedData = {
             title: updateData.title !== undefined ? updateData.title : currentProperty.title,
             description: updateData.description !== undefined ? updateData.description : currentProperty.description,
@@ -230,9 +258,8 @@ const updateProperty = async (req, res) => {
             }
         };
 
-        // Tính lại điểm chất lượng tin mới sau khi người dùng sửa bài
         updateData.score = calculatePropertyScore(mergedData);
-        updateData.status = 'pending'; // Reset trạng thái về chờ duyệt khi sửa bài
+        updateData.status = 'pending'; // Đẩy về trạng thái chờ duyệt khi sửa đổi nội dung
         
         const updatedProperty = await Property.findByIdAndUpdate(
             id, 
@@ -250,6 +277,7 @@ const updateProperty = async (req, res) => {
     }
 };
 
+// 7. YÊU THÍCH / BỎ YÊU THÍCH TIN
 const toggleFavorite = async (req, res) => {
     try {
         const { propertyId, userId } = req.body;
@@ -281,6 +309,7 @@ const toggleFavorite = async (req, res) => {
     }
 };
 
+// 8. LẤY DANH SÁCH TIN YÊU THÍCH CỦA USER
 const getFavoriteProperties = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -303,6 +332,7 @@ const getFavoriteProperties = async (req, res) => {
     }
 };
 
+// 9. KIỂM TRA TRẠNG THÁI YÊU THÍCH CỦA TIN ĐỐI VỚI USER
 const checkFavoriteStatus = async (req, res) => {
     try {
         const { userId, propertyId } = req.params;

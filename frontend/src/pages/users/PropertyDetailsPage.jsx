@@ -21,7 +21,9 @@ export default function PropertyDetailsPage() {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE_URL}/api/properties/${id}`);
+        
+        // 👉 SỬA DÒNG NÀY: Truyền thêm userId lên url qua dấu chấm hỏi, nếu chưa đăng nhập thì truyền chuỗi rỗng ""
+        const res = await axios.get(`${API_BASE_URL}/api/properties/${id}?userId=${userId || ""}`);
 
         if (res.data?.success) {
           setProperty(res.data.data);
@@ -35,7 +37,7 @@ export default function PropertyDetailsPage() {
     };
 
     fetchProperty();
-  }, [id]);
+  }, [id, userId]); // Thêm userId vào dependency array để bảo đảm khi Clerk nạp xong token là gọi API chuẩn xác
 
   useEffect(() => {
     const checkFavoriteStatus = async () => {
@@ -196,7 +198,7 @@ export default function PropertyDetailsPage() {
                     borderRadius: "lg",
                     marginTop: "12px",
                     marginBottom: "12px",
-                  },
+                    },
                 }}
                 dangerouslySetInnerHTML={{ __html: property.description }}
               />
