@@ -35,7 +35,7 @@ const RealEstateNews = () => {
   if (news.length === 0) return null;
 
   return (
-    <Box maxW="1200px" mx="auto" px={4} py={10}>
+    <Box maxW="1200px" mx="auto" px={{ base: "0", md: "4" }} py={10} w="100%">
       <Heading as="h2" size="xl" mb={1} color={{ base: "gray.800", _dark: "white" }}>
         Tin tức Bất động sản nổi bật
       </Heading>
@@ -43,8 +43,7 @@ const RealEstateNews = () => {
         Cập nhật nhanh các biến động thị trường từ VnExpress
       </Text>
 
-      {/* Lưới hiển thị các thẻ bài viết */}
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+      <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} gap={6} w="100%">
         {news.map((item, index) => (
           <Link
             href={item.link}
@@ -66,7 +65,6 @@ const RealEstateNews = () => {
               display="flex"
               flexDirection="column"
             >
-              {/* Ảnh Thumbnail */}
               <Box position="relative" overflow="hidden" h="160px">
                 <Image
                   src={item.thumbnail}
@@ -78,10 +76,8 @@ const RealEstateNews = () => {
                 />
               </Box>
 
-              {/* Nội dung bài báo */}
               <Flex p={4} direction="column" flex={1} justify="space-between" gap={2}>
                 <Box>
-                  {/* Tiêu đề (Giới hạn tối đa 2 dòng hiển thị) */}
                   <Heading
                     as="h3"
                     fontSize="sm"
@@ -95,7 +91,6 @@ const RealEstateNews = () => {
                     {item.title}
                   </Heading>
 
-                  {/* Mô tả chi tiết (Giới hạn tối đa 3 dòng hiển thị) */}
                   <Text
                     fontSize="xs"
                     color={{ base: "gray.600", _dark: "gray.400" }}
@@ -106,7 +101,6 @@ const RealEstateNews = () => {
                   </Text>
                 </Box>
 
-                {/* Ngày tháng đăng báo */}
                 <Text fontSize="10px" color="gray.400" mt={2} textAlign="right">
                   {new Date(item.pubDate).toLocaleDateString("vi-VN", {
                     day: "2-digit",

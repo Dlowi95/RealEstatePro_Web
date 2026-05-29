@@ -15,9 +15,8 @@ import { toaster } from "@/components/ui/toaster";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import {
-  RedirectToSignIn,
   SignedIn,
-  SignedOut,
+  SignInButton,
   useUser,
 } from "@clerk/clerk-react";
 import axios from "axios";
@@ -106,8 +105,7 @@ const CreatePropertyPage = () => {
         e.target.reset();
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại.";
+      const errorMessage = error.response?.data?.message || "Đã có lỗi xảy ra. Vui lòng thử lại.";
       toaster.create({
         title: "Lỗi",
         description: errorMessage,
@@ -134,22 +132,23 @@ const CreatePropertyPage = () => {
 
   return (
     <SignedIn>
-      <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh">
-        <Container maxW="container.md" py={10}>
+      <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh" w="100%">
+        <Container maxW="800px" py={{ base: "4", md: "10" }} px={{ base: "2", sm: "4" }}>
           <Box
             bg={{ base: "white", _dark: "gray.900" }}
-            p={8}
+            p={{ base: "4", md: "8" }}
             rounded="lg"
             shadow="md"
             borderWidth="1px"
             borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+            w="100%"
           >
             <Heading size="md" mb={6} color="#E65C00">
               Đăng tin mới
             </Heading>
 
             <form onSubmit={handleSubmit}>
-              <Stack gap={5} align="stretch">
+              <Stack gap={5} align="stretch" w="100%">
                 <Field.Root required>
                   <Field.Label
                     fontWeight="600"
@@ -164,10 +163,11 @@ const CreatePropertyPage = () => {
                     color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
                     borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     onChange={handleChange}
+                    value={formData.title}
                   />
                 </Field.Root>
 
-                <SimpleGrid columns={2} gap={4}>
+                <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w="100%">
                   <Field.Root required>
                     <Field.Label
                       fontWeight="600"
@@ -175,16 +175,14 @@ const CreatePropertyPage = () => {
                     >
                       Hình thức
                     </Field.Label>
-                    <NativeSelect.Root>
+                    <NativeSelect.Root w="100%">
                       <NativeSelect.Field
                         name="type"
                         onChange={handleChange}
+                        value={formData.type}
                         bg={{ base: "white", _dark: "gray.800" }}
                         color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                        borderColor={{
-                          base: "gray.200",
-                          _dark: "whiteAlpha.200",
-                        }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                       >
                         <option value="Buy">Cần bán</option>
                         <option value="Rent">Cho thuê</option>
@@ -199,16 +197,14 @@ const CreatePropertyPage = () => {
                     >
                       Loại bất động sản
                     </Field.Label>
-                    <NativeSelect.Root>
+                    <NativeSelect.Root w="100%">
                       <NativeSelect.Field
                         name="propertyType"
                         onChange={handleChange}
+                        value={formData.propertyType}
                         bg={{ base: "white", _dark: "gray.800" }}
                         color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                        borderColor={{
-                          base: "gray.200",
-                          _dark: "whiteAlpha.200",
-                        }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                       >
                         <option value="">Chọn loại</option>
                         <option value="Apartment">Căn hộ</option>
@@ -219,7 +215,7 @@ const CreatePropertyPage = () => {
                   </Field.Root>
                 </SimpleGrid>
 
-                <SimpleGrid columns={{ base: 1, md: 3 }} gap={5}>
+                <SimpleGrid columns={{ base: 1, sm: 3 }} gap={4} w="100%">
                   <Field.Root required>
                     <Field.Label
                       fontWeight="600"
@@ -235,10 +231,7 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
 
@@ -257,10 +250,7 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
 
@@ -279,20 +269,18 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
                 </SimpleGrid>
 
                 <Box
                   border="1px solid"
-                  borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+                  borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                   p={4}
                   rounded="md"
                   bg={{ base: "gray.50", _dark: "gray.950" }}
+                  w="100%"
                 >
                   <Text
                     fontWeight="bold"
@@ -302,7 +290,7 @@ const CreatePropertyPage = () => {
                   >
                     Địa chỉ bất động sản
                   </Text>
-                  <SimpleGrid columns={2} gap={3} mb={3}>
+                  <SimpleGrid columns={{ base: 1, sm: 2 }} gap={3} mb={3} w="100%">
                     <Field.Root required>
                       <Field.Label
                         fontWeight="600"
@@ -310,17 +298,14 @@ const CreatePropertyPage = () => {
                       >
                         Tỉnh/Thành
                       </Field.Label>
-                      <NativeSelect.Root>
+                      <NativeSelect.Root w="100%">
                         <NativeSelect.Field
                           name="province"
                           value={formData.province}
                           onChange={handleChange}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{
-                            base: "gray.200",
-                            _dark: "whiteAlpha.200",
-                          }}
+                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">Chọn tỉnh/thành</option>
                           {provinces.map((province) => (
@@ -339,7 +324,7 @@ const CreatePropertyPage = () => {
                       >
                         Xã/Phường
                       </Field.Label>
-                      <NativeSelect.Root>
+                      <NativeSelect.Root w="100%">
                         <NativeSelect.Field
                           name="ward"
                           value={formData.ward}
@@ -347,15 +332,10 @@ const CreatePropertyPage = () => {
                           disabled={!formData.province}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{
-                            base: "gray.200",
-                            _dark: "whiteAlpha.200",
-                          }}
+                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">
-                            {formData.province
-                              ? "Chọn xã/phường"
-                              : "Chọn tỉnh trước"}
+                            {formData.province ? "Chọn xã/phường" : "Chọn tỉnh trước"}
                           </option>
                           {wards.map((ward) => (
                             <option key={ward.Code} value={ward.Name}>
@@ -377,10 +357,11 @@ const CreatePropertyPage = () => {
                   />
                 </Box>
 
-                <Field.Root>
+                <Field.Root w="100%">
                   <Field.Label
                     fontWeight="600"
                     color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+                    mb={2}
                   >
                     Hình ảnh bất động sản ({images.length})
                   </Field.Label>
@@ -389,10 +370,12 @@ const CreatePropertyPage = () => {
                     colorPalette="orange"
                     onClick={handleUpload}
                     mb={4}
+                    size="sm"
+                    w={{ base: "100%", sm: "auto" }}
                   >
                     Tải ảnh lên
                   </Button>
-                  <SimpleGrid columns={4} gap={2}>
+                  <SimpleGrid columns={{ base: 2, sm: 4 }} gap={2} w="100%">
                     {images.map((url, index) => (
                       <Box
                         key={index}
@@ -400,10 +383,7 @@ const CreatePropertyPage = () => {
                         rounded="md"
                         overflow="hidden"
                         border="1px solid"
-                        borderColor={{
-                          base: "gray.200",
-                          _dark: "whiteAlpha.200",
-                        }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                       >
                         <img
                           src={url}
@@ -429,10 +409,11 @@ const CreatePropertyPage = () => {
                   </SimpleGrid>
                 </Field.Root>
 
-                <Field.Root required>
+                <Field.Root required w="100%">
                   <Field.Label
                     fontWeight="600"
                     color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+                    mb={2}
                   >
                     Mô tả chi tiết
                   </Field.Label>
@@ -441,14 +422,15 @@ const CreatePropertyPage = () => {
                     border="1px solid"
                     borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     rounded="md"
-                    w="full"
+                    w="100%"
+                    overflow="hidden"
                   >
                     <ReactQuill
                       theme="snow"
                       value={description}
                       onChange={setDescription}
                       style={{
-                        height: "400px",
+                        height: "280px",
                         marginBottom: "45px",
                         width: "100%",
                       }}
@@ -461,7 +443,7 @@ const CreatePropertyPage = () => {
                   bg="#E65C00"
                   color="white"
                   size="lg"
-                  w="full"
+                  w="100%"
                   _hover={{ bg: "#CC5200" }}
                   mt={4}
                 >

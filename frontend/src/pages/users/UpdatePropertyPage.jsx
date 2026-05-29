@@ -19,12 +19,13 @@ import "react-quill-new/dist/quill.snow.css";
 import {
   useUser,
   SignedIn,
-  SignedOut,
   RedirectToSignIn,
 } from "@clerk/clerk-react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const EditPropertyPage = () => {
   const { id } = useParams();
@@ -51,16 +52,13 @@ const EditPropertyPage = () => {
   }));
 
   const wards = formData.province
-    ? vnAddressData.find((province) => province.Name === formData.province)
-        ?.Wards || []
+    ? vnAddressData.find((province) => province.Name === formData.province)?.Wards || []
     : [];
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/properties/${id}`,
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/properties/${id}`);
         const data = response.data.data;
 
         if (data.userId !== user?.id) {
@@ -140,7 +138,7 @@ const EditPropertyPage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/properties/update/${id}`,
+        `${API_BASE_URL}/api/properties/update/${id}`,
         updatedData,
       );
 
@@ -164,29 +162,30 @@ const EditPropertyPage = () => {
   if (loading) {
     return (
       <Center h="100vh">
-        <Spinner color="#E65C00" />
+        <Spinner color="#E65C00" size="xl" />
       </Center>
     );
   }
 
   return (
     <SignedIn>
-      <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh">
-        <Container maxW="container.md" py={10}>
+      <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh" w="100%">
+        <Container maxW="800px" py={{ base: "4", md: "10" }} px={{ base: "2", sm: "4" }}>
           <Box
             bg={{ base: "white", _dark: "gray.900" }}
-            p={8}
+            p={{ base: "4", md: "8" }}
             rounded="lg"
             shadow="md"
             borderWidth="1px"
             borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+            w="100%"
           >
             <Heading size="md" mb={6} color="#E65C00">
               Chỉnh sửa tin đăng
             </Heading>
             <form onSubmit={handleSubmit}>
-              <Stack gap={5}>
-                <Field.Root required>
+              <Stack gap={5} w="100%" align="stretch">
+                <Field.Root required w="100%">
                   <Field.Label
                     fontWeight="600"
                     color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
@@ -203,7 +202,48 @@ const EditPropertyPage = () => {
                   />
                 </Field.Root>
 
-                <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+                <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w="100%">
+                  <Field.Root required>
+                    <Field.Label fontWeight="600" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+                      Hình thức
+                    </Field.Label>
+                    <NativeSelect.Root w="100%">
+                      <NativeSelect.Field
+                        name="type"
+                        value={formData.type}
+                        onChange={handleChange}
+                        bg={{ base: "white", _dark: "gray.800" }}
+                        color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      >
+                        <option value="Buy">Cần bán</option>
+                        <option value="Rent">Cho thuê</option>
+                      </NativeSelect.Field>
+                    </NativeSelect.Root>
+                  </Field.Root>
+                  <Field.Root required>
+                    <Field.Label fontWeight="600" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+                      Loại bất động sản
+                    </Field.Label>
+                    <NativeSelect.Root w="100%">
+                      <NativeSelect.Field
+                        name="propertyType"
+                        value={formData.propertyType}
+                        onChange={handleChange}
+                        bg={{ base: "white", _dark: "gray.800" }}
+                        color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      >
+                        <option value="">Chọn loại</option>
+                        <option value="Apartment">Căn hộ</option>
+                        <option value="House">Nhà phố</option>
+                        <option value="Land">Đất nền</option>
+                      </NativeSelect.Field>
+                    </NativeSelect.Root>
+                  </Field.Root>
+                </SimpleGrid>
+
+                <SimpleGrid columns={{ base: 1, sm: 3 }} gap={4} w="100%">
                   <Field.Root required>
                     <Field.Label
                       fontWeight="600"
@@ -218,10 +258,7 @@ const EditPropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
 
@@ -239,10 +276,7 @@ const EditPropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
 
@@ -260,20 +294,18 @@ const EditPropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{
-                        base: "gray.200",
-                        _dark: "whiteAlpha.200",
-                      }}
+                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
                   </Field.Root>
                 </SimpleGrid>
 
                 <Box
                   border="1px solid"
-                  borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+                  borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                   p={4}
                   rounded="md"
                   bg={{ base: "gray.50", _dark: "gray.950" }}
+                  w="100%"
                 >
                   <Text
                     fontWeight="bold"
@@ -283,7 +315,7 @@ const EditPropertyPage = () => {
                   >
                     Địa chỉ
                   </Text>
-                  <SimpleGrid columns={2} gap={3} mb={3}>
+                  <SimpleGrid columns={{ base: 1, sm: 2 }} gap={3} mb={3} w="100%">
                     <Field.Root required>
                       <Field.Label
                         fontWeight="600"
@@ -291,17 +323,14 @@ const EditPropertyPage = () => {
                       >
                         Tỉnh/Thành
                       </Field.Label>
-                      <NativeSelect.Root>
+                      <NativeSelect.Root w="100%">
                         <NativeSelect.Field
                           name="province"
                           value={formData.province}
                           onChange={handleChange}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{
-                            base: "gray.200",
-                            _dark: "whiteAlpha.200",
-                          }}
+                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">Chọn tỉnh/thành</option>
                           {provinces.map((province) => (
@@ -320,7 +349,7 @@ const EditPropertyPage = () => {
                       >
                         Xã/Phường
                       </Field.Label>
-                      <NativeSelect.Root>
+                      <NativeSelect.Root w="100%">
                         <NativeSelect.Field
                           name="ward"
                           value={formData.ward}
@@ -328,15 +357,10 @@ const EditPropertyPage = () => {
                           disabled={!formData.province}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{
-                            base: "gray.200",
-                            _dark: "whiteAlpha.200",
-                          }}
+                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">
-                            {formData.province
-                              ? "Chọn xã/phường"
-                              : "Chọn tỉnh trước"}
+                            {formData.province ? "Chọn xã/phường" : "Chọn tỉnh trước"}
                           </option>
                           {wards.map((ward) => (
                             <option key={ward.Code} value={ward.Name}>
@@ -354,10 +378,11 @@ const EditPropertyPage = () => {
                     bg={{ base: "white", _dark: "gray.800" }}
                     color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
                     borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                    placeholder="Địa chỉ chi tiết"
                   />
                 </Box>
 
-                <Field.Root>
+                <Field.Root w="100%">
                   <Field.Label
                     fontWeight="600"
                     color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
@@ -369,10 +394,12 @@ const EditPropertyPage = () => {
                     colorPalette="orange"
                     onClick={handleUpload}
                     mb={4}
+                    size="sm"
+                    w={{ base: "100%", sm: "auto" }}
                   >
                     Thêm ảnh
                   </Button>
-                  <SimpleGrid columns={4} gap={2}>
+                  <SimpleGrid columns={{ base: 2, sm: 4 }} gap={2} w="100%">
                     {images.map((url, index) => (
                       <Box
                         key={index}
@@ -380,10 +407,7 @@ const EditPropertyPage = () => {
                         rounded="md"
                         overflow="hidden"
                         border="1px solid"
-                        borderColor={{
-                          base: "gray.200",
-                          _dark: "whiteAlpha.200",
-                        }}
+                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                       >
                         <img
                           src={url}
@@ -409,7 +433,7 @@ const EditPropertyPage = () => {
                   </SimpleGrid>
                 </Field.Root>
 
-                <Field.Root required>
+                <Field.Root required w="100%">
                   <Field.Label
                     fontWeight="600"
                     color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
@@ -421,13 +445,14 @@ const EditPropertyPage = () => {
                     border="1px solid"
                     borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
                     rounded="md"
-                    width="full"
+                    width="100%"
+                    overflow="hidden"
                   >
                     <ReactQuill
                       theme="snow"
                       value={description}
                       onChange={setDescription}
-                      style={{ height: "300px", marginBottom: "45px" }}
+                      style={{ height: "300px", marginBottom: "45px", width: "100%" }}
                     />
                   </Box>
                 </Field.Root>
@@ -437,7 +462,7 @@ const EditPropertyPage = () => {
                   bg="#E65C00"
                   color="white"
                   size="lg"
-                  w="full"
+                  w="100%"
                   _hover={{ bg: "#CC5200" }}
                   mt={4}
                 >

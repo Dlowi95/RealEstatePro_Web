@@ -21,6 +21,8 @@ export default function PropertyCard({ property }) {
       display="flex"
       flexDirection="column"
       h="100%"
+      w="100%"
+      minW="0"
     >
       {p.images && p.images.length > 0 ? (
         <Image src={p.images[0]} alt={p.title} objectFit="cover" h="160px" w="100%" />
@@ -28,10 +30,10 @@ export default function PropertyCard({ property }) {
         <Box h="160px" bg={{ base: "gray.100", _dark: "gray.800" }} />
       )}
 
-      <Box p="3" flex="1" display="flex" flexDirection="column">
+      <Box p="3" flex="1" display="flex" flexDirection="column" justify="space-between">
         <Box>
           <Flex justify="space-between" align="center" mb="2" gap={2}>
-            <Text fontWeight="bold" noOfLines={1} color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+            <Text fontWeight="bold" noOfLines={1} color={{ base: "gray.900", _dark: "whiteAlpha.900" }} flex="1">
               {p.title}
             </Text>
             <Badge colorPalette="orange" flexShrink={0}>
@@ -51,10 +53,9 @@ export default function PropertyCard({ property }) {
           borderTop="1px solid"
           borderColor={{ base: "gray.50", _dark: "gray.800" }}
         >
-          <Text fontSize="xs" fontWeight="semibold" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+          <Text fontSize="xs" fontWeight="semibold" color={{ base: "gray.900", _dark: "whiteAlpha.900" }} noOfLines={1} flex="1" pr="1">
             Giá: {Number(p.price).toLocaleString("vi-VN")} VNĐ • {p.area} m²
           </Text>
-
           <Flex align="center" gap="1" color="gray.500" flexShrink={0}>
             <FaEye size={14} />
             <Text fontSize="xs" fontWeight="medium">{p.views || 0}</Text>

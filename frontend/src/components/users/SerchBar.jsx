@@ -28,31 +28,15 @@ export default function SearchBar({
 }) {
   const [keywordState, setKeywordState] = useState(keyword || "");
   const [locationState, setLocationState] = useState(location || "");
-  const [propertyTypeState, setPropertyTypeState] = useState(
-    propertyType || "",
-  );
+  const [propertyTypeState, setPropertyTypeState] = useState(propertyType || "");
   const [maxPriceState, setMaxPriceState] = useState(maxPrice || "");
   const [minAreaState, setMinAreaState] = useState(minArea || "");
 
-  useEffect(() => {
-    setKeywordState(keyword || "");
-  }, [keyword]);
-
-  useEffect(() => {
-    setLocationState(location || "");
-  }, [location]);
-
-  useEffect(() => {
-    setPropertyTypeState(propertyType || "");
-  }, [propertyType]);
-
-  useEffect(() => {
-    setMaxPriceState(maxPrice || "");
-  }, [maxPrice]);
-
-  useEffect(() => {
-    setMinAreaState(minArea || "");
-  }, [minArea]);
+  useEffect(() => { setKeywordState(keyword || ""); }, [keyword]);
+  useEffect(() => { setLocationState(location || ""); }, [location]);
+  useEffect(() => { setPropertyTypeState(propertyType || ""); }, [propertyType]);
+  useEffect(() => { setMaxPriceState(maxPrice || ""); }, [maxPrice]);
+  useEffect(() => { setMinAreaState(minArea || ""); }, [minArea]);
 
   const handleKeywordChange = (value) => {
     setKeywordState(value);
@@ -81,42 +65,27 @@ export default function SearchBar({
     if (setMinArea) setMinArea(value);
   };
 
-  const handleSearchClick = () => {
-    if (onSearch) onSearch();
-  };
-
   const handleClearClick = () => {
-    setKeywordState("");
-    setLocationState("");
-    setPropertyTypeState("");
-    setMaxPriceState("");
-    setMinAreaState("");
-
-    if (setKeyword) setKeyword("");
-    if (setLocation) setLocation("");
-    if (setPropertyType) setPropertyType("");
-    if (setMaxPrice) setMaxPrice("");
-    if (setMinArea) setMinArea("");
-
+    setKeywordState(""); setLocationState(""); setPropertyTypeState(""); setMaxPriceState(""); setMinAreaState("");
+    if (setKeyword) setKeyword(""); if (setLocation) setLocation(""); if (setPropertyType) setPropertyType(""); if (setMaxPrice) setMaxPrice(""); if (setMinArea) setMinArea("");
     if (onClear) onClear();
   };
 
   return (
     <Card.Root
-      p="6"
-      mb="10"
+      p={{ base: "4", md: "6" }}
+      mb={{ base: "6", md: "10" }}
       bg={{ base: "white", _dark: "gray.900" }}
-      borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+      boxShadow="sm"
+      w="100%"
     >
       <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(2,1fr)",
-          lg: "repeat(5,1fr)",
-        }}
+        templateColumns={{ base: "1fr", sm: "repeat(2,1fr)", lg: "repeat(5,1fr)" }}
         gap="4"
+        w="100%"
       >
-        <InputGroup startElement={<FiSearch />}>
+        <InputGroup startElement={<FiSearch />} w="100%">
           <Input
             placeholder="Tìm kiếm..."
             value={keywordState}
@@ -127,7 +96,7 @@ export default function SearchBar({
           />
         </InputGroup>
 
-        <NativeSelect.Root>
+        <NativeSelect.Root w="100%">
           <NativeSelect.Field
             value={locationState}
             onChange={(e) => handleLocationChange(e.target.value)}
@@ -137,14 +106,12 @@ export default function SearchBar({
           >
             <option value="">Tất cả khu vực</option>
             {provinces.map((province) => (
-              <option key={province} value={province}>
-                {province}
-              </option>
+              <option key={province} value={province}>{province}</option>
             ))}
           </NativeSelect.Field>
         </NativeSelect.Root>
 
-        <NativeSelect.Root>
+        <NativeSelect.Root w="100%">
           <NativeSelect.Field
             value={propertyTypeState}
             onChange={(e) => handleTypeChange(e.target.value)}
@@ -167,6 +134,7 @@ export default function SearchBar({
           bg={{ base: "white", _dark: "gray.800" }}
           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
           borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+          w="100%"
         />
 
         <Input
@@ -177,15 +145,22 @@ export default function SearchBar({
           bg={{ base: "white", _dark: "gray.800" }}
           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
           borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+          w="100%"
         />
       </Grid>
 
       {!hideButtons && (
-        <Flex justify="flex-end" mt="4" gap="2">
-          <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
+        <Flex
+          justify={{ base: "stretch", sm: "flex-end" }}
+          mt="4"
+          gap="3"
+          w="100%"
+          flexDirection={{ base: "row", sm: "row" }}
+        >
+          <Button variant="outline" colorPalette="orange" onClick={handleClearClick} flex={{ base: "1", sm: "none" }} minW={{ sm: "100px" }} size="sm">
             Xóa
           </Button>
-          <Button bg="#E65C00" color="white" _hover={{ bg: "#CC5200" }} onClick={handleSearchClick}>
+          <Button bg="#E65C00" color="white" _hover={{ bg: "#CC5200" }} onClick={onSearch} flex={{ base: "1", sm: "none" }} minW={{ sm: "120px" }} size="sm">
             Tìm kiếm
           </Button>
         </Flex>

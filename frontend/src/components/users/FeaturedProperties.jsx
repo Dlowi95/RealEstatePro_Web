@@ -10,11 +10,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-// 👉 IMPORT FILE CARD DÙNG CHUNG QUA ALIAS @ TRONG DỰ ÁN CỦA ÔNG
 import PropertyCard from "@/components/users/PropertyCard";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function FeaturedProperties({ limit = 6 }) {
   const [properties, setProperties] = useState([]);
@@ -26,9 +24,7 @@ export default function FeaturedProperties({ limit = 6 }) {
       try {
         setLoading(true);
         const res = await axios.get(`${API_BASE_URL}/api/properties`);
-
         if (res.data?.success) {
-          // Lấy danh sách tin đã được backend sắp xếp theo views nổi bật
           setProperties((res.data.data || []).slice(0, limit));
         } else {
           setError("Không thể tải danh sách bất động sản.");
@@ -40,7 +36,6 @@ export default function FeaturedProperties({ limit = 6 }) {
         setLoading(false);
       }
     };
-
     fetch();
   }, [limit]);
 
@@ -69,7 +64,7 @@ export default function FeaturedProperties({ limit = 6 }) {
   }
 
   return (
-    <Container maxW="container.lg">
+    <Container maxW="1200px" px={{ base: "0", md: "4" }}>
       <Box mb="6">
         <Text fontSize="xl" fontWeight="semibold" mb="4">
           Tin nổi bật hàng đầu
@@ -78,13 +73,13 @@ export default function FeaturedProperties({ limit = 6 }) {
         <Grid
           templateColumns={{
             base: "1fr",
-            md: "repeat(2,1fr)",
-            lg: "repeat(3,1fr)", // Chia làm 3 cột mượt mà ở trang chủ
+            sm: "repeat(2,1fr)",
+            lg: "repeat(3,1fr)",
           }}
           gap="4"
+          w="100%"
         >
           {properties.map((property) => (
-            // 👉 THẢ COMPONENT RIÊNG VÀO ĐÂY: Giao diện tự động cân bằng, khóa chân đáy chuẩn chỉnh
             <PropertyCard key={property._id} property={property} />
           ))}
         </Grid>
@@ -95,7 +90,7 @@ export default function FeaturedProperties({ limit = 6 }) {
             to="/list-properties"
             variant="outline"
             colorScheme="orange"
-            size="xl"
+            size="md"
             color="orange.600"
           >
             Xem thêm

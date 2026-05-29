@@ -19,8 +19,7 @@ import {
   RedirectToSignIn,
 } from "@clerk/clerk-react";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function FavoritePropertiesPage() {
   const { user } = useUser();
@@ -30,13 +29,9 @@ export default function FavoritePropertiesPage() {
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!user) return;
-
       try {
         setLoading(true);
-        const res = await axios.get(
-          `${API_BASE_URL}/api/properties/favorites/${user.id}`,
-        );
-
+        const res = await axios.get(`${API_BASE_URL}/api/properties/favorites/${user.id}`);
         if (res.data?.success) {
           setProperties(res.data.data || []);
         }
@@ -46,14 +41,13 @@ export default function FavoritePropertiesPage() {
         setLoading(false);
       }
     };
-
     fetchFavorites();
   }, [user]);
 
   return (
-    <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh">
+    <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh" w="100%">
       <SignedIn>
-        <Container maxW="container.xl" py={8}>
+        <Container maxW="1200px" py={{ base: "4", md: "8" }} px={{ base: "4", md: "6" }}>
           <Heading
             size="lg"
             mb={6}
@@ -75,7 +69,7 @@ export default function FavoritePropertiesPage() {
               textAlign="center"
               py={10}
               bg={{ base: "white", _dark: "gray.900" }}
-              rounded="md"
+              rounded="lg"
               borderWidth="1px"
               borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
               px={6}
@@ -92,6 +86,7 @@ export default function FavoritePropertiesPage() {
                 md: "repeat(3, 1fr)",
               }}
               gap={6}
+              w="100%"
             >
               {properties.map((p) => (
                 <Box
@@ -104,52 +99,28 @@ export default function FavoritePropertiesPage() {
                   overflow="hidden"
                   bg={{ base: "white", _dark: "gray.900" }}
                   transition="0.3s"
-                  _hover={{
-                    shadow: "lg",
-                    transform: "translateY(-4px)",
-                    cursor: "pointer",
-                  }}
+                  minW="0"
+                  _hover={{ shadow: "lg", transform: "translateY(-4px)" }}
                 >
                   {p.images && p.images.length > 0 ? (
-                    <Image
-                      src={p.images[0]}
-                      alt={p.title}
-                      objectFit="cover"
-                      h="160px"
-                      w="100%"
-                    />
+                    <Image src={p.images[0]} alt={p.title} objectFit="cover" h="160px" w="100%" />
                   ) : (
-                    <Box
-                      h="160px"
-                      bg={{ base: "gray.100", _dark: "gray.800" }}
-                    />
+                    <Box h="160px" bg={{ base: "gray.100", _dark: "gray.800" }} />
                   )}
                   <Box p="3">
-                    <Flex justify="space-between" align="center" mb="2">
-                      <Text
-                        fontWeight="bold"
-                        noOfLines={1}
-                        color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
-                      >
+                    <Flex justify="space-between" align="center" mb="2" gap={2}>
+                      <Text fontWeight="bold" noOfLines={1} color={{ base: "gray.900", _dark: "whiteAlpha.900" }} flex="1">
                         {p.title}
                       </Text>
-                      <Badge colorPalette="green">
+                      <Badge colorPalette="green" flexShrink={0}>
                         {p.type === "Buy" ? "Bán" : "Cho thuê"}
                       </Badge>
                     </Flex>
-                    <Text
-                      fontSize="sm"
-                      color={{ base: "gray.600", _dark: "gray.300" }}
-                      mb={1}
-                      noOfLines={1}
-                    >
-                      {p.location?.address},{" "}
-                      {p.location?.ward || "Chưa cập nhật"},{" "}
-                      {p.location?.province}
+                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }} mb={2} noOfLines={1}>
+                      {p.location?.address}, {p.location?.ward || "Chưa cập nhật"}, {p.location?.province}
                     </Text>
                     <Text fontSize="sm" fontWeight="semibold" color="#E65C00">
-                      Giá: {Number(p.price).toLocaleString("vi-VN")} VNĐ •{" "}
-                      {p.area} m²
+                      Giá: {Number(p.price).toLocaleString("vi-VN")} VNĐ • {p.area} m²
                     </Text>
                   </Box>
                 </Box>

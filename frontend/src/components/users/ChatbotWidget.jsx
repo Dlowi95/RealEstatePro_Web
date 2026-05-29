@@ -28,6 +28,15 @@ const ChatbotWidget = () => {
   const messagesEndRef = useRef(null);
   const lastUserRef = useRef(null);
 
+  // Cấu hình URL động để không bị sập kết nối khi lên Production (Vercel)
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+  // State và Ref xử lý Logic Kéo/Thả (Drag & Drop) thông minh
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const dragStart = useRef({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const hasMoved = useRef(false);
+
   const quickReplies = [
     "Tôi muốn tìm nhà đất ở Hồ Chí Minh",
     "Tôi muốn tìm nhà đất ở Hà Nội",
@@ -38,14 +47,12 @@ const ChatbotWidget = () => {
 
   useEffect(() => {
     const currentUserId = dbUser?._id || dbUser?.id || "guest";
-
     if (currentUserId !== lastUserRef.current) {
       lastUserRef.current = currentUserId;
       setShowTooltip(true);
       const timer = setTimeout(() => {
         setShowTooltip(false);
       }, 5000);
-
       return () => clearTimeout(timer);
     }
   }, [dbUser]);
@@ -60,17 +67,74 @@ const ChatbotWidget = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOpen]);
 
+  // Thiết lập cơ chế bắt sự kiện chuột và chạm trên toàn hệ thống cửa sổ
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging.current) return;
+      hasMoved.current = true;
+      setPosition({
+        x: e.clientX - dragStart.current.x,
+        y: e.clientY - dragStart.current.y,
+      });
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDragging.current) return;
+      hasMoved.current = true;
+      const touch = e.touches[0];
+      setPosition({
+        x: touch.clientX - dragStart.current.x,
+        y: touch.clientY - dragStart.current.y,
+      });
+    };
+
+    const handleDragEnd = () => {
+      isDragging.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleDragEnd);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleDragEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleDragEnd);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleDragEnd);
+    };
+  }, []);
+
+  const startDragMouse = (e) => {
+    // Chỉ cho kéo khi bấm vào phần tử điều khiển, tránh cản trở việc cuộn tin nhắn hoặc gõ chữ
+    if (isOpen && e.target.closest("form, input, vstack, button")) return;
+    dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    isDragging.current = true;
+    hasMoved.current = false;
+  };
+
+  const startDragTouch = (e) => {
+    if (isOpen && e.target.closest("form, input, vstack, button")) return;
+    const touch = e.touches[0];
+    dragStart.current = { x: touch.clientX - position.x, y: touch.clientY - position.y };
+    isDragging.current = true;
+    hasMoved.current = false;
+  };
+
+  const handleButtonClick = () => {
+    // Nếu ngón tay có di chuyển dịch chuyển vị trí thì tính là kéo, ngược lại mới mở chat
+    if (!hasMoved.current) {
+      setIsOpen(true);
+    }
+  };
+
   const sendMessageToServer = async (userMessage, currentMessages) => {
     setIsLoading(true);
-
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/ai/chat-assistant",
-        {
-          message: userMessage,
-          history: currentMessages,
-        },
-      );
+      const response = await axios.post(`${API_BASE_URL}/api/ai/chat-assistant`, {
+        message: userMessage,
+        history: currentMessages,
+      });
 
       if (response.data.success) {
         setMessages([
@@ -94,7 +158,6 @@ const ChatbotWidget = () => {
 
   const handleSend = async (e) => {
     e.preventDefault();
-
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
@@ -110,7 +173,6 @@ const ChatbotWidget = () => {
 
   const handleQuickReply = async (replyText) => {
     if (isLoading) return;
-
     const updatedMessages = [...messages, { sender: "user", text: replyText }];
     setMessages(updatedMessages);
     await sendMessageToServer(replyText, updatedMessages);
@@ -121,11 +183,12 @@ const ChatbotWidget = () => {
       position="fixed"
       bottom="20px"
       right="20px"
-      zIndex="2000"
+      zIndex="9999"
       display="flex"
       flexDirection="column"
       alignItems="flex-end"
       gap={3}
+      style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
     >
       {!isOpen && showTooltip && (
         <Box
@@ -163,21 +226,17 @@ const ChatbotWidget = () => {
             style={{ animation: "shrinkWidth 5s linear forwards" }}
           />
           <style>{`
-            @keyframes shrinkWidth {
-              from { width: 100%; }
-              to { width: 0%; }
-            }
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
+            @keyframes shrinkWidth { from { width: 100%; } to { width: 0%; } }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           `}</style>
         </Box>
       )}
 
       {!isOpen && (
         <Button
-          onClick={() => setIsOpen(true)}
+          onMouseDown={startDragMouse}
+          onTouchStart={startDragTouch}
+          onClick={handleButtonClick}
           borderRadius="full"
           w="60px"
           h="60px"
@@ -185,6 +244,8 @@ const ChatbotWidget = () => {
           color="white"
           _hover={{ bg: "#CC5200" }}
           shadow="2xl"
+          cursor="move"
+          style={{ touchAction: "none" }}
         >
           <LuMessageSquare size={26} />
         </Button>
@@ -192,8 +253,8 @@ const ChatbotWidget = () => {
 
       {isOpen && (
         <Box
-          w={{ base: "320px", sm: "380px" }}
-          h="480px"
+          w={{ base: "300px", sm: "360px" }}
+          h="440px"
           bg={{ base: "white", _dark: "gray.900" }}
           borderRadius="xl"
           boxShadow="2xl"
@@ -203,16 +264,21 @@ const ChatbotWidget = () => {
           flexDirection="column"
           overflow="hidden"
         >
+          {/* Thanh Header này đóng vai trò làm thanh cầm để kéo cả hộp chat đi chỗ khác */}
           <Flex
+            onMouseDown={startDragMouse}
+            onTouchStart={startDragTouch}
             bg="#E65C00"
             p={4}
             color="white"
             align="center"
             justify="space-between"
+            cursor="move"
+            style={{ touchAction: "none" }}
           >
             <HStack gap={2}>
               <Box w="8px" h="8px" bg="green.400" borderRadius="full" />
-              <Text fontWeight="bold" fontSize="sm">
+              <Text fontWeight="bold" fontSize="sm" userSelect="none">
                 Trợ lý ảo RealEstatePro
               </Text>
             </HStack>

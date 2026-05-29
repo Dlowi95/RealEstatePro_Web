@@ -2,10 +2,7 @@ import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-
-// Note: Nội dung giới thiệu có thể dài. Bản hiện tại chỉ render “preview” để tránh lỗi build do quá dài.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function AboutUsPage() {
   const [admins, setAdmins] = useState([]);
@@ -16,7 +13,6 @@ export default function AboutUsPage() {
     const fetchAdmins = async () => {
       try {
         setLoading(true);
-        // Lấy danh sách users, filter role=admin.
         const res = await axios.get(`${API_BASE_URL}/api/admin/users`);
         const users = res.data?.users || [];
         setAdmins(users.filter((u) => u.role === "admin"));
@@ -27,27 +23,26 @@ export default function AboutUsPage() {
         setLoading(false);
       }
     };
-
     fetchAdmins();
   }, []);
 
   return (
-    <Container maxW="container.lg" py={10}>
+    <Container maxW="1200px" py={{ base: "4", md: "10" }} px={{ base: "4", md: "6" }}>
       <Box
         mb={6}
         bg={{ base: "white", _dark: "gray.800" }}
-        p={8}
+        p={{ base: "5", md: "8" }}
         borderRadius="lg"
         borderWidth="1px"
+        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
       >
-        <Heading size="2xl" textAlign="center" mb={4}>
+        <Heading size={{ base: "xl", md: "2xl" }} textAlign="center" mb={4} lineHeight="shorter">
           <Text as="span">
             Mua Bán Và Cho Thuê Bất Động Sản Nhanh Chóng Trên{" "}
           </Text>
           <Text
             as="span"
             color={{ base: "gray.800", _dark: "gray.100" }}
-            mb={4}
             fontWeight="bold"
           >
             RealEstatePro
@@ -57,6 +52,8 @@ export default function AboutUsPage() {
         <Text
           textAlign="center"
           color={{ base: "gray.600", _dark: "gray.200" }}
+          mb={6}
+          fontSize="sm"
         >
           (RealEstatePro: Nền tảng công nghệ bất động sản)
         </Text>
@@ -102,7 +99,6 @@ export default function AboutUsPage() {
         <Text
           textAlign="justify"
           color={{ base: "gray.800", _dark: "gray.100" }}
-          mb={4}
         >
           RealEstatePro giúp bạn tìm kiếm và đăng tin bất động sản nhanh chóng,
           minh bạch và hiệu quả.
@@ -112,38 +108,40 @@ export default function AboutUsPage() {
       <Box mt={8}>
         <Box
           bg={{ base: "white", _dark: "gray.800" }}
-          p={8}
+          p={{ base: "5", md: "8" }}
           borderRadius="lg"
           borderWidth="1px"
+          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
         >
-          <VStack align="start" spacing={3}>
-            <Heading size="xl" mb={2}>
+          <VStack align="start" gap={3}>
+            <Heading size={{ base: "lg", md: "xl" }} mb={2}>
               Đội ngũ quản trị
             </Heading>
-            <Text color={{ base: "gray.600", _dark: "gray.200" }} mb={6}>
+            <Text color={{ base: "gray.600", _dark: "gray.200" }} mb={4} fontSize="sm">
               Thông tin của các admin vận hành hệ thống (tóm tắt).
             </Text>
+            
             <Text fontWeight="semibold">Phạm Duy Anh</Text>
-            <Text color="gray.600">
+            <Text color="gray.600" fontSize="sm">
               Chuyên hỗ trợ các vấn đề về mặt pháp lý
             </Text>
 
             <Text fontWeight="semibold" pt={2}>
               Trương Gia Huy
             </Text>
-            <Text color="gray.600">
+            <Text color="gray.600" fontSize="sm">
               Chuyên hỗ trợ các vấn đề về mặt kỹ thuật
             </Text>
 
             <Text fontWeight="semibold" pt={2}>
               Võ Hoàng Đại Lợi
             </Text>
-            <Text color="gray.600">Chuyên hỗ trợ về mặt tài chính</Text>
+            <Text color="gray.600" fontSize="sm">Chuyên hỗ trợ về mặt tài chính</Text>
 
             <Text fontWeight="semibold" pt={2}>
               Trần Hữu Nhân
             </Text>
-            <Text color="gray.600">
+            <Text color="gray.600" fontSize="sm">
               Chuyên hỗ trợ về mặt dự án cũng như xây dựng
             </Text>
           </VStack>
