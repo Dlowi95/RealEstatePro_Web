@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
-import { Button, Card, Flex, Grid, Input, InputGroup, NativeSelect } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Input,
+  InputGroup,
+  NativeSelect,
+} from "@chakra-ui/react";
 import { FiSearch } from "react-icons/fi";
 
 export default function SearchBar({
@@ -20,7 +28,9 @@ export default function SearchBar({
 }) {
   const [keywordState, setKeywordState] = useState(keyword || "");
   const [locationState, setLocationState] = useState(location || "");
-  const [propertyTypeState, setPropertyTypeState] = useState(propertyType || "");
+  const [propertyTypeState, setPropertyTypeState] = useState(
+    propertyType || "",
+  );
   const [maxPriceState, setMaxPriceState] = useState(maxPrice || "");
   const [minAreaState, setMinAreaState] = useState(minArea || "");
 
@@ -92,8 +102,20 @@ export default function SearchBar({
   };
 
   return (
-    <Card.Root p="6" mb="10" bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}>
-      <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(5,1fr)" }} gap="4">
+    <Card.Root
+      p="6"
+      mb="10"
+      bg={{ base: "white", _dark: "gray.900" }}
+      borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+    >
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          md: "repeat(2,1fr)",
+          lg: "repeat(5,1fr)",
+        }}
+        gap="4"
+      >
         <InputGroup startElement={<FiSearch />}>
           <Input
             placeholder="Tìm kiếm..."
@@ -158,6 +180,7 @@ export default function SearchBar({
         />
       </Grid>
 
+<<<<<<< Updated upstream
       {!hideButtons && (
         <Flex justify="flex-end" mt="4" gap="2">
           <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
@@ -168,6 +191,25 @@ export default function SearchBar({
           </Button>
         </Flex>
       )}
+=======
+      <Flex justify="flex-end" mt="4" gap="2">
+        <Button
+          variant="outline"
+          colorPalette="orange"
+          onClick={handleClearClick}
+        >
+          Xóa
+        </Button>
+        <Button
+          bg="#E65C00"
+          color="white"
+          _hover={{ bg: "#CC5200" }}
+          onClick={handleSearchClick}
+        >
+          Tìm kiếm
+        </Button>
+      </Flex>
+>>>>>>> Stashed changes
     </Card.Root>
   );
 }

@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function FeaturedCarousel({ limit = 10 }) {
   const [properties, setProperties] = useState([]);
@@ -79,10 +80,20 @@ export default function FeaturedCarousel({ limit = 10 }) {
           Tin nổi bật
         </Text>
         <Flex gap={2}>
-          <Button size="sm" variant="outline" onClick={handlePrev} isDisabled={safeIndex === 0}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handlePrev}
+            isDisabled={safeIndex === 0}
+          >
             Trước
           </Button>
-          <Button size="sm" variant="outline" onClick={handleNext} isDisabled={safeIndex === maxStartIndex}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleNext}
+            isDisabled={safeIndex === maxStartIndex}
+          >
             Sau
           </Button>
         </Flex>
@@ -107,7 +118,13 @@ export default function FeaturedCarousel({ limit = 10 }) {
             }}
           >
             {p.images && p.images.length > 0 ? (
-              <Image src={p.images[0]} alt={p.title} objectFit="cover" h="160px" w="100%" />
+              <Image
+                src={p.images[0]}
+                alt={p.title}
+                objectFit="cover"
+                h="160px"
+                w="100%"
+              />
             ) : (
               <Box h="160px" bg="gray.100" />
             )}
@@ -119,7 +136,8 @@ export default function FeaturedCarousel({ limit = 10 }) {
                 <Badge colorScheme="green">{p.type}</Badge>
               </Flex>
               <Text fontSize="sm" color="gray.600" noOfLines={2}>
-                {p.location?.address}, {p.location?.ward || "Chưa cập nhật"} {p.location?.province}
+                {p.location?.address}, {p.location?.ward || "Chưa cập nhật"}{" "}
+                {p.location?.province}
               </Text>
               <Text fontSize="sm" fontWeight="semibold" mt="2">
                 {Number(p.price).toLocaleString("vi-VN")} VNĐ
@@ -131,4 +149,3 @@ export default function FeaturedCarousel({ limit = 10 }) {
     </Container>
   );
 }
-

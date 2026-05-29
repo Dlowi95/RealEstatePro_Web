@@ -24,22 +24,28 @@ const chatAssistant = async (req, res) => {
       Property.aggregate([
         { $match: { status: "approved" } },
         { $group: { _id: "$location.province", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ])
+        { $sort: { count: -1 } },
+      ]),
     ]);
 
     const propertyContext = propertiesFromDB
       .map((p) => {
         const locationStr = `${p.location.address}, ${p.location.ward || "Chưa cập nhật"}, ${p.location.province}`;
         const cleanDesc = stripHTML(p.description);
-        const shortDesc = cleanDesc.length > 150 ? cleanDesc.substring(0, 150) + "..." : cleanDesc;
+        const shortDesc =
+          cleanDesc.length > 150
+            ? cleanDesc.substring(0, 150) + "..."
+            : cleanDesc;
 
         return `- [ID: ${p._id}] ${p.title} | ${p.propertyType} | ${p.price.toLocaleString("vi-VN")} VNĐ | Diện tích: ${p.area}m² | Địa chỉ: ${locationStr} | Mô tả ngắn: ${shortDesc}`;
       })
       .join("\n");
 
     const statsContext = areaStats
-      .map((stat) => `- Tỉnh/Thành phố: ${stat._id || "Không rõ"} có ${stat.count} tin đăng`)
+      .map(
+        (stat) =>
+          `- Tỉnh/Thành phố: ${stat._id || "Không rõ"} có ${stat.count} tin đăng`,
+      )
       .join("\n");
 
     const systemInstruction = `Bạn là Trợ lý ảo thông minh của sàn bất động sản RealEstatePro.

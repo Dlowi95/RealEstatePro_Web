@@ -6,9 +6,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -39,7 +39,10 @@ body {
 }
 
 /* ===== BUTTONS UNIVERSAL ===== */
-.btn-primary, .btn-ghost, .btn-post, .btn-admin {
+.btn-primary,
+.btn-ghost,
+.btn-post,
+.btn-admin {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +55,10 @@ body {
   font-family: inherit;
 }
 
-.btn-primary:hover, .btn-ghost:hover, .btn-post:hover, .btn-admin:hover {
+.btn-primary:hover,
+.btn-ghost:hover,
+.btn-post:hover,
+.btn-admin:hover {
   transform: translateY(-1px);
 }
 
@@ -108,8 +114,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== RESPONSIVE ===== */
@@ -117,7 +127,7 @@ body {
   .container {
     padding: 0 15px;
   }
-  
+
   .placeholder h1 {
     font-size: 2rem;
   }

@@ -32,7 +32,11 @@ function Footer() {
                 filter={{ base: "none", _dark: "invert(1)" }}
               />
 
-              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+              <Text
+                fontWeight="bold"
+                fontSize="lg"
+                color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+              >
                 CÔNG TY TNHH REALESTATEPRO
               </Text>
 
@@ -52,32 +56,77 @@ function Footer() {
 
           <GridItem>
             <VStack align="start" spacing={3}>
-              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+              <Text
+                fontWeight="bold"
+                fontSize="lg"
+                color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+              >
                 HƯỚNG DẪN
               </Text>
 
+<<<<<<< Updated upstream
               <Link href="/about" color={{ base: "gray.700", _dark: "gray.200" }}>Về chúng tôi</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Báo giá và hỗ trợ</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Câu hỏi thường gặp</Link>
               <Link href="/contact" color={{ base: "gray.700", _dark: "gray.200" }}>Liên hệ</Link>
+=======
+              <Link
+                href="/about"
+                color={{ base: "gray.700", _dark: "gray.200" }}
+              >
+                Về chúng tôi
+              </Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
+                Báo giá và hỗ trợ
+              </Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
+                Câu hỏi thường gặp
+              </Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
+                Liên hệ
+              </Link>
+>>>>>>> Stashed changes
             </VStack>
           </GridItem>
 
           <GridItem>
             <VStack align="start" spacing={3}>
-              <Text fontWeight="bold" fontSize="lg" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
+              <Text
+                fontWeight="bold"
+                fontSize="lg"
+                color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+              >
                 QUY ĐỊNH
               </Text>
 
-              <Link href="/terms" color={{ base: "gray.700", _dark: "gray.200" }}>Điều khoản sử dụng</Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Chính sách bảo mật</Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Quy chế hoạt động</Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Giải quyết khiếu nại</Link>
+              <Link
+                href="/terms"
+                color={{ base: "gray.700", _dark: "gray.200" }}
+              >
+                Điều khoản sử dụng
+              </Link>
+              <Link
+                href="/policy"
+                color={{ base: "gray.700", _dark: "gray.200" }}
+              >
+                Chính sách bảo mật
+              </Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
+                Quy chế hoạt động
+              </Link>
+              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
+                Giải quyết khiếu nại
+              </Link>
             </VStack>
           </GridItem>
         </Grid>
 
-        <Box mt={10} pt={5} borderTop="1px solid" borderColor={{ base: "gray.300", _dark: "whiteAlpha.200" }}>
+        <Box
+          mt={10}
+          pt={5}
+          borderTop="1px solid"
+          borderColor={{ base: "gray.300", _dark: "whiteAlpha.200" }}
+        >
           <HStack justify="space-between" flexWrap="wrap">
             <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }}>
               © 2026 RealEstatePro. All rights reserved.

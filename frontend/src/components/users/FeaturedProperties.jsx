@@ -13,7 +13,8 @@ import { Link } from "react-router-dom";
 // 👉 IMPORT FILE CARD DÙNG CHUNG QUA ALIAS @ TRONG DỰ ÁN CỦA ÔNG
 import PropertyCard from "@/components/users/PropertyCard";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function FeaturedProperties({ limit = 6 }) {
   const [properties, setProperties] = useState([]);
@@ -62,7 +63,13 @@ export default function FeaturedProperties({ limit = 6 }) {
   if (!properties.length) {
     return (
       <Box py="4">
+<<<<<<< Updated upstream
         <Text color={{ base: "gray.600", _dark: "gray.300" }}>Chưa có bất động sản nổi bật nào.</Text>
+=======
+        <Text color={{ base: "gray.600", _dark: "gray.300" }}>
+          Chưa có bất động sản nào.
+        </Text>
+>>>>>>> Stashed changes
       </Box>
     );
   }
@@ -82,9 +89,70 @@ export default function FeaturedProperties({ limit = 6 }) {
           }}
           gap="4"
         >
+<<<<<<< Updated upstream
           {properties.map((property) => (
             // 👉 THẢ COMPONENT RIÊNG VÀO ĐÂY: Giao diện tự động cân bằng, khóa chân đáy chuẩn chỉnh
             <PropertyCard key={property._id} property={property} />
+=======
+          {properties.map((p) => (
+            <Box
+              key={p._id}
+              as={Link}
+              to={`/property/${p._id}`}
+              borderWidth="1px"
+              borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+              borderRadius="md"
+              overflow="hidden"
+              bg={{ base: "white", _dark: "gray.900" }}
+              transition="0.3s"
+              _hover={{
+                shadow: "lg",
+                transform: "translateY(-4px)",
+                cursor: "pointer",
+              }}
+            >
+              {p.images && p.images.length > 0 ? (
+                <Image
+                  src={p.images[0]}
+                  alt={p.title}
+                  objectFit="cover"
+                  h="160px"
+                  w="100%"
+                />
+              ) : (
+                <Box h="160px" bg={{ base: "gray.100", _dark: "gray.800" }} />
+              )}
+              <Box p="3">
+                <Flex justify="space-between" align="center" mb="2">
+                  <Text
+                    fontWeight="bold"
+                    noOfLines={1}
+                    color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+                  >
+                    {p.title}
+                  </Text>
+                  <Badge colorPalette="orange">{p.type}</Badge>
+                </Flex>
+                <Text
+                  fontSize="sm"
+                  color={{ base: "gray.600", _dark: "gray.300" }}
+                  mb="1"
+                  noOfLines={1}
+                >
+                  {p.location.address}, {p.location.ward || "Chưa cập nhật"},{" "}
+                  {p.location.province}
+                </Text>
+                <Text
+                  fontSize="sm"
+                  fontWeight="semibold"
+                  color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
+                >
+                  Giá: {Number(p.price).toLocaleString("vi-VN")} VNĐ • {p.area}{" "}
+                  m²
+                </Text>
+              </Box>
+            </Box>
+>>>>>>> Stashed changes
           ))}
         </Grid>
 

@@ -45,7 +45,7 @@ export default function HomePage() {
         minArea={minArea}
         hasSearched={hasSearched}
       />
-      
+
       <FeaturedProperties />
     </UserLayout>
   );

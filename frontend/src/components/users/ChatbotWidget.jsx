@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Button, Input, VStack, HStack, Text, Flex, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Input,
+  VStack,
+  HStack,
+  Text,
+  Flex,
+  Spinner,
+} from "@chakra-ui/react";
 import { LuMessageSquare, LuX, LuSend } from "react-icons/lu";
 import axios from "axios";
 import { useAuthContext } from "../../context/AuthContext";
@@ -9,7 +18,10 @@ const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: "ai", text: "Xin chào! Tôi là trợ lý ảo RealEstatePro. Tôi có thể giúp bạn tìm kiếm nhà đất phù hợp hoặc soạn thảo bài đăng BĐS nhanh chóng. Bạn cần hỗ trợ gì ạ?" },
+    {
+      sender: "ai",
+      text: "Xin chào! Tôi là trợ lý ảo RealEstatePro. Tôi có thể giúp bạn tìm kiếm nhà đất phù hợp hoặc soạn thảo bài đăng BĐS nhanh chóng. Bạn cần hỗ trợ gì ạ?",
+    },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,17 +64,29 @@ const ChatbotWidget = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/chat-assistant", {
-        message: userMessage,
-        history: currentMessages,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/ai/chat-assistant",
+        {
+          message: userMessage,
+          history: currentMessages,
+        },
+      );
 
       if (response.data.success) {
-        setMessages([...currentMessages, { sender: "ai", text: response.data.reply }]);
+        setMessages([
+          ...currentMessages,
+          { sender: "ai", text: response.data.reply },
+        ]);
       }
     } catch (error) {
       console.error("Error connecting to chatbot API:", error);
-      setMessages([...currentMessages, { sender: "ai", text: "Rất tiếc, kết nối của tôi đang bị gián đoạn. Bạn thử lại nhé!" }]);
+      setMessages([
+        ...currentMessages,
+        {
+          sender: "ai",
+          text: "Rất tiếc, kết nối của tôi đang bị gián đoạn. Bạn thử lại nhé!",
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +100,10 @@ const ChatbotWidget = () => {
     const userMessage = input.trim();
     setInput("");
 
-    const updatedMessages = [...messages, { sender: "user", text: userMessage }];
+    const updatedMessages = [
+      ...messages,
+      { sender: "user", text: userMessage },
+    ];
     setMessages(updatedMessages);
     await sendMessageToServer(userMessage, updatedMessages);
   };
@@ -90,7 +117,16 @@ const ChatbotWidget = () => {
   };
 
   return (
-    <Box position="fixed" bottom="20px" right="20px" zIndex="2000" display="flex" flexDirection="column" alignItems="flex-end" gap={3}>
+    <Box
+      position="fixed"
+      bottom="20px"
+      right="20px"
+      zIndex="2000"
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-end"
+      gap={3}
+    >
       {!isOpen && showTooltip && (
         <Box
           bg={{ base: "white", _dark: "gray.900" }}
@@ -108,12 +144,24 @@ const ChatbotWidget = () => {
             <Text fontWeight="bold" fontSize="xs" color="#E65C00">
               🤖 Trợ lý RealEstatePro
             </Text>
-            <LuX cursor="pointer" size={14} onClick={() => setShowTooltip(false)} />
+            <LuX
+              cursor="pointer"
+              size={14}
+              onClick={() => setShowTooltip(false)}
+            />
           </Flex>
           <Text fontSize="xs" lineHeight="short">
             Bấm vào đây để tôi hỗ trợ bạn tìm kiếm nhà đất nhanh chóng nhé!
           </Text>
-          <Box position="absolute" bottom="0" left="0" h="3px" bg="#FF944D" w="100%" style={{ animation: "shrinkWidth 5s linear forwards" }} />
+          <Box
+            position="absolute"
+            bottom="0"
+            left="0"
+            h="3px"
+            bg="#FF944D"
+            w="100%"
+            style={{ animation: "shrinkWidth 5s linear forwards" }}
+          />
           <style>{`
             @keyframes shrinkWidth {
               from { width: 100%; }
@@ -155,7 +203,13 @@ const ChatbotWidget = () => {
           flexDirection="column"
           overflow="hidden"
         >
-          <Flex bg="#E65C00" p={4} color="white" align="center" justify="space-between">
+          <Flex
+            bg="#E65C00"
+            p={4}
+            color="white"
+            align="center"
+            justify="space-between"
+          >
             <HStack gap={2}>
               <Box w="8px" h="8px" bg="green.400" borderRadius="full" />
               <Text fontWeight="bold" fontSize="sm">
@@ -165,13 +219,31 @@ const ChatbotWidget = () => {
             <LuX cursor="pointer" size={20} onClick={() => setIsOpen(false)} />
           </Flex>
 
-          <VStack flex={1} p={4} overflowY="auto" align="stretch" gap={3} bg={{ base: "gray.50", _dark: "gray.950" }}>
+          <VStack
+            flex={1}
+            p={4}
+            overflowY="auto"
+            align="stretch"
+            gap={3}
+            bg={{ base: "gray.50", _dark: "gray.950" }}
+          >
             {messages.map((msg, index) => (
-              <Flex key={index} justify={msg.sender === "user" ? "flex-end" : "flex-start"}>
+              <Flex
+                key={index}
+                justify={msg.sender === "user" ? "flex-end" : "flex-start"}
+              >
                 <Box
                   maxW="80%"
-                  bg={msg.sender === "user" ? "#E65C00" : { base: "white", _dark: "gray.800" }}
-                  color={msg.sender === "user" ? "white" : { base: "gray.800", _dark: "whiteAlpha.900" }}
+                  bg={
+                    msg.sender === "user"
+                      ? "#E65C00"
+                      : { base: "white", _dark: "gray.800" }
+                  }
+                  color={
+                    msg.sender === "user"
+                      ? "white"
+                      : { base: "gray.800", _dark: "whiteAlpha.900" }
+                  }
                   px={3}
                   py={2}
                   borderRadius="lg"
@@ -205,7 +277,13 @@ const ChatbotWidget = () => {
 
             {isLoading && (
               <Flex justify="flex-start" align="center" gap={2}>
-                <Box bg={{ base: "white", _dark: "gray.800" }} px={4} py={2} borderRadius="lg" boxShadow="sm">
+                <Box
+                  bg={{ base: "white", _dark: "gray.800" }}
+                  px={4}
+                  py={2}
+                  borderRadius="lg"
+                  boxShadow="sm"
+                >
                   <Spinner size="xs" color="#E65C00" />
                 </Box>
               </Flex>
@@ -213,7 +291,12 @@ const ChatbotWidget = () => {
             <div ref={messagesEndRef} />
           </VStack>
 
-          <Box p={3} bg={{ base: "white", _dark: "gray.950" }} borderTop="1px solid" borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
+          <Box
+            p={3}
+            bg={{ base: "white", _dark: "gray.950" }}
+            borderTop="1px solid"
+            borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+          >
             <form onSubmit={handleSend}>
               <HStack gap={2}>
                 <Input
@@ -226,7 +309,15 @@ const ChatbotWidget = () => {
                   bg={{ base: "white", _dark: "gray.800" }}
                   color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
                 />
-                <Button type="submit" bg="#E65C00" color="white" size="sm" p={2} isDisabled={isLoading} _hover={{ bg: "#CC5200" }}>
+                <Button
+                  type="submit"
+                  bg="#E65C00"
+                  color="white"
+                  size="sm"
+                  p={2}
+                  isDisabled={isLoading}
+                  _hover={{ bg: "#CC5200" }}
+                >
                   <LuSend size={16} />
                 </Button>
               </HStack>

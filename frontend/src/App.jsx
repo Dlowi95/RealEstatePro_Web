@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -20,27 +19,115 @@ import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
 
+<<<<<<< Updated upstream
 import MyPolicyPage from "./pages/users/policypage";
 
+=======
+import MyTermPage from "./pages/users/Termpage";
+import PolicyPage from "./pages/users/PolicyPage";
+>>>>>>> Stashed changes
 function App() {
-
-
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+<<<<<<< Updated upstream
         <Route path="/about" element={<UserLayout><AboutUsPage /></UserLayout>} />
         <Route path="/contact" element={<UserLayout><ContactPage /></UserLayout>} />
         <Route path="/terms" element={<UserLayout><MyTermPage /></UserLayout>} />
         <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
+=======
+        <Route
+          path="/about"
+          element={
+            <UserLayout>
+              <AboutUsPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <UserLayout>
+              <MyTermPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/policy"
+          element={
+            <UserLayout>
+              <PolicyPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/sell"
+          element={
+            <UserLayout>
+              <SellPropertiesPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/rent"
+          element={
+            <UserLayout>
+              <RentPropertiesPage />
+            </UserLayout>
+          }
+        />
+>>>>>>> Stashed changes
 
-        <Route path="/create-property" element={<UserLayout><CreatePropertyPage /></UserLayout>} />
-        <Route path="/manage-properties" element={<UserLayout><ManagePropertiesPage /></UserLayout>} />
-        <Route path="/edit-property/:id" element={<UserLayout><EditPropertyPage /></UserLayout>} />
-        <Route path="/favorites" element={<UserLayout><FavoritePropertiesPage /></UserLayout>} />
-        <Route path="/property/:id" element={<UserLayout><PropertyDetailsPage /></UserLayout>} />
-        <Route path="/list-properties" element={<UserLayout><ListPropertiesPage /></UserLayout>} />
+        <Route
+          path="/create-property"
+          element={
+            <UserLayout>
+              <CreatePropertyPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/manage-properties"
+          element={
+            <UserLayout>
+              <ManagePropertiesPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/edit-property/:id"
+          element={
+            <UserLayout>
+              <EditPropertyPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <UserLayout>
+              <FavoritePropertiesPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/property/:id"
+          element={
+            <UserLayout>
+              <PropertyDetailsPage />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/list-properties"
+          element={
+            <UserLayout>
+              <ListPropertiesPage />
+            </UserLayout>
+          }
+        />
         <Route path="/admin/*" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
@@ -49,8 +136,8 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }

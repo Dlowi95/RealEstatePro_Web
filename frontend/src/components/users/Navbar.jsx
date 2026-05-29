@@ -16,7 +16,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { LuMenu, LuBell, LuChevronDown, LuBellOff, LuSun, LuMoon } from "react-icons/lu";
+import {
+  LuMenu,
+  LuBell,
+  LuChevronDown,
+  LuBellOff,
+  LuSun,
+  LuMoon,
+} from "react-icons/lu";
 import {
   SignedIn,
   SignedOut,
@@ -34,8 +41,8 @@ const navLinks = [
   { label: "Nhà đất cho thuê", href: "/rent" },
 ];
 
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const Navbar = () => {
   const { user } = useUser();
@@ -51,7 +58,9 @@ const Navbar = () => {
 
     const fetchNotifications = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/notifications/${user.id}`);
+        const res = await axios.get(
+          `${API_BASE_URL}/api/notifications/${user.id}`,
+        );
         if (res.data?.success) {
           setNotifications(res.data.data);
         }
@@ -117,11 +126,13 @@ const Navbar = () => {
                   w="150px"
                   objectFit="contain"
                   style={{
-                    filter: colorMode === "dark" ? "invert(1) brightness(1.2)" : "none",
+                    filter:
+                      colorMode === "dark"
+                        ? "invert(1) brightness(1.2)"
+                        : "none",
                     transition: "filter 0.2s ease",
                   }}
                 />
-                
               </HStack>
             </Link>
 
@@ -144,7 +155,11 @@ const Navbar = () => {
 
           <HStack gap={4} position="relative" align="center">
             <SignedIn>
-              <HStack gap={4} display={{ base: "none", md: "flex" }} align="center">
+              <HStack
+                gap={4}
+                display={{ base: "none", md: "flex" }}
+                align="center"
+              >
                 <Menu.Root>
                   <Menu.Trigger asChild>
                     <Button
@@ -160,14 +175,32 @@ const Navbar = () => {
                   </Menu.Trigger>
                   <Portal>
                     <Menu.Positioner>
-                      <Menu.Content bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
-                        <Menu.Item value="create" as={RouterLink} to="/create-property">
+                      <Menu.Content
+                        bg={{ base: "white", _dark: "gray.900" }}
+                        borderColor={{
+                          base: "gray.200",
+                          _dark: "whiteAlpha.200",
+                        }}
+                      >
+                        <Menu.Item
+                          value="create"
+                          as={RouterLink}
+                          to="/create-property"
+                        >
                           Đăng tin mới
                         </Menu.Item>
-                        <Menu.Item value="manage" as={RouterLink} to="/manage-properties">
+                        <Menu.Item
+                          value="manage"
+                          as={RouterLink}
+                          to="/manage-properties"
+                        >
                           Tin của tôi
                         </Menu.Item>
-                        <Menu.Item value="favorites" as={RouterLink} to="/favorites">
+                        <Menu.Item
+                          value="favorites"
+                          as={RouterLink}
+                          to="/favorites"
+                        >
                           Tin yêu thích
                         </Menu.Item>
                       </Menu.Content>
@@ -210,12 +243,25 @@ const Navbar = () => {
                       boxShadow="xl"
                       borderRadius="lg"
                       borderWidth="1px"
-                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      borderColor={{
+                        base: "gray.200",
+                        _dark: "whiteAlpha.200",
+                      }}
                       overflow="hidden"
                       zIndex="1100"
                     >
-                      <Flex justify="space-between" align="center" p={3} bg={{ base: "gray.50", _dark: "gray.800" }} borderBottomWidth="1px">
-                        <Text fontWeight="bold" fontSize="sm" color={{ base: "gray.800", _dark: "whiteAlpha.900" }}>
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        p={3}
+                        bg={{ base: "gray.50", _dark: "gray.800" }}
+                        borderBottomWidth="1px"
+                      >
+                        <Text
+                          fontWeight="bold"
+                          fontSize="sm"
+                          color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                        >
                           Thông báo cá nhân
                         </Text>
                         {unreadCount > 0 && (
@@ -233,7 +279,12 @@ const Navbar = () => {
 
                       <Box maxH="320px" overflowY="auto">
                         {notifications.length === 0 ? (
-                          <Text p={4} fontSize="sm" color={{ base: "gray.500", _dark: "gray.300" }} textAlign="center">
+                          <Text
+                            p={4}
+                            fontSize="sm"
+                            color={{ base: "gray.500", _dark: "gray.300" }}
+                            textAlign="center"
+                          >
                             Bạn chưa có thông báo nào.
                           </Text>
                         ) : (
@@ -242,22 +293,47 @@ const Navbar = () => {
                               key={noti._id}
                               p={3}
                               borderBottomWidth="1px"
-                              borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
-                              bg={noti.isRead ? "transparent" : { base: "orange.50", _dark: "orange.950" }}
-                              _hover={{ bg: { base: "gray.50", _dark: "gray.800" } }}
+                              borderColor={{
+                                base: "gray.100",
+                                _dark: "whiteAlpha.200",
+                              }}
+                              bg={
+                                noti.isRead
+                                  ? "transparent"
+                                  : { base: "orange.50", _dark: "orange.950" }
+                              }
+                              _hover={{
+                                bg: { base: "gray.50", _dark: "gray.800" },
+                              }}
                               as={RouterLink}
                               to={`/properties/${noti.propertyId}`}
                               onClick={() => setShowDropdown(false)}
                               display="block"
                             >
-                              <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }} noOfLines={1}>
+                              <Text
+                                fontWeight={noti.isRead ? "medium" : "bold"}
+                                fontSize="sm"
+                                color={{ base: "gray.800", _dark: "gray.100" }}
+                                noOfLines={1}
+                              >
                                 {noti.title}
                               </Text>
-                              <Text fontSize="xs" color={{ base: "gray.600", _dark: "gray.300" }} mt={0.5} noOfLines={2}>
+                              <Text
+                                fontSize="xs"
+                                color={{ base: "gray.600", _dark: "gray.300" }}
+                                mt={0.5}
+                                noOfLines={2}
+                              >
                                 {noti.message}
                               </Text>
-                              <Text fontSize="10px" color={{ base: "gray.400", _dark: "gray.500" }} mt={1}>
-                                {new Date(noti.createdAt).toLocaleString("vi-VN")}
+                              <Text
+                                fontSize="10px"
+                                color={{ base: "gray.400", _dark: "gray.500" }}
+                                mt={1}
+                              >
+                                {new Date(noti.createdAt).toLocaleString(
+                                  "vi-VN",
+                                )}
                               </Text>
                             </Box>
                           ))
@@ -278,20 +354,37 @@ const Navbar = () => {
                   style={{ borderRadius: "9999px" }}
                   color={{ base: "gray.700", _dark: "gray.100" }}
                 >
-                  {colorMode === "light" ? <LuMoon size={20} /> : <LuSun size={20} />}
+                  {colorMode === "light" ? (
+                    <LuMoon size={20} />
+                  ) : (
+                    <LuSun size={20} />
+                  )}
                 </IconButton>
               </HStack>
             </SignedIn>
 
             <SignedOut>
-              <HStack gap={3} display={{ base: "none", md: "flex" }} align="center">
+              <HStack
+                gap={3}
+                display={{ base: "none", md: "flex" }}
+                align="center"
+              >
                 <SignInButton mode="modal">
-                  <Button variant="ghost" size="sm" color={{ base: "gray.700", _dark: "gray.100" }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    color={{ base: "gray.700", _dark: "gray.100" }}
+                  >
                     Đăng nhập
                   </Button>
                 </SignInButton>
                 <SignInButton mode="modal">
-                  <Button bg="#E65C00" color="white" size="sm" _hover={{ bg: "#CC5200" }}>
+                  <Button
+                    bg="#E65C00"
+                    color="white"
+                    size="sm"
+                    _hover={{ bg: "#CC5200" }}
+                  >
                     Đăng ký
                   </Button>
                 </SignInButton>
@@ -302,7 +395,11 @@ const Navbar = () => {
                   style={{ borderRadius: "9999px" }}
                   color={{ base: "gray.700", _dark: "gray.100" }}
                 >
-                  {colorMode === "light" ? <LuMoon size={20} /> : <LuSun size={20} />}
+                  {colorMode === "light" ? (
+                    <LuMoon size={20} />
+                  ) : (
+                    <LuSun size={20} />
+                  )}
                 </IconButton>
               </HStack>
             </SignedOut>
@@ -310,7 +407,11 @@ const Navbar = () => {
             <Box display={{ base: "block", md: "none" }}>
               <Drawer.Root alternativeTrigger={true}>
                 <Drawer.Trigger asChild>
-                  <IconButton variant="ghost" aria-label="Open Menu" color={{ base: "gray.700", _dark: "gray.100" }}>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Open Menu"
+                    color={{ base: "gray.700", _dark: "gray.100" }}
+                  >
                     <LuMenu size={24} />
                   </IconButton>
                 </Drawer.Trigger>
@@ -329,7 +430,10 @@ const Navbar = () => {
                               color={{ base: "gray.800", _dark: "gray.100" }}
                               py={3}
                               borderBottom="1px solid"
-                              borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
+                              borderColor={{
+                                base: "gray.100",
+                                _dark: "whiteAlpha.200",
+                              }}
                             >
                               {link.label}
                             </Link>
@@ -347,23 +451,49 @@ const Navbar = () => {
                                     w="full"
                                     display="flex"
                                     justifyContent="space-between"
-                                    borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
-                                    color={{ base: "gray.800", _dark: "gray.100" }}
+                                    borderColor={{
+                                      base: "gray.200",
+                                      _dark: "whiteAlpha.200",
+                                    }}
+                                    color={{
+                                      base: "gray.800",
+                                      _dark: "gray.100",
+                                    }}
                                   >
-                                    <Text fontWeight="500">Quản lý tin đăng</Text>
+                                    <Text fontWeight="500">
+                                      Quản lý tin đăng
+                                    </Text>
                                     <LuChevronDown size={16} />
                                   </Button>
                                 </Menu.Trigger>
                                 <Portal>
                                   <Menu.Positioner>
-                                    <Menu.Content bg={{ base: "white", _dark: "gray.900" }} borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
-                                      <Menu.Item value="create" as={RouterLink} to="/create-property">
+                                    <Menu.Content
+                                      bg={{ base: "white", _dark: "gray.900" }}
+                                      borderColor={{
+                                        base: "gray.200",
+                                        _dark: "whiteAlpha.200",
+                                      }}
+                                    >
+                                      <Menu.Item
+                                        value="create"
+                                        as={RouterLink}
+                                        to="/create-property"
+                                      >
                                         Đăng tin mới
                                       </Menu.Item>
-                                      <Menu.Item value="manage" as={RouterLink} to="/manage-properties">
+                                      <Menu.Item
+                                        value="manage"
+                                        as={RouterLink}
+                                        to="/manage-properties"
+                                      >
                                         Tin của tôi
                                       </Menu.Item>
-                                      <Menu.Item value="favorites" as={RouterLink} to="/favorites">
+                                      <Menu.Item
+                                        value="favorites"
+                                        as={RouterLink}
+                                        to="/favorites"
+                                      >
                                         Tin yêu thích
                                       </Menu.Item>
                                     </Menu.Content>
@@ -371,22 +501,49 @@ const Navbar = () => {
                                 </Portal>
                               </Menu.Root>
 
-                              <Box borderWidth="1px" borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }} borderRadius="xl" bg={{ base: "gray.50/50", _dark: "gray.900" }} overflow="hidden">
+                              <Box
+                                borderWidth="1px"
+                                borderColor={{
+                                  base: "gray.100",
+                                  _dark: "whiteAlpha.200",
+                                }}
+                                borderRadius="xl"
+                                bg={{ base: "gray.50/50", _dark: "gray.900" }}
+                                overflow="hidden"
+                              >
                                 <Flex
                                   justify="space-between"
                                   align="center"
                                   p={3}
-                                  bg={{ base: "gray.100/70", _dark: "gray.800" }}
+                                  bg={{
+                                    base: "gray.100/70",
+                                    _dark: "gray.800",
+                                  }}
                                   cursor="pointer"
-                                  onClick={() => setShowMobileNoti(!showMobileNoti)}
+                                  onClick={() =>
+                                    setShowMobileNoti(!showMobileNoti)
+                                  }
                                 >
                                   <HStack gap={2}>
                                     <LuBell size={18} />
-                                    <Text fontWeight="600" fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
+                                    <Text
+                                      fontWeight="600"
+                                      fontSize="sm"
+                                      color={{
+                                        base: "gray.800",
+                                        _dark: "gray.100",
+                                      }}
+                                    >
                                       Thông báo của bạn
                                     </Text>
                                     {unreadCount > 0 && (
-                                      <Badge bg="#E65C00" color="white" borderRadius="full" fontSize="10px" px={2}>
+                                      <Badge
+                                        bg="#E65C00"
+                                        color="white"
+                                        borderRadius="full"
+                                        fontSize="10px"
+                                        px={2}
+                                      >
                                         {unreadCount} mới
                                       </Badge>
                                     )}
@@ -394,26 +551,56 @@ const Navbar = () => {
                                   <LuChevronDown
                                     size={16}
                                     style={{
-                                      transform: showMobileNoti ? "rotate(180deg)" : "none",
+                                      transform: showMobileNoti
+                                        ? "rotate(180deg)"
+                                        : "none",
                                       transition: "transform 0.2s",
                                     }}
                                   />
                                 </Flex>
 
                                 {showMobileNoti && (
-                                  <Box bg={{ base: "white", _dark: "gray.955" }} maxH="260px" overflowY="auto">
+                                  <Box
+                                    bg={{ base: "white", _dark: "gray.955" }}
+                                    maxH="260px"
+                                    overflowY="auto"
+                                  >
                                     {unreadCount > 0 && (
-                                      <Flex justify="flex-end" p={2} borderBottomWidth="1px" borderColor={{ base: "gray.50", _dark: "whiteAlpha.200" }}>
-                                        <Button size="xs" variant="ghost" colorPalette="orange" onClick={handleMarkAllAsRead}>
+                                      <Flex
+                                        justify="flex-end"
+                                        p={2}
+                                        borderBottomWidth="1px"
+                                        borderColor={{
+                                          base: "gray.50",
+                                          _dark: "whiteAlpha.200",
+                                        }}
+                                      >
+                                        <Button
+                                          size="xs"
+                                          variant="ghost"
+                                          colorPalette="orange"
+                                          onClick={handleMarkAllAsRead}
+                                        >
                                           Đánh dấu đọc tất cả
                                         </Button>
                                       </Flex>
                                     )}
 
                                     {notifications.length === 0 ? (
-                                      <Flex direction="column" align="center" gap={1} py={6} color={{ base: "gray.400", _dark: "gray.500" }}>
+                                      <Flex
+                                        direction="column"
+                                        align="center"
+                                        gap={1}
+                                        py={6}
+                                        color={{
+                                          base: "gray.400",
+                                          _dark: "gray.500",
+                                        }}
+                                      >
                                         <LuBellOff size={20} />
-                                        <Text fontSize="xs">Không có thông báo nào</Text>
+                                        <Text fontSize="xs">
+                                          Không có thông báo nào
+                                        </Text>
                                       </Flex>
                                     ) : (
                                       notifications.map((noti) => (
@@ -421,20 +608,57 @@ const Navbar = () => {
                                           key={noti._id}
                                           p={3}
                                           borderBottomWidth="1px"
-                                          borderColor={{ base: "gray.50", _dark: "whiteAlpha.200" }}
-                                          bg={noti.isRead ? "transparent" : { base: "orange.50", _dark: "orange.950" }}
+                                          borderColor={{
+                                            base: "gray.50",
+                                            _dark: "whiteAlpha.200",
+                                          }}
+                                          bg={
+                                            noti.isRead
+                                              ? "transparent"
+                                              : {
+                                                  base: "orange.50",
+                                                  _dark: "orange.950",
+                                                }
+                                          }
                                           as={RouterLink}
                                           to={`/properties/${noti.propertyId}`}
                                           display="block"
                                         >
-                                          <Text fontWeight={noti.isRead ? "medium" : "bold"} fontSize="xs" color={{ base: "gray.800", _dark: "gray.100" }} noOfLines={1}>
+                                          <Text
+                                            fontWeight={
+                                              noti.isRead ? "medium" : "bold"
+                                            }
+                                            fontSize="xs"
+                                            color={{
+                                              base: "gray.800",
+                                              _dark: "gray.100",
+                                            }}
+                                            noOfLines={1}
+                                          >
                                             {noti.title}
                                           </Text>
-                                          <Text fontSize="11px" color={{ base: "gray.600", _dark: "gray.300" }} mt={0.5} noOfLines={2}>
+                                          <Text
+                                            fontSize="11px"
+                                            color={{
+                                              base: "gray.600",
+                                              _dark: "gray.300",
+                                            }}
+                                            mt={0.5}
+                                            noOfLines={2}
+                                          >
                                             {noti.message}
                                           </Text>
-                                          <Text fontSize="9px" color={{ base: "gray.400", _dark: "gray.500" }} mt={1}>
-                                            {new Date(noti.createdAt).toLocaleString("vi-VN")}
+                                          <Text
+                                            fontSize="9px"
+                                            color={{
+                                              base: "gray.400",
+                                              _dark: "gray.500",
+                                            }}
+                                            mt={1}
+                                          >
+                                            {new Date(
+                                              noti.createdAt,
+                                            ).toLocaleString("vi-VN")}
                                           </Text>
                                         </Box>
                                       ))
@@ -443,19 +667,43 @@ const Navbar = () => {
                                 )}
                               </Box>
 
-                              <HStack justify="space-between" p={3} bg={{ base: "gray.50", _dark: "gray.900" }} rounded="xl" borderWidth="1px" borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}>
+                              <HStack
+                                justify="space-between"
+                                p={3}
+                                bg={{ base: "gray.50", _dark: "gray.900" }}
+                                rounded="xl"
+                                borderWidth="1px"
+                                borderColor={{
+                                  base: "gray.100",
+                                  _dark: "whiteAlpha.200",
+                                }}
+                              >
                                 <HStack gap={2}>
                                   <IconButton
                                     variant="ghost"
                                     aria-label="Toggle Theme"
                                     onClick={toggleColorMode}
                                     style={{ borderRadius: "9999px" }}
-                                    color={{ base: "gray.700", _dark: "gray.100" }}
+                                    color={{
+                                      base: "gray.700",
+                                      _dark: "gray.100",
+                                    }}
                                     size="sm"
                                   >
-                                    {colorMode === "light" ? <LuMoon size={18} /> : <LuSun size={18} />}
+                                    {colorMode === "light" ? (
+                                      <LuMoon size={18} />
+                                    ) : (
+                                      <LuSun size={18} />
+                                    )}
                                   </IconButton>
-                                  <Text fontWeight="600" fontSize="sm" color={{ base: "gray.700", _dark: "gray.100" }}>
+                                  <Text
+                                    fontWeight="600"
+                                    fontSize="sm"
+                                    color={{
+                                      base: "gray.700",
+                                      _dark: "gray.100",
+                                    }}
+                                  >
                                     Giao diện
                                   </Text>
                                 </HStack>
@@ -467,20 +715,35 @@ const Navbar = () => {
                           <SignedOut>
                             <Flex direction="column" gap={2}>
                               <HStack justify="space-between" mb={2} px={1}>
-                                <Text fontSize="sm" color="fg.muted">Chuyển chế độ màu:</Text>
+                                <Text fontSize="sm" color="fg.muted">
+                                  Chuyển chế độ màu:
+                                </Text>
                                 <IconButton
                                   variant="ghost"
                                   aria-label="Toggle Theme"
                                   onClick={toggleColorMode}
                                   style={{ borderRadius: "9999px" }}
-                                  color={{ base: "gray.700", _dark: "gray.100" }}
+                                  color={{
+                                    base: "gray.700",
+                                    _dark: "gray.100",
+                                  }}
                                   size="sm"
                                 >
-                                  {colorMode === "light" ? <LuMoon size={18} /> : <LuSun size={18} />}
+                                  {colorMode === "light" ? (
+                                    <LuMoon size={18} />
+                                  ) : (
+                                    <LuSun size={18} />
+                                  )}
                                 </IconButton>
                               </HStack>
                               <SignInButton mode="modal">
-                                <Button bg="#E65C00" color="white" w="full" size="md" _hover={{ bg: "#CC5200" }}>
+                                <Button
+                                  bg="#E65C00"
+                                  color="white"
+                                  w="full"
+                                  size="md"
+                                  _hover={{ bg: "#CC5200" }}
+                                >
                                   Đăng nhập / Đăng ký
                                 </Button>
                               </SignInButton>

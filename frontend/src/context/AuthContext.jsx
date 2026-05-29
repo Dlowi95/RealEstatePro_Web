@@ -7,8 +7,8 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const { getToken, isSignedIn, userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
-  const [user, setUser] = useState(null);       // thông tin user từ DB của mình
-  const [role, setRole] = useState(null);        // "user" | "admin"
+  const [user, setUser] = useState(null); // thông tin user từ DB của mình
+  const [role, setRole] = useState(null); // "user" | "admin"
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,8 +35,15 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        const email = clerkUser?.primaryEmailAddress?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress || "";
-        const fullName = clerkUser?.fullName || `${clerkUser?.firstName || ""} ${clerkUser?.lastName || ""}`.trim() || clerkUser?.username || "";
+        const email =
+          clerkUser?.primaryEmailAddress?.emailAddress ||
+          clerkUser?.emailAddresses?.[0]?.emailAddress ||
+          "";
+        const fullName =
+          clerkUser?.fullName ||
+          `${clerkUser?.firstName || ""} ${clerkUser?.lastName || ""}`.trim() ||
+          clerkUser?.username ||
+          "";
         const avatar = clerkUser?.imageUrl || "";
 
         const res = await axios.post(
@@ -46,7 +53,7 @@ export function AuthProvider({ children }) {
             fullName,
             avatar,
           },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         console.log("[AuthContext] sync response:", res.data);
         setUser(res.data.user);

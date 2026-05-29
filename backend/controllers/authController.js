@@ -17,49 +17,32 @@ const formatClerkError = (error) => {
   };
 };
 
-exports.registerUser = async (
-  req,
-  res
-) => {
-
+exports.registerUser = async (req, res) => {
   try {
+    const { fullName, email, password, phoneNumber, avatar } = req.body;
 
-    const {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      avatar
-    } = req.body;
-
-    const existingUser =
-      await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-
       return res.status(400).json({
-        message: "User already exists"
+        message: "User already exists",
       });
     }
 
     const encryptedPassword = password ? encryptPasswordMD5(password) : "";
 
     const user = await User.create({
-
       fullName,
       email,
       password: encryptedPassword,
       phoneNumber,
-      avatar
-
+      avatar,
     });
 
     res.status(201).json(user);
-
   } catch (error) {
-
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -71,10 +54,21 @@ exports.syncUser = async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
 
-    const decoded = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+    const decoded = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY,
+    });
     const clerkUserId = decoded.sub;
-    const email = decoded.email_addresses?.[0]?.email_address || decoded.email_address || req.body.email || "";
-    const fullName = decoded.full_name || `${decoded.first_name || ""} ${decoded.last_name || ""}`.trim() || decoded.name || req.body.fullName || "";
+    const email =
+      decoded.email_addresses?.[0]?.email_address ||
+      decoded.email_address ||
+      req.body.email ||
+      "";
+    const fullName =
+      decoded.full_name ||
+      `${decoded.first_name || ""} ${decoded.last_name || ""}`.trim() ||
+      decoded.name ||
+      req.body.fullName ||
+      "";
     const avatar = decoded.image_url || req.body.avatar || "";
 
     if (!email) {
@@ -97,7 +91,7 @@ exports.syncUser = async (req, res) => {
         avatar,
         clerkId: clerkUserId,
         phoneNumber: "",
-        role: "user"
+        role: "user",
       });
     } else {
       // Cập nhật các trường, nhưng giữ nguyên fullName và phoneNumber đã có
@@ -111,7 +105,11 @@ exports.syncUser = async (req, res) => {
       await user.save();
     }
 
-    console.log("[authController.syncUser] matched user:", { id: user._id, email: user.email, role: user.role });
+    console.log("[authController.syncUser] matched user:", {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    });
     res.status(200).json({ success: true, user });
   } catch (error) {
     const clerkError = formatClerkError(error);
