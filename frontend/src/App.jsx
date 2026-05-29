@@ -19,9 +19,8 @@ import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
 import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
-
-import  MyTermPage from "./pages/users/Termpage";
-
+import ContactPage from "./pages/users/ContactPage";  
+import MyTermPage from "./pages/users/TermPage";
 function App() {
 
 
@@ -30,6 +29,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<UserLayout><AboutUsPage /></UserLayout>} />
+        <Route path="/contact" element={<UserLayout><ContactPage /></UserLayout>} />
         <Route path="/terms" element={<UserLayout><MyTermPage /></UserLayout>} />
         <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
