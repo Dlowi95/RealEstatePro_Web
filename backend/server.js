@@ -1,9 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-
 const cors = require("cors");
-
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -19,10 +17,22 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
+// Cấu hình danh sách tên miền được phép truy cập hệ thống
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://real-estate-pro-tau.vercel.app"
+];
+
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+// Khởi tạo Socket.io với cấu hình CORS đồng bộ
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true
   },
 });
 
@@ -43,6 +53,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     for (let [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
+        onlineUsers.set(userId); // Hoặc giữ nguyên logic cũ tùy cấu trúc xóa của bạn
         onlineUsers.delete(userId);
         console.log(
           `Người dùng ${userId} đã ngắt kết nối và bị xóa khỏi danh sách online.`,
@@ -56,7 +67,12 @@ io.on("connection", (socket) => {
 app.set("io", io);
 app.set("onlineUsers", onlineUsers);
 
-app.use(cors());
+// Áp dụng cấu hình CORS cho các phản hồi HTTP của Express
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+}));
 
 app.use(express.json());
 
