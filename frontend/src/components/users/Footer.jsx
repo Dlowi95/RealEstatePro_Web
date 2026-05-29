@@ -69,7 +69,7 @@ function Footer() {
                 QUY ĐỊNH
               </Text>
 
-              <Link href="/policy" color={{ base: "gray.700", _dark: "gray.200" }}>Điều khoản sử dụng</Link>
+              <Link href="/terms" color={{ base: "gray.700", _dark: "gray.200" }}>Điều khoản sử dụng</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Chính sách bảo mật</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Quy chế hoạt động</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Giải quyết khiếu nại</Link>

@@ -1,7 +1,7 @@
 import { Box, Container, Flex, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { useColorModeValue } from "../../components/ui/color-mode";
 
-function MyPolicyPage() {
+function MyTermPage() {
   const bgColor = useColorModeValue("white", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
   const headingColor = useColorModeValue("gray.900", "white");
@@ -636,4 +636,4 @@ Hết Thời hạn sử dụng, nếu tài khoản còn tiền thì khoản ti�
   );
 }
 
-export default MyPolicyPage;
+export default MyTermPage;
