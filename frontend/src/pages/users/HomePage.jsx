@@ -4,6 +4,7 @@ import UserLayout from "@/layouts/UserLayout";
 import SearchBar from "@/components/users/SerchBar";
 import PropertyList from "@/components/users/PropertyList";
 import FeaturedProperties from "@/components/users/FeaturedProperties";
+import RealEstateNews from "@/components/users/RealEstateNews";
 export default function HomePage() {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
@@ -47,6 +48,7 @@ export default function HomePage() {
       />
 
       <FeaturedProperties />
+      <RealEstateNews />
     </UserLayout>
   );
 }

@@ -108,25 +108,25 @@ export default function PropertyList({ keyword = "", location = "", type = "", p
 
   return (
     <Box mb="6">
-      <Flex justify="space-between" align="center" mb="4" wrap="wrap" gap="3">
-        <Text fontSize="md" fontWeight="semibold">Tìm thấy {filteredProperties.length} bất động sản</Text>
-        {totalPages > 1 && (
-          <Flex gap="2">
-            <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} isDisabled={currentPage === 1}>Trước</Button>
-            <Text fontSize="sm" color="gray.600" alignSelf="center">Trang {currentPage}/{totalPages}</Text>
-            <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} isDisabled={currentPage === totalPages}>Sau</Button>
-          </Flex>
-        )}
-      </Flex>
+      <Text fontSize="md" fontWeight="semibold" mb="4">Tìm thấy {filteredProperties.length} bất động sản</Text>
 
       {filteredProperties.length === 0 ? (
         <Text color="gray.500">Không tìm thấy bất động sản phù hợp.</Text>
       ) : (
-        <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4">
-          {pagedProperties.map((property) => (
-            <PropertyCard key={property._id} property={property} />
-          ))}
-        </Grid>
+        <>
+          <Grid templateColumns={{ base: "1fr", md: "repeat(2,1fr)", lg: "repeat(4,1fr)" }} gap="4" mb="6">
+            {pagedProperties.map((property) => (
+              <PropertyCard key={property._id} property={property} />
+            ))}
+          </Grid>
+          {totalPages > 1 && (
+            <Flex justify="flex-end" align="center" gap="2">
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} isDisabled={currentPage === 1}>Trước</Button>
+              <Text fontSize="sm" color="gray.600" alignSelf="center">Trang {currentPage}/{totalPages}</Text>
+              <Button size="sm" variant="outline" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} isDisabled={currentPage === totalPages}>Sau</Button>
+            </Flex>
+          )}
+        </>
       )}
     </Box>
   );
