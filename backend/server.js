@@ -17,17 +17,18 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-// Cấu hình danh sách tên miền được phép truy cập hệ thống
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://real-estate-pro-tau.vercel.app"
+  "http://localhost:5173"
 ];
 
-if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+if (process.env.FRONTEND_URL) {
+  if (process.env.FRONTEND_URL.includes(",")) {
+    allowedOrigins.push(...process.env.FRONTEND_URL.split(",").map(url => url.trim()));
+  } else {
+    allowedOrigins.push(process.env.FRONTEND_URL.trim());
+  }
 }
 
-// Khởi tạo Socket.io với cấu hình CORS đồng bộ
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -44,20 +45,15 @@ io.on("connection", (socket) => {
   socket.on("register_user", (userId) => {
     if (userId) {
       onlineUsers.set(userId, socket.id);
-      console.log(
-        `Người dùng ${userId} đã đăng ký với socket ID: ${socket.id}`,
-      );
+      console.log(`Người dùng ${userId} đã đăng ký với socket ID: ${socket.id}`);
     }
   });
 
   socket.on("disconnect", () => {
     for (let [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
-        onlineUsers.set(userId); // Hoặc giữ nguyên logic cũ tùy cấu trúc xóa của bạn
         onlineUsers.delete(userId);
-        console.log(
-          `Người dùng ${userId} đã ngắt kết nối và bị xóa khỏi danh sách online.`,
-        );
+        console.log(`Người dùng ${userId} đã ngắt kết nối và bị xóa khỏi danh sách online.`);
         break;
       }
     }
@@ -67,7 +63,6 @@ io.on("connection", (socket) => {
 app.set("io", io);
 app.set("onlineUsers", onlineUsers);
 
-// Áp dụng cấu hình CORS cho các phản hồi HTTP của Express
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
@@ -92,7 +87,6 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
-
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
