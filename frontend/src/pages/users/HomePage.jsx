@@ -1,5 +1,6 @@
 import { useState } from "react";
 import HeroSection from "@/components/users/HeroSection";
+import PostPropertyCTA from "@/components/PostPropertyCTA";
 import UserLayout from "@/layouts/UserLayout";
 import SearchBar from "@/components/users/SerchBar";
 import PropertyList from "@/components/users/PropertyList";
@@ -20,6 +21,7 @@ export default function HomePage() {
   return (
     <UserLayout>
       <HeroSection />
+      <PostPropertyCTA />
       <SearchBar
         keyword={keyword} setKeyword={setKeyword}
         location={location} setLocation={setLocation}
