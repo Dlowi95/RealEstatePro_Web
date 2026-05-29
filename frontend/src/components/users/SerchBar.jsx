@@ -180,7 +180,6 @@ export default function SearchBar({
         />
       </Grid>
 
-<<<<<<< Updated upstream
       {!hideButtons && (
         <Flex justify="flex-end" mt="4" gap="2">
           <Button variant="outline" colorPalette="orange" onClick={handleClearClick}>
@@ -191,25 +190,6 @@ export default function SearchBar({
           </Button>
         </Flex>
       )}
-=======
-      <Flex justify="flex-end" mt="4" gap="2">
-        <Button
-          variant="outline"
-          colorPalette="orange"
-          onClick={handleClearClick}
-        >
-          Xóa
-        </Button>
-        <Button
-          bg="#E65C00"
-          color="white"
-          _hover={{ bg: "#CC5200" }}
-          onClick={handleSearchClick}
-        >
-          Tìm kiếm
-        </Button>
-      </Flex>
->>>>>>> Stashed changes
     </Card.Root>
   );
 }

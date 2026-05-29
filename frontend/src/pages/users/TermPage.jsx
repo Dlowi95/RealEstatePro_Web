@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useColorModeValue } from "../../components/ui/color-mode";
 
-function MyTermPage() {
+function TermPage() {
   const bgColor = useColorModeValue("white", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
   const headingColor = useColorModeValue("gray.900", "white");
@@ -748,4 +748,4 @@ function MyTermPage() {
   );
 }
 
-export default MyTermPage;
+export default TermPage;

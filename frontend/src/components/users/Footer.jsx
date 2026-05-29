@@ -64,28 +64,10 @@ function Footer() {
                 HƯỚNG DẪN
               </Text>
 
-<<<<<<< Updated upstream
               <Link href="/about" color={{ base: "gray.700", _dark: "gray.200" }}>Về chúng tôi</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Báo giá và hỗ trợ</Link>
               <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>Câu hỏi thường gặp</Link>
               <Link href="/contact" color={{ base: "gray.700", _dark: "gray.200" }}>Liên hệ</Link>
-=======
-              <Link
-                href="/about"
-                color={{ base: "gray.700", _dark: "gray.200" }}
-              >
-                Về chúng tôi
-              </Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
-                Báo giá và hỗ trợ
-              </Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
-                Câu hỏi thường gặp
-              </Link>
-              <Link href="#" color={{ base: "gray.700", _dark: "gray.200" }}>
-                Liên hệ
-              </Link>
->>>>>>> Stashed changes
             </VStack>
           </GridItem>
 

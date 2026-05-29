@@ -18,67 +18,23 @@ import PropertyDetailsPage from "./pages/users/PropertyDetailsPage";
 import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
-
-<<<<<<< Updated upstream
-import MyPolicyPage from "./pages/users/policypage";
-
-=======
-import MyTermPage from "./pages/users/Termpage";
+import ContactPage from "./pages/users/ContactPage";
+import TermPage from "./pages/users/TermPage";
 import PolicyPage from "./pages/users/PolicyPage";
->>>>>>> Stashed changes
+
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-<<<<<<< Updated upstream
         <Route path="/about" element={<UserLayout><AboutUsPage /></UserLayout>} />
         <Route path="/contact" element={<UserLayout><ContactPage /></UserLayout>} />
-        <Route path="/terms" element={<UserLayout><MyTermPage /></UserLayout>} />
+        <Route path="/terms" element={<UserLayout><TermPage /></UserLayout>} />
         <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
-=======
-        <Route
-          path="/about"
-          element={
-            <UserLayout>
-              <AboutUsPage />
-            </UserLayout>
-          }
-        />
-        <Route
-          path="/terms"
-          element={
-            <UserLayout>
-              <MyTermPage />
-            </UserLayout>
-          }
-        />
-        <Route
-          path="/policy"
-          element={
-            <UserLayout>
-              <PolicyPage />
-            </UserLayout>
-          }
-        />
-        <Route
-          path="/sell"
-          element={
-            <UserLayout>
-              <SellPropertiesPage />
-            </UserLayout>
-          }
-        />
-        <Route
-          path="/rent"
-          element={
-            <UserLayout>
-              <RentPropertiesPage />
-            </UserLayout>
-          }
-        />
->>>>>>> Stashed changes
+        <Route path="/policy" element={<UserLayout><PolicyPage /></UserLayout>} />
+        
 
         <Route
           path="/create-property"

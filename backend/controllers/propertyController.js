@@ -36,11 +36,8 @@ const calculatePropertyScore = (data) => {
     "trúng thưởng lớn",
     "giá rẻ sập sàn",
   ];
-  const contentToSearch =
-    `${data.title || ""} ${data.description || ""}`.toLowerCase();
-  const hasSpam = spamKeywords.some((keyword) =>
-    contentToSearch.includes(keyword),
-  );
+  const contentToSearch = `${data.title || ""} ${data.description || ""}`.toLowerCase();
+  const hasSpam = spamKeywords.some((keyword) => contentToSearch.includes(keyword));
   if (hasSpam) {
     score -= 20;
   }
@@ -65,84 +62,20 @@ const createProperty = async (req, res) => {
       userId,
     } = req.body;
 
-<<<<<<< Updated upstream
-        if (!title || !description || !type || !propertyType || !price || !area || !location || !contactPhone || !userId) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required fields"
-            });
-        }
-
-        const calculatedScore = calculatePropertyScore({
-            title,
-            description,
-            images,
-            contactPhone,
-            area,
-            location
-        });
-
-        const newProperty = new Property({
-            title,
-            description,
-            type,
-            propertyType,
-            price,
-            area,
-            location: {
-                province: location?.province,
-                ward: location?.ward,
-                address: location?.address
-            },
-            contactPhone,
-            images,
-            userId,
-            score: calculatedScore,
-            views: 0,
-            viewedUsers: [] // Khởi tạo mảng rỗng chưa có ai xem
-        });
-
-        const savedProperty = await newProperty.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Property created successfully",
-            data: savedProperty
-        });
-    } catch (error) {
-        console.log("Error creating property:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error, please try again later",
-            error: error.message
-        });
-    }
-=======
-    if (
-      !title ||
-      !description ||
-      !type ||
-      !propertyType ||
-      !price ||
-      !area ||
-      !location ||
-      !contactPhone ||
-      !userId
-    ) {
+    if (!title || !description || !type || !propertyType || !price || !area || !location || !contactPhone || !userId) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields",
+        message: "Missing required fields"
       });
     }
 
-    // Tự động chấm điểm chất lượng tin trước khi tạo mới
     const calculatedScore = calculatePropertyScore({
       title,
       description,
       images,
       contactPhone,
       area,
-      location,
+      location
     });
 
     const newProperty = new Property({
@@ -155,12 +88,14 @@ const createProperty = async (req, res) => {
       location: {
         province: location?.province,
         ward: location?.ward,
-        address: location?.address,
+        address: location?.address
       },
       contactPhone,
       images,
       userId,
-      score: calculatedScore, // Lưu điểm số vào DB
+      score: calculatedScore,
+      views: 0,
+      viewedUsers: [] // Khởi tạo mảng rỗng chưa có ai xem
     });
 
     const savedProperty = await newProperty.save();
@@ -168,107 +103,74 @@ const createProperty = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Property created successfully",
-      data: savedProperty,
+      data: savedProperty
     });
   } catch (error) {
     console.log("Error creating property:", error);
     res.status(500).json({
       success: false,
       message: "Server error, please try again later",
-      error: error.message,
+      error: error.message
     });
   }
->>>>>>> Stashed changes
 };
 
-// 2. LẤY DANH SÁCH TIN ĐÃ DUYỆT (Ưu tiên xếp bài nhiều VIEW nhất lên đầu làm TIN NỔI BẬT)
+// 2. LẤY DANH SÁCH TIN ĐA DUYỆT (Ưu tiên bài nhiều lượt xem lên đầu làm Tin Nổi Bật)
 const getApprovedProperties = async (req, res) => {
-<<<<<<< Updated upstream
-    try {
-        // Sắp xếp theo views nhiều nhất (-1), rồi đến score chất lượng, cuối cùng là mới nhất
-        const properties = await Property.find({ status: 'approved' }).sort({ views: -1, score: -1, createdAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            count: properties.length,
-            data: properties
-        });
-    } catch (error) {
-        console.log("Error fetching properties:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error, please try again later",
-            error: error.message
-        });
-    }
-=======
   try {
-    // TỐI ƯU: Sắp xếp theo điểm số cao nhất lên trước (Làm tin nổi bật), sau đó mới đến tin mới nhất
-    const properties = await Property.find({ status: "approved" }).sort({
-      score: -1,
-      createdAt: -1,
-    });
+    const properties = await Property.find({ status: 'approved' }).sort({ views: -1, score: -1, createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: properties.length,
-      data: properties,
+      data: properties
     });
   } catch (error) {
     console.log("Error fetching properties:", error);
     res.status(500).json({
       success: false,
       message: "Server error, please try again later",
-      error: error.message,
+      error: error.message
     });
   }
->>>>>>> Stashed changes
 };
 
-// 3. XEM CHI TIẾT TIN ĐĂNG (Chống Spam View - Mỗi tài khoản tăng 1 lần duy nhất)
+// 3. XEM CHI TIẾT TIN ĐĂNG (Chống Spam View chuẩn chỉnh)
 const getPropertyById = async (req, res) => {
-<<<<<<< Updated upstream
-    try {
-        const { id } = req.params;
-        const { userId } = req.query; // Nhận userId truyền từ frontend lên qua url ?userId=...
-
-        let property;
-
-        if (userId) {
-            // Kiểm tra xem userId này đã từng xem bài viết này chưa
-            const hasViewed = await Property.findOne({ _id: id, viewedUsers: userId });
-
-            if (!hasViewed) {
-                // Nếu chưa xem: tăng views lên 1 và đẩy userId vào mảng viewedUsers để khóa lại
-                property = await Property.findByIdAndUpdate(
-                    id,
-                    { 
-                        $inc: { views: 1 },
-                        $push: { viewedUsers: userId }
-                    },
-                    { new: true }
-                ).lean();
-            } else {
-                // Nếu đã xem rồi: giữ nguyên views, chỉ đọc dữ liệu
-                property = await Property.findById(id).lean();
-            }
-        } else {
-            // Khách vãng lai chưa đăng nhập: chỉ xem, không tăng view để tránh bot cào dữ liệu phá hoại số liệu
-            property = await Property.findById(id).lean();
-        }
-=======
   try {
     const { id } = req.params;
->>>>>>> Stashed changes
+    const { userId } = req.query; // Nhận từ URL frontend truyền lên qua ?userId=...
 
-    const property = await Property.findById(id).lean();
+    let property;
 
-    if (!property) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Property not found" });
+    if (userId) {
+      // Kiểm tra xem tài khoản này đã từng bấm xem bài đăng này chưa
+      const hasViewed = await Property.findOne({ _id: id, viewedUsers: userId });
+
+      if (!hasViewed) {
+        // Nếu chưa xem: tăng trường views lên +1 và nạp userId vào mảng để khóa lại
+        property = await Property.findByIdAndUpdate(
+          id,
+          { 
+            $inc: { views: 1 },
+            $push: { viewedUsers: userId }
+          },
+          { new: true }
+        ).lean();
+      } else {
+        // Nếu đã xem rồi: Chỉ đọc thông tin hiện tại, giữ nguyên lượt xem
+        property = await Property.findById(id).lean();
+      }
+    } else {
+      // Khách vãng lai chưa đăng nhập: Chỉ cho phép xem dữ liệu thuần, không tính lượt xem
+      property = await Property.findById(id).lean();
     }
 
+    if (!property) {
+      return res.status(404).json({ success: false, message: "Property not found" });
+    }
+
+    // Logic tìm kiếm và gán thông tin chủ sở hữu (Owner) bài đăng
     let queryCondition = { clerkId: property.userId };
 
     if (mongoose.Types.ObjectId.isValid(property.userId)) {
@@ -302,44 +204,23 @@ const getPropertyById = async (req, res) => {
 
 // 4. LẤY TIN ĐĂNG CỦA RIÊNG MỘT USER
 const getUserProperties = async (req, res) => {
-<<<<<<< Updated upstream
-    try {
-        const { userId } = req.params;
-        const properties = await Property.find({ userId }).sort({ createdAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            count: properties.length,
-            data: properties
-        });
-    } catch (error) {
-        console.log("Error fetching user properties:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server error, please try again later",
-            error: error.message
-        });
-    }
-=======
   try {
     const { userId } = req.params;
-
     const properties = await Property.find({ userId }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: properties.length,
-      data: properties,
+      data: properties
     });
   } catch (error) {
     console.log("Error fetching user properties:", error);
     res.status(500).json({
       success: false,
       message: "Server error, please try again later",
-      error: error.message,
+      error: error.message
     });
   }
->>>>>>> Stashed changes
 };
 
 // 5. XÓA TIN ĐĂNG
@@ -349,97 +230,39 @@ const deleteProperty = async (req, res) => {
     const deletedProperty = await Property.findByIdAndDelete(id);
 
     if (!deletedProperty) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy bài đăng" });
+      return res.status(404).json({ success: false, message: "Không tìm thấy bài đăng" });
     }
 
     res.status(200).json({ success: true, message: "Xóa bài đăng thành công" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Lỗi khi xóa bài đăng",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi xóa bài đăng",
+      error: error.message,
+    });
   }
 };
 
-// 6. CẬP NHẬT TIN ĐĂNG VÀ TÍNH LẠI ĐIỂM SỐ
+// 6. CẬP NHẬT TIN ĐĂNG VÀ TÍNH TOÁN LẠI ĐIỂM SỐ CHẤT LƯỢNG TIN
 const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
-<<<<<<< Updated upstream
-        const currentProperty = await Property.findById(id);
-        if (!currentProperty) {
-            return res.status(404).json({ success: false, message: "Không tìm thấy bài đăng" });
-        }
-
-        const mergedData = {
-            title: updateData.title !== undefined ? updateData.title : currentProperty.title,
-            description: updateData.description !== undefined ? updateData.description : currentProperty.description,
-            images: updateData.images !== undefined ? updateData.images : currentProperty.images,
-            contactPhone: updateData.contactPhone !== undefined ? updateData.contactPhone : currentProperty.contactPhone,
-            area: updateData.area !== undefined ? updateData.area : currentProperty.area,
-            location: {
-                address: updateData.location?.address !== undefined ? updateData.location.address : currentProperty.location?.address
-            }
-        };
-
-        updateData.score = calculatePropertyScore(mergedData);
-        updateData.status = 'pending'; // Đẩy về trạng thái chờ duyệt khi sửa đổi nội dung
-        
-        const updatedProperty = await Property.findByIdAndUpdate(
-            id, 
-            updateData, 
-            { returnDocument: 'after' }
-        );
-
-        res.status(200).json({
-            success: true,
-            message: "Cập nhật thành công, tin đang chờ duyệt lại và đã được cập nhật điểm số.",
-            data: updatedProperty
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Lỗi khi cập nhật bài đăng", error: error.message });
-=======
-    // Lấy dữ liệu tin đăng cũ để merge tính toán lại điểm số chuẩn xác nhất
     const currentProperty = await Property.findById(id);
     if (!currentProperty) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy bài đăng" });
->>>>>>> Stashed changes
+      return res.status(404).json({ success: false, message: "Không tìm thấy bài đăng" });
     }
 
-    // Trộn thông tin cũ và thông tin cập nhật mới để tránh mất trường khi tính điểm
+    // Trộn thông tin cũ và thông tin cập nhật mới để tránh mất trường dữ liệu khi tính điểm
     const mergedData = {
-      title:
-        updateData.title !== undefined
-          ? updateData.title
-          : currentProperty.title,
-      description:
-        updateData.description !== undefined
-          ? updateData.description
-          : currentProperty.description,
-      images:
-        updateData.images !== undefined
-          ? updateData.images
-          : currentProperty.images,
-      contactPhone:
-        updateData.contactPhone !== undefined
-          ? updateData.contactPhone
-          : currentProperty.contactPhone,
-      area:
-        updateData.area !== undefined ? updateData.area : currentProperty.area,
+      title: updateData.title !== undefined ? updateData.title : currentProperty.title,
+      description: updateData.description !== undefined ? updateData.description : currentProperty.description,
+      images: updateData.images !== undefined ? updateData.images : currentProperty.images,
+      contactPhone: updateData.contactPhone !== undefined ? updateData.contactPhone : currentProperty.contactPhone,
+      area: updateData.area !== undefined ? updateData.area : currentProperty.area,
       location: {
-        address:
-          updateData.location?.address !== undefined
-            ? updateData.location.address
-            : currentProperty.location?.address,
+        address: updateData.location?.address !== undefined ? updateData.location.address : currentProperty.location?.address,
       },
     };
 
@@ -447,24 +270,23 @@ const updateProperty = async (req, res) => {
     updateData.score = calculatePropertyScore(mergedData);
     updateData.status = "pending"; // Reset trạng thái về chờ duyệt khi sửa bài
 
-    const updatedProperty = await Property.findByIdAndUpdate(id, updateData, {
-      returnDocument: "after",
-    });
+    const updatedProperty = await Property.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true }
+    );
 
     res.status(200).json({
       success: true,
-      message:
-        "Cập nhật thành công, tin đang chờ duyệt lại và đã được cập nhật điểm số.",
+      message: "Cập nhật thành công, tin đang chờ duyệt lại và đã được cập nhật điểm số.",
       data: updatedProperty,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Lỗi khi cập nhật bài đăng",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật bài đăng",
+      error: error.message,
+    });
   }
 };
 
@@ -474,12 +296,10 @@ const toggleFavorite = async (req, res) => {
     const { propertyId, userId } = req.body;
 
     if (!propertyId || !userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Thiếu thông tin propertyId hoặc userId",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin propertyId hoặc userId",
+      });
     }
 
     const existingFavorite = await Favourite.findOne({ userId, propertyId });
@@ -501,9 +321,7 @@ const toggleFavorite = async (req, res) => {
       });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Lỗi hệ thống", error: error.message });
+    res.status(500).json({ success: false, message: "Lỗi hệ thống", error: error.message });
   }
 };
 
@@ -526,13 +344,11 @@ const getFavoriteProperties = async (req, res) => {
       data: favoriteProperties,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Lỗi khi lấy danh sách yêu thích",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy danh sách yêu thích",
+      error: error.message,
+    });
   }
 };
 
