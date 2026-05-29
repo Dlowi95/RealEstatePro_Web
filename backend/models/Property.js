@@ -16,6 +16,7 @@ const propertySchema = new mongoose.Schema({
     images: [String],
     userId: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected', 'hidden'], default: 'pending' },
+    score: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
 });
 

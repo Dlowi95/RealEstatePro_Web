@@ -186,66 +186,87 @@ export default function AdminProperties() {
                 <Table.ColumnHeader py={3} px={4} color="fg.muted">Giá</Table.ColumnHeader>
                 <Table.ColumnHeader py={3} px={4} color="fg.muted">Diện tích</Table.ColumnHeader>
                 <Table.ColumnHeader py={3} px={4} color="fg.muted">Người đăng</Table.ColumnHeader>
+                <Table.ColumnHeader py={3} px={4} textAlign="center" color="fg.muted">Đánh giá chất lượng</Table.ColumnHeader>
                 <Table.ColumnHeader py={3} px={4} textAlign="center" color="fg.muted">Hành động</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {currentProperties.map((prop) => (
-                <Table.Row key={prop._id} _hover={{ bg: 'bg.muted' }} borderColor="border.default" transition="background 0.2s">
-                  <Table.Cell px={4} py={2} fontWeight="medium" color="fg.default">{prop.title}</Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <Badge colorPalette={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
-                      {prop.type === 'Buy' ? 'Mua' : 'Thuê'}
-                    </Badge>
-                  </Table.Cell>
-                  <Table.Cell px={4} py={2} color="fg.default">{prop.price.toLocaleString()} VNĐ</Table.Cell>
-                  <Table.Cell px={4} py={2} color="fg.default">{prop.area} m²</Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <HStack gap={2}>
-                      <Avatar.Root size="xs">
-                        <Avatar.Fallback name={getDisplayName(prop)} />
-                        <Avatar.Image src={getUserAvatarSrc(prop)} />
-                      </Avatar.Root>
-                      <Text fontSize="sm" noOfLines={1} maxW="180px" color="fg.default">{getDisplayName(prop)}</Text>
-                    </HStack>
-                  </Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <HStack gap={2} flexWrap="wrap">
-                      {prop.status === 'pending' && (
-                        <Tooltip content="Duyệt tin">
-                          <Button size="xs" colorPalette="green" variant="solid" onClick={() => handleApprove(prop._id)}>
-                            <FaCheck /> Duyệt
+              {currentProperties.map((prop) => {
+                // Đọc trực tiếp điểm từ Database trả về, mặc định là 0 nếu chưa có
+                const score = prop.score || 0;
+                return (
+                  <Table.Row key={prop._id} _hover={{ bg: 'bg.muted' }} borderColor="border.default" transition="background 0.2s">
+                    <Table.Cell px={4} py={2} fontWeight="medium" color="fg.default">{prop.title}</Table.Cell>
+                    <Table.Cell px={4} py={2}>
+                      <Badge colorPalette={prop.type === 'Buy' ? 'green' : 'blue'} variant="solid" borderRadius="full" px={2}>
+                        {prop.type === 'Buy' ? 'Mua' : 'Thuê'}
+                      </Badge>
+                    </Table.Cell>
+                    <Table.Cell px={4} py={2} color="fg.default">{prop.price.toLocaleString()} VNĐ</Table.Cell>
+                    <Table.Cell px={4} py={2} color="fg.default">{prop.area} m²</Table.Cell>
+                    <Table.Cell px={4} py={2}>
+                      <HStack gap={2}>
+                        <Avatar.Root size="xs">
+                          <Avatar.Fallback name={getDisplayName(prop)} />
+                          <Avatar.Image src={getUserAvatarSrc(prop)} />
+                        </Avatar.Root>
+                        <Text fontSize="sm" noOfLines={1} maxW="180px" color="fg.default">{getDisplayName(prop)}</Text>
+                      </HStack>
+                    </Table.Cell>
+
+                    {/* Cột hiển thị điểm số thông minh lấy từ DB */}
+                    <Table.Cell px={4} py={2} textAlign="center">
+                      <Tooltip content={score <= 50 ? 'Tin có dấu hiệu spam hoặc thiếu nhiều thông tin' : 'Tin đạt chuẩn chất lượng uy tín'}>
+                        <Badge 
+                          colorPalette={score <= 50 ? 'red' : 'green'} 
+                          variant="solid" 
+                          borderRadius="full" 
+                          px={3} 
+                          py={0.5}
+                        >
+                          {score}đ {score <= 50 ? 'SPAM' : 'UY TÍN'}
+                        </Badge>
+                      </Tooltip>
+                    </Table.Cell>
+
+                    <Table.Cell px={4} py={2}>
+                      <HStack gap={2} flexWrap="wrap" justify="center">
+                        {prop.status === 'pending' && (
+                          <Tooltip content="Duyệt tin">
+                            <Button size="xs" colorPalette="green" variant="solid" onClick={() => handleApprove(prop._id)}>
+                              <FaCheck /> Duyệt
+                            </Button>
+                          </Tooltip>
+                        )}
+
+                        <Tooltip content={prop.status === 'hidden' ? 'Hiện tin' : 'Ẩn tin'}>
+                          <Button size="xs" colorPalette="orange" variant="solid" onClick={() => handleToggleHide(prop._id)}>
+                            {prop.status === 'hidden' ? <FaEye /> : <FaEyeSlash />} {prop.status === 'hidden' ? 'Hiện' : 'Ẩn'}
                           </Button>
                         </Tooltip>
-                      )}
-
-                      <Tooltip content={prop.status === 'hidden' ? 'Hiện tin' : 'Ẩn tin'}>
-                        <Button size="xs" colorPalette="orange" variant="solid" onClick={() => handleToggleHide(prop._id)}>
-                          {prop.status === 'hidden' ? <FaEye /> : <FaEyeSlash />} {prop.status === 'hidden' ? 'Hiện' : 'Ẩn'}
-                        </Button>
-                      </Tooltip>
-                      
-                      <Tooltip content="Xem chi tiết">
-                        <Button size="xs" colorPalette="blue" variant="solid" onClick={() => { setViewingProperty(prop); setIsViewOpen(true); }}>
-                          <FaEye /> Xem
-                        </Button>
-                      </Tooltip>
-                      
-                      <Tooltip content="Chỉnh sửa">
-                        <Button size="xs" colorPalette="yellow" variant="solid" onClick={() => { setEditingProperty(prop); setEditForm({ title: prop.title, price: prop.price, area: prop.area, contactPhone: prop.contactPhone || '' }); setIsEditOpen(true); }}>
-                          <FaEdit /> Sửa
-                        </Button>
-                      </Tooltip>
-                      
-                      <Tooltip content="Xóa tin">
-                        <Button size="xs" colorPalette="red" variant="solid" onClick={() => handleDelete(prop._id)}>
-                          <FaTrash /> Xóa
-                        </Button>
-                      </Tooltip>
-                    </HStack>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+                        
+                        <Tooltip content="Xem chi tiết">
+                          <Button size="xs" colorPalette="blue" variant="solid" onClick={() => { setViewingProperty(prop); setIsViewOpen(true); }}>
+                            <FaEye /> Xem
+                          </Button>
+                        </Tooltip>
+                        
+                        <Tooltip content="Chỉnh sửa">
+                          <Button size="xs" colorPalette="yellow" variant="solid" onClick={() => { setEditingProperty(prop); setEditForm({ title: prop.title, price: prop.price, area: prop.area, contactPhone: prop.contactPhone || '' }); setIsEditOpen(true); }}>
+                            <FaEdit /> Sửa
+                          </Button>
+                        </Tooltip>
+                        
+                        <Tooltip content="Xóa tin">
+                          <Button size="xs" colorPalette="red" variant="solid" onClick={() => handleDelete(prop._id)}>
+                            <FaTrash /> Xóa
+                          </Button>
+                        </Tooltip>
+                      </HStack>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
             </Table.Body>
           </Table.Root>
         </Card.Root>
@@ -312,6 +333,7 @@ export default function AdminProperties() {
         </HStack>
       )}
 
+      {/* --- Dialog chi tiết tin đăng --- */}
       <Dialog.Root open={isViewOpen} onOpenChange={(e) => setIsViewOpen(e.open)} size="lg">
         <Portal>
           <Dialog.Backdrop />
@@ -321,6 +343,12 @@ export default function AdminProperties() {
               <Dialog.Body color="fg.default">
                 {viewingProperty && (
                   <Stack gap={3}>
+                    <HStack>
+                      <Text fontWeight="bold">Điểm chất lượng hệ thống:</Text>
+                      <Badge colorPalette={(viewingProperty.score || 0) <= 50 ? 'red' : 'green'} variant="solid">
+                        {viewingProperty.score || 0} điểm
+                      </Badge>
+                    </HStack>
                     <Text dangerouslySetInnerHTML={{ __html: `<strong>Tiêu đề:</strong> ${viewingProperty.title}` }} />
                     <Text dangerouslySetInnerHTML={{ __html: `<strong>Mô tả:</strong> ${viewingProperty.description}` }} />
                     <Text dangerouslySetInnerHTML={{ __html: `<strong>Loại giao dịch:</strong> ${viewingProperty.type === 'Buy' ? 'Mua' : 'Thuê'}` }} />
@@ -353,6 +381,7 @@ export default function AdminProperties() {
         </Portal>
       </Dialog.Root>
 
+      {/* --- Dialog chỉnh sửa tin đăng --- */}
       <Dialog.Root open={isEditOpen} onOpenChange={(e) => setIsEditOpen(e.open)}>
         <Portal>
           <Dialog.Backdrop />

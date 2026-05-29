@@ -1,7 +1,46 @@
-const mongoose = require("mongoose"); // 1. THÊM DÒNG NÀY Ở ĐẦU FILE để dùng hàm kiểm tra định dạng ID
+const mongoose = require("mongoose"); 
 const Property = require("../models/Property");
 const Favourite = require("../models/Favourite");
 const User = require("../models/User");
+
+// --- HÀM HEURISTICS CHẤM ĐIỂM CHẤT LƯỢNG TIN (TỐI ĐA 100 ĐIỂM) ---
+const calculatePropertyScore = (data) => {
+    let score = 0;
+
+    // 1. Tiêu chí Số lượng hình ảnh (Tối đa 25 điểm)
+    const imgCount = data.images?.length || 0;
+    if (imgCount >= 3) {
+        score += 25;
+    } else if (imgCount === 1 || imgCount === 2) {
+        score += 10;
+    }
+
+    // 2. Tiêu chí Độ dài văn bản mô tả (Tối đa 25 điểm)
+    const descLen = data.description?.length || 0;
+    if (descLen > 100) {
+        score += 25;
+    } else if (descLen >= 20) {
+        score += 15;
+    } else if (descLen > 0) {
+        score += 5;
+    }
+
+    // 3. Tiêu chí Đầy đủ thông tin cốt lõi (Tối đa 30 điểm)
+    if (data.contactPhone) score += 10;
+    if (data.area) score += 10;
+    if (data.location?.address) score += 10;
+
+    // 4. Tiêu chí Phát hiện từ khóa spam/nhạy cảm (Trừ tối đa 20 điểm)
+    const spamKeywords = ["cam kết lời gấp đôi", "trúng thưởng lớn", "giá rẻ sập sàn"];
+    const contentToSearch = `${data.title || ''} ${data.description || ''}`.toLowerCase();
+    const hasSpam = spamKeywords.some(keyword => contentToSearch.includes(keyword));
+    if (hasSpam) {
+        score -= 20;
+    }
+
+    // Giới hạn điểm số từ 0 đến 100
+    return Math.max(0, Math.min(score, 100));
+};
 
 const createProperty = async (req, res) => {
     try {
@@ -25,6 +64,16 @@ const createProperty = async (req, res) => {
             });
         }
 
+        // Tự động chấm điểm chất lượng tin trước khi tạo mới
+        const calculatedScore = calculatePropertyScore({
+            title,
+            description,
+            images,
+            contactPhone,
+            area,
+            location
+        });
+
         const newProperty = new Property({
             title,
             description,
@@ -40,6 +89,7 @@ const createProperty = async (req, res) => {
             contactPhone,
             images,
             userId,
+            score: calculatedScore // Lưu điểm số vào DB
         });
 
         const savedProperty = await newProperty.save();
@@ -61,7 +111,8 @@ const createProperty = async (req, res) => {
 
 const getApprovedProperties = async (req, res) => {
     try {
-        const properties = await Property.find({ status: 'approved' }).sort({ createdAt: -1 });
+        // TỐI ƯU: Sắp xếp theo điểm số cao nhất lên trước (Làm tin nổi bật), sau đó mới đến tin mới nhất
+        const properties = await Property.find({ status: 'approved' }).sort({ score: -1, createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -88,12 +139,8 @@ const getPropertyById = async (req, res) => {
             return res.status(404).json({ success: false, message: "Property not found" });
         }
 
-        // 2. TỐI ƯU ĐIỀU KIỆN TÌM KIẾM ĐỂ TRÁNH LỖI CASTERROR 500
-        // Mặc định chúng ta sẽ chỉ tìm User dựa trên trường clerkId (vì userId của bài đăng là chuỗi dạng Clerk)
         let queryCondition = { clerkId: property.userId };
 
-        // Chỉ khi nào property.userId có cấu trúc đúng định dạng 24 ký tự Hex của MongoDB ObjectId, 
-        // chúng ta mới thêm điều kiện tìm kiếm bằng _id để tránh bị crash.
         if (mongoose.Types.ObjectId.isValid(property.userId)) {
             queryCondition = {
                 $or: [
@@ -165,7 +212,27 @@ const updateProperty = async (req, res) => {
         const { id } = req.params;
         const updateData = req.body;
 
-        updateData.status = 'pending';
+        // Lấy dữ liệu tin đăng cũ để merge tính toán lại điểm số chuẩn xác nhất
+        const currentProperty = await Property.findById(id);
+        if (!currentProperty) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy bài đăng" });
+        }
+
+        // Trộn thông tin cũ và thông tin cập nhật mới để tránh mất trường khi tính điểm
+        const mergedData = {
+            title: updateData.title !== undefined ? updateData.title : currentProperty.title,
+            description: updateData.description !== undefined ? updateData.description : currentProperty.description,
+            images: updateData.images !== undefined ? updateData.images : currentProperty.images,
+            contactPhone: updateData.contactPhone !== undefined ? updateData.contactPhone : currentProperty.contactPhone,
+            area: updateData.area !== undefined ? updateData.area : currentProperty.area,
+            location: {
+                address: updateData.location?.address !== undefined ? updateData.location.address : currentProperty.location?.address
+            }
+        };
+
+        // Tính lại điểm chất lượng tin mới sau khi người dùng sửa bài
+        updateData.score = calculatePropertyScore(mergedData);
+        updateData.status = 'pending'; // Reset trạng thái về chờ duyệt khi sửa bài
         
         const updatedProperty = await Property.findByIdAndUpdate(
             id, 
@@ -175,7 +242,7 @@ const updateProperty = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Cập nhật thành công, tin đang chờ duyệt lại.",
+            message: "Cập nhật thành công, tin đang chờ duyệt lại và đã được cập nhật điểm số.",
             data: updatedProperty
         });
     } catch (error) {
@@ -260,4 +327,4 @@ module.exports = {
     toggleFavorite,
     getFavoriteProperties,
     checkFavoriteStatus
-}
+};
