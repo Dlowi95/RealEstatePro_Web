@@ -1,10 +1,10 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 const Property = require("../models/Property");
 
-// Khởi tạo AI SDK
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Khởi tạo Groq AI bằng API Key lấy từ biến môi trường
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Hàm làm sạch HTML an toàn
+// Hàm làm sạch HTML an toàn (Lọc bỏ thẻ div, p, span... để AI đọc dễ hơn)
 const stripHTML = (htmlString) => {
   if (!htmlString) return "";
   return htmlString
@@ -17,15 +17,16 @@ const chatAssistant = async (req, res) => {
   try {
     const { message, history } = req.body;
 
+    // Kiểm tra tin nhắn đầu vào
     if (!message) {
       return res.status(400).json({ success: false, message: "Vui lòng nhập tin nhắn." });
     }
 
-    // Lấy dữ liệu từ DB (Chạy song song bằng Promise.all cho tốc độ nhanh nhất)
+    // Lấy dữ liệu thực tế từ DB (Chạy song song bằng Promise.all cho tốc độ xử lý nhanh nhất)
     const [propertiesFromDB, areaStats] = await Promise.all([
       Property.find({ status: "approved" })
         .sort({ createdAt: -1 })
-        .limit(10) // Lấy 10 tin mới nhất để làm Context
+        .limit(10) // Lấy 10 tin mới nhất nạp vào não AI
         .select("_id title type price area location description")
         .lean(),
       Property.aggregate([
@@ -35,7 +36,7 @@ const chatAssistant = async (req, res) => {
       ]),
     ]);
 
-    // Format Context Bất Động Sản
+    // Format Context Bất Động Sản thành chuỗi văn bản cho AI dễ hiểu
     const propertyContext = propertiesFromDB
       .map((p) => {
         const locationStr = `${p.location?.address || ""}, ${p.location?.ward || "Chưa cập nhật"}, ${p.location?.province || ""}`;
@@ -47,12 +48,12 @@ const chatAssistant = async (req, res) => {
       })
       .join("\n");
 
-    // Format Context Thống kê
+    // Format Context Thống kê 
     const statsContext = areaStats
       .map((stat) => `- Khu vực ${stat._id || "Không rõ"}: ${stat.count} tin đăng`)
       .join("\n");
 
-    // System Instruction (Prompt định hướng nhân cách và luật lệ)
+    // Lời thỉnh cầu (System Prompt - Dạy cho AI biết nó là ai và phải làm gì)
     const systemInstruction = `Bạn là Trợ lý ảo thông minh của sàn bất động sản RealEstatePro.
 
 NHIỆM VỤ:
@@ -71,59 +72,27 @@ LƯU Ý QUAN TRỌNG:
 - Có thể cung cấp ID hoặc trích dẫn tiêu đề để khách dễ tìm.
 - Nếu câu hỏi KHÔNG liên quan đến bất động sản, nhà đất, hoặc hệ thống RealEstatePro, hãy lịch sự từ chối và hướng khách hàng về chủ đề nhà đất.`;
 
-    // Sử dụng model gemini-1.5-flash (Ổn định, nhanh, tối ưu nhất cho Production)
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: systemInstruction,
+    // Format lịch sử chat theo đúng cấu trúc cực kỳ dễ chịu của Groq (Vai trò: system, user, assistant)
+    const formattedMessages = [
+      { role: "system", content: systemInstruction },
+      ...(history || []).map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text || "",
+      })),
+      { role: "user", content: message },
+    ];
+
+    // Gửi request lên Groq AI bằng model Llama 3.3 70B (Bản xịn nhất, nhanh nhất)
+    const chatCompletion = await groq.chat.completions.create({
+      messages: formattedMessages,
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.3, // Nhiệt độ thấp = Ép AI trả lời chuẩn xác theo data, không chém gió
+      max_tokens: 1000,
     });
 
-    // Cấu hình kiểm soát nhiệt độ (Ép bot bám sát dữ liệu thật, không "ảo giác" tự bịa nhà đất)
-    const generationConfig = {
-      temperature: 0.3,
-      maxOutputTokens: 1000,
-    };
+    const responseText = chatCompletion.choices[0]?.message?.content || "";
 
-    // --- XỬ LÝ LỊCH SỬ CHAT CHUẨN FORM API GEMINI ---
-    let formattedHistory = [];
-    if (Array.isArray(history) && history.length > 0) {
-      // 1. Chuyển đổi format sender -> role
-      let validHistory = history.map(msg => ({
-        role: msg.sender === "user" ? "user" : "model",
-        parts: [{ text: msg.text || "" }]
-      }));
-      
-      // 2. Xóa phần tử đầu tiên nếu nó là 'model' (Gemini bắt buộc lịch sử phải bắt đầu bằng 'user')
-      if (validHistory[0].role === "model") {
-        validHistory.shift();
-      }
-
-      // 3. Gộp các tin nhắn trùng role liên tiếp nhau (Gemini bắt buộc phải luân phiên user -> model -> user)
-      formattedHistory = validHistory.reduce((acc, curr) => {
-        if (acc.length === 0) {
-          acc.push(curr);
-        } else {
-          const lastMsg = acc[acc.length - 1];
-          if (lastMsg.role === curr.role) {
-            // Nối text nếu trùng role liên tiếp
-            lastMsg.parts[0].text += `\n${curr.parts[0].text}`; 
-          } else {
-            acc.push(curr);
-          }
-        }
-        return acc;
-      }, []);
-    }
-
-    // Khởi tạo Chat Session
-    const chat = model.startChat({
-      history: formattedHistory,
-      generationConfig
-    });
-
-    // Gửi tin nhắn mới nhất
-    const result = await chat.sendMessage(message);
-    const responseText = result.response.text();
-
+    // Phản hồi về cho Frontend
     res.status(200).json({
       success: true,
       reply: responseText,
