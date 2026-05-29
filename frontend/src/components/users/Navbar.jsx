@@ -32,7 +32,6 @@ import { toaster } from "@/components/ui/toaster";
 const navLinks = [
   { label: "Nhà đất bán", href: "/sell" },
   { label: "Nhà đất cho thuê", href: "/rent" },
-  { label: "Về chúng tôi", href: "/about" },
 ];
 
 
