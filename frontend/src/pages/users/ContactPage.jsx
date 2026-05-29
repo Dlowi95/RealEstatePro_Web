@@ -34,7 +34,8 @@ export default function ContactPage() {
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} mt={2} fontSize="xs" noOfLines={1}>Hotline: 0976741018</Text>
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} fontSize="xs" noOfLines={1}>Email: phamduyanhkg@gmail.com</Text>
                 </Box>
-                <Image src="/public/imgs/avatar1.jpg" alt="Phạm Duy Anh" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
+                {/* Đã sửa đường dẫn ảnh ở đây */}
+                <Image src="/imgs/avatar1.jpg" alt="Phạm Duy Anh" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
               </Flex>
             </Box>
 
@@ -51,7 +52,8 @@ export default function ContactPage() {
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} mt={2} fontSize="xs" noOfLines={1}>Hotline: 0976154487</Text>
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} fontSize="xs" noOfLines={1}>Email: huygiatruong2005@gmail.com</Text>
                 </Box>
-                <Image src="/public/imgs/avatar2.jpg" alt="Trương Gia Huy" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
+                {/* Đã sửa đường dẫn ảnh ở đây */}
+                <Image src="/imgs/avatar2.jpg" alt="Trương Gia Huy" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
               </Flex>
             </Box>
 
@@ -68,7 +70,8 @@ export default function ContactPage() {
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} mt={2} fontSize="xs" noOfLines={1}>Hotline: 0336066639</Text>
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} fontSize="xs" noOfLines={1}>Email: loisadnhan@gmail.com</Text>
                 </Box>
-                <Image src="/public/imgs/avatar3.jpg" alt="Võ Hoàng Đại Lợi" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
+                {/* Đã sửa đường dẫn ảnh ở đây */}
+                <Image src="/imgs/avatar3.jpg" alt="Võ Hoàng Đại Lợi" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
               </Flex>
             </Box>
 
@@ -85,7 +88,8 @@ export default function ContactPage() {
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} mt={2} fontSize="xs" noOfLines={1}>Hotline: 0767050126</Text>
                   <Text color={{ base: "gray.700", _dark: "gray.200" }} fontSize="xs" noOfLines={1}>Email: nhanz200588@gmail.com</Text>
                 </Box>
-                <Image src="/public/imgs/avatar4.jpg" alt="Trần Hữu Nhân" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
+                {/* Đã sửa đường dẫn ảnh ở đây */}
+                <Image src="/imgs/avatar4.jpg" alt="Trần Hữu Nhân" boxSize={{ base: "80px", sm: "100px", md: "120px" }} objectFit="cover" borderRadius="full" border="3px solid" borderColor="orange.400" flexShrink={0}/>
               </Flex>
             </Box>
           </Box>
