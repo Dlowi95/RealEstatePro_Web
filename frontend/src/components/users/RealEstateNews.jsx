@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Box, SimpleGrid, Image, Text, Heading, Link, Flex, Spinner } from "@chakra-ui/react";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
 const RealEstateNews = () => {
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -9,7 +11,7 @@ const RealEstateNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/news");
+        const response = await axios.get(`${API_BASE_URL}/api/news`);
         if (response.data.success) {
           setNews(response.data.data);
         }
