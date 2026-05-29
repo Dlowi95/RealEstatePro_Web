@@ -19,13 +19,9 @@ import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
 import ContactPage from "./pages/users/ContactPage";
-<<<<<<< Updated upstream
 import TermPage from "./pages/users/TermPage";
 import PolicyPage from "./pages/users/PolicyPage";
 
-=======
-import MyTermPage from "./pages/users/TermPage";
->>>>>>> Stashed changes
 
 function App() {
   return (
