@@ -20,6 +20,7 @@ import FavoritePropertiesPage from "./pages/users/FavoritePropertiesPage";
 import ListPropertiesPage from "./pages/users/ListPropertiesPage";
 import AboutUsPage from "./pages/users/AboutUsPage";
 
+import MyPolicyPage from "./pages/users/policypage";
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<UserLayout><AboutUsPage /></UserLayout>} />
+        <Route path="/policy" element={<UserLayout><MyPolicyPage /></UserLayout>} />
         <Route path="/sell" element={<UserLayout><SellPropertiesPage /></UserLayout>} />
         <Route path="/rent" element={<UserLayout><RentPropertiesPage /></UserLayout>} />
 
