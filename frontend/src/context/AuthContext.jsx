@@ -7,9 +7,11 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const { getToken, isSignedIn, userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
-  const [user, setUser] = useState(null); // thông tin user từ DB của mình
-  const [role, setRole] = useState(null); // "user" | "admin"
+  const [user, setUser] = useState(null); 
+  const [role, setRole] = useState(null); 
   const [loading, setLoading] = useState(true);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
   useEffect(() => {
     if (!isLoaded) {
@@ -25,7 +27,7 @@ export function AuthProvider({ children }) {
     }
 
     setLoading(true);
-    // Khi Clerk đăng nhập xong → lấy JWT rồi gửi lên backend để đồng bộ user
+
     const syncUser = async () => {
       try {
         const token = await getToken();
@@ -46,8 +48,9 @@ export function AuthProvider({ children }) {
           "";
         const avatar = clerkUser?.imageUrl || "";
 
+        // Sửa tại đây: Sử dụng API_BASE_URL chuẩn hóa
         const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/auth/sync`,
+          `${API_BASE_URL}/api/auth/sync`,
           {
             email,
             fullName,
@@ -79,7 +82,6 @@ export function AuthProvider({ children }) {
     syncUser();
   }, [isLoaded, isSignedIn, userId, clerkUser, getToken]);
 
-  // Hàm helper: gọi API có kèm JWT tự động
   const authAxios = async () => {
     const token = await getToken();
 
@@ -88,7 +90,7 @@ export function AuthProvider({ children }) {
     }
 
     return axios.create({
-      baseURL: import.meta.env.VITE_API_URL,
+      baseURL: API_BASE_URL,
       headers: { Authorization: `Bearer ${token}` },
     });
   };
