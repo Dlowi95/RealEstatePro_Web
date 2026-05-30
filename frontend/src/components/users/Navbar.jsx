@@ -19,7 +19,6 @@ import {
   LuBell,
   LuChevronDown,
   LuChevronUp,
-  LuBellOff,
   LuSun,
   LuMoon,
   LuX,
@@ -106,7 +105,8 @@ const Navbar = () => {
       bg={{ base: "#fff", _dark: "gray.900" }}
       borderBottom="1px solid"
       borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
-      py="4"
+      // CHỈNH Ở ĐÂY: Mobile padding cực mỏng (py=2 ~ 8px), PC giữ nguyên py=4 (~ 16px)
+      py={{ base: "2", md: "4" }} 
       position="fixed"
       top="0"
       left="0"
@@ -121,7 +121,8 @@ const Navbar = () => {
               <Image
                 src="/imgs/logo.png"
                 alt="RealEstate Pro"
-                w="150px"
+                // CHỈNH Ở ĐÂY: Thu nhỏ logo trên mobile gọn gàng, PC giữ nguyên kích thước cũ
+                w={{ base: "115px", md: "150px" }} 
                 objectFit="contain"
                 style={{
                   filter: colorMode === "dark" ? "invert(1) brightness(1.2)" : "none",
@@ -237,17 +238,19 @@ const Navbar = () => {
               </Flex>
             </SignedIn>
 
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="ghost" size="sm" color={{ base: "gray.700", _dark: "gray.100" }}>Đăng nhập</Button>
-              </SignInButton>
-              <SignInButton mode="modal">
-                <Button bg="#E65C00" color="white" size="sm" _hover={{ bg: "#CC5200" }} borderRadius="xl" fontWeight="semibold">Đăng ký</Button>
-              </SignInButton>
-            </SignedOut>
+            <Box display="flex" gap="2">
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button variant="ghost" size="sm" color={{ base: "gray.700", _dark: "gray.100" }}>Đăng nhập</Button>
+                </SignInButton>
+                <SignInButton mode="modal">
+                  <Button bg="#E65C00" color="white" size="sm" _hover={{ bg: "#CC5200" }} borderRadius="xl" fontWeight="semibold">Đăng ký</Button>
+                </SignInButton>
+              </SignedOut>
+            </Box>
           </HStack>
 
-          <HStack gap="3" display={{ base: "flex", md: "none" }} align="center">
+          <HStack gap="2" display={{ base: "flex", md: "none" }} align="center">
             <IconButton
               variant="ghost"
               aria-label="Toggle Theme"
