@@ -11,7 +11,7 @@ const UserLayout = ({ children }) => {
       color={{ base: "gray.900", _dark: "whiteAlpha.900" }}
       minH="100vh"
       w="100%"
-      overflowX="hidden"
+      overflowX={{ base: "hidden", md: "visible" }}
     >
       <Navbar />
 

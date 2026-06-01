@@ -11,16 +11,19 @@ import {
 
 function TermPage() {
   return (
-    <Box bg={{ base: "white", _dark: "gray.900" }} color={{ base: "gray.800", _dark: "whiteAlpha.900" }} py={{ base: 6, md: 10 }} minH="100vh">
+    <Box bg={{ base: "white", _dark: "gray.900" }} color={{ base: "gray.800", _dark: "whiteAlpha.900" }} py={{ base: 6, md: 10 }} minH="100vh" overflow="visible">
       <Container maxW="1200px" px={{ base: "4", md: "6" }}>
-        <Flex direction={{ base: "column", md: "row" }} gap={8}>
+        <Flex direction={{ base: "column", md: "row" }} gap={8} position="relative">
+          
           <Box
             display={{ base: "none", md: "block" }}
             flexBasis="260px"
             maxW="260px"
+            w="100%"
             position="sticky"
-            top="100px"
+            top="90px"
             alignSelf="flex-start"
+            height="fit-content"
           >
             <Box
               borderWidth="1px"
@@ -29,33 +32,33 @@ function TermPage() {
               bg={{ base: "gray.50", _dark: "gray.800" }}
               borderColor={{ base: "gray.200", _dark: "gray.700" }}
               boxShadow="sm"
-              maxH="calc(100vh - 140px)"
+              maxH="calc(100vh - 130px)"
               overflowY="auto"
             >
               <Text fontSize="lg" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                 Mục lục
               </Text>
               <VStack align="start" gap={3}>
-                <Link href="#section-1" color="blue.500">Điều 1. Dịch vụ</Link>
-                <Link href="#section-2" color="blue.500">Điều 2. Phí dịch vụ</Link>
-                <Link href="#section-3" color="blue.500">Điều 3. Đơn giá và thời hạn</Link>
-                <Link href="#section-4" color="blue.500">Điều 4. Thanh toán</Link>
-                <Link href="#section-5" color="blue.500">Điều 5. Quyền và nghĩa vụ</Link>
-                <Link href="#section-6" color="blue.500">Điều 6. Tạm ngừng</Link>
-                <Link href="#section-7" color="blue.500">Điều 7. Chấm dứt</Link>
-                <Link href="#section-8" color="blue.500">Điều 8. Phạt vi phạm</Link>
-                <Link href="#section-9" color="blue.500">Điều 9. Trách nhiệm pháp lý</Link>
-                <Link href="#section-10" color="blue.500">Điều 10. Sở hữu trí tuệ</Link>
-                <Link href="#section-11" color="blue.500">Điều 11. Bất khả kháng</Link>
-                <Link href="#section-12" color="blue.500">Điều 12. Bảo mật thông tin</Link>
-                <Link href="#section-13" color="blue.500">Điều 13. Chống tham nhũng</Link>
-                <Link href="#section-14" color="blue.500">Điều 14. Giải quyết tranh chấp</Link>
-                <Link href="#section-15" color="blue.500">Điều 15. Quy định chung</Link>
+                <Link href="#section-1" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 1. Dịch vụ</Link>
+                <Link href="#section-2" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 2. Phí dịch vụ</Link>
+                <Link href="#section-3" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 3. Đơn giá và thời hạn</Link>
+                <Link href="#section-4" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 4. Thanh toán</Link>
+                <Link href="#section-5" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 5. Quyền và nghĩa vụ</Link>
+                <Link href="#section-6" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 6. Tạm ngừng</Link>
+                <Link href="#section-7" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 7. Chấm dứt</Link>
+                <Link href="#section-8" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 8. Phạt vi phạm</Link>
+                <Link href="#section-9" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 9. Trách nhiệm pháp lý</Link>
+                <Link href="#section-10" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 10. Sở hữu trí tuệ</Link>
+                <Link href="#section-11" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 11. Bất khả kháng</Link>
+                <Link href="#section-12" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 12. Bảo mật thông tin</Link>
+                <Link href="#section-13" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 13. Chống tham nhũng</Link>
+                <Link href="#section-14" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 14. Giải quyết tranh chấp</Link>
+                <Link href="#section-15" color="blue.500" _hover={{ textDecoration: "underline", color: "#E65C00" }}>Điều 15. Quy định chung</Link>
               </VStack>
             </Box>
           </Box>
 
-          <Box flex="1">
+          <Box flex="1" minW="0">
             <VStack gap={8} align="stretch">
               <VStack gap={3}>
                 <Heading
@@ -89,7 +92,7 @@ function TermPage() {
               </Text>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-1" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-1" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 1. DỊCH VỤ
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -114,7 +117,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-2" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-2" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 2. PHÍ DỊCH VỤ
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">
@@ -126,7 +129,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-3" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-3" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 3. ĐƠN GIÁ DỊCH VỤ VÀ THỜI HẠN SỬ DỤNG
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -185,7 +188,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-4" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-4" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 4. THANH TOÁN
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -206,7 +209,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-5" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-5" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 5. QUYỀN VÀ NGHĨA VỤ CỦA CÁC BÊN
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -224,7 +227,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-6" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-6" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 6. TẠM NGỪNG THỰC HIỆN DỊCH VỤ
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -234,7 +237,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-7" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-7" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 7. CHẤM DỨT ĐƠN ĐẶT HÀNG / DỊCH VỤ
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -244,7 +247,7 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-8" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-8" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 8. PHẠT VI PHẠM VÀ BỒI THƯỜNG THIỆT HẠI
                 </Heading>
                 <VStack gap={4} align="stretch">
@@ -254,49 +257,49 @@ function TermPage() {
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-9" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-9" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 9. GIỚI HẠN TRÁCH NHIỆM PHÁP LÝ
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">9.1. Trách nhiệm pháp lý của các Bên chỉ giới hạn trong các thiệt hại trực tiếp phát sinh.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-10" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-10" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 10. QUYỀN SỞ HỮU TRÍ TUỆ
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">10.1. Các Bên là chủ sở hữu hợp pháp đối với các thông tin và tài liệu thuộc quyền sở hữu của mình.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-11" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-11" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 11. SỰ KIỆN BẤT KHẢ KHÁNG
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">11.1. Sự kiện bất khả kháng là các sự kiện nằm ngoài khả năng kiểm soát hợp lý của Các Bên.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-12" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-12" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 12. BẢO MẬT THÔNG TIN
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">12.1. Các Bên cam kết bảo mật toàn bộ thông tin trong quá trình thực hiện Dịch vụ.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-13" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-13" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 13. TUÂN THỦ CHỐNG HỐI LỘ VÀ THAM NHŨNG
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">13.1. Các Bên cam kết tuân thủ đầy đủ các quy định pháp luật về phòng chống tham nhũng và hối lộ.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-14" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-14" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 14. LUẬT ĐIỀU CHỈNH VÀ GIẢI QUYẾT TRANH CHẤP
                 </Heading>
                 <Text lineHeight="1.8" textAlign="justify">14.1. Điều khoản sử dụng dịch vụ này được điều chỉnh bởi pháp luật Việt Nam.</Text>
               </Box>
 
               <Box>
-                <Heading scrollMarginTop="120px" id="section-15" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
+                <Heading scrollMarginTop="100px" id="section-15" fontSize="20px" fontWeight="700" mb={4} color={{ base: "gray.900", _dark: "white" }}>
                   ĐIỀU 15. QUY ĐỊNH CHUNG
                 </Heading>
                 <VStack gap={4} align="stretch">

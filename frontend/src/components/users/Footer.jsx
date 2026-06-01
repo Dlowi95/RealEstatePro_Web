@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Container,
@@ -29,7 +30,7 @@ function Footer() {
           gap={10}
         >
           <GridItem>
-            <VStack align="start" gap={4}>
+            <VStack align="start" gap={4} w="100%">
               <Image
                 src="/imgs/logo.png"
                 alt="RealEstate Pro"
@@ -49,6 +50,26 @@ function Footer() {
               <Text color={{ base: "gray.700", _dark: "gray.300" }}>
                 Địa chỉ: 11 Nguyễn Đình Chiểu, Phường Sài Gòn, TP.HCM
               </Text>
+
+              <Box
+                w="100%"
+                h={{ base: "160px", md: "180px" }}
+                borderRadius="xl"
+                overflow="hidden"
+                border="1px solid"
+                borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                boxShadow="sm"
+              >
+                <iframe
+                  title="RealEstatePro Map"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  src="https://maps.google.com/maps?q=11%20Nguy%E1%BB%85n%20%C4%90%C3%ACnh%20Chi%E1%BB%83u,%20TP.HCM&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                />
+              </Box>
 
               <Text color={{ base: "gray.700", _dark: "gray.300" }}>
                 Email hỗ trợ: support@realestatepro.com

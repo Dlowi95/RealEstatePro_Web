@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth, useClerk } from "@clerk/clerk-react";
 import axios from "axios";
-import { LuHeart, LuUser, LuPhone } from "react-icons/lu";
+import { LuHeart, LuUser, LuPhone, LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import {
   Box,
   Flex,
@@ -28,6 +28,7 @@ export default function PropertyDetailsPage() {
   const [mainImage, setMainImage] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -61,7 +62,7 @@ export default function PropertyDetailsPage() {
   }, [property?._id, userId]);
 
   useEffect(() => {
-    if (!property?.images || property.images.length <= 1) return;
+    if (!property?.images || property.images.length <= 1 || lightboxIndex !== null) return;
     
     const timer = setInterval(() => {
       setMainImage((current) => {
@@ -72,7 +73,7 @@ export default function PropertyDetailsPage() {
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [property?.images]);
+  }, [property?.images, lightboxIndex]);
 
   const handleCallAction = () => {
     if (!userId) {
@@ -104,6 +105,18 @@ export default function PropertyDetailsPage() {
     } finally {
       setFavLoading(false);
     }
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    if (!property?.images) return;
+    setLightboxIndex((prev) => (prev === 0 ? property.images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    if (!property?.images) return;
+    setLightboxIndex((prev) => (prev === property.images.length - 1 ? 0 : prev + 1));
   };
 
   if (loading) {
@@ -146,6 +159,14 @@ export default function PropertyDetailsPage() {
               h={{ base: "220px", sm: "320px", md: "450px" }}
               w="100%"
               transition="all 0.5s ease-in-out"
+              cursor="pointer"
+              _hover={{ opacity: 0.95 }}
+              onClick={() => {
+                if (property?.images?.length > 0) {
+                  const idx = property.images.indexOf(mainImage);
+                  setLightboxIndex(idx >= 0 ? idx : 0);
+                }
+              }}
             >
               {mainImage ? (
                 <Image 
@@ -301,6 +322,92 @@ export default function PropertyDetailsPage() {
           </Box>
         </Grid>
       </Container>
+
+      {lightboxIndex !== null && property.images && property.images.length > 0 && (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          width="100vw"
+          height="100vh"
+          bg="rgba(0, 0, 0, 0.95)"
+          zIndex="7000"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <Box
+            position="absolute"
+            top="4"
+            right="4"
+            color="white"
+            cursor="pointer"
+            p="3"
+            borderRadius="full"
+            bg="whiteAlpha.200"
+            _hover={{ bg: "whiteAlpha.400" }}
+            onClick={() => setLightboxIndex(null)}
+          >
+            <LuX size={24} />
+          </Box>
+
+          {property.images.length > 1 && (
+            <Box
+              position="absolute"
+              left={{ base: "2", md: "6" }}
+              color="white"
+              cursor="pointer"
+              p="3"
+              borderRadius="full"
+              bg="whiteAlpha.200"
+              _hover={{ bg: "whiteAlpha.400" }}
+              onClick={handlePrevImage}
+            >
+              <LuChevronLeft size={28} />
+            </Box>
+          )}
+
+          <Box maxW="90%" maxH="82%" display="flex" justifyContent="center" alignItems="center" onClick={(e) => e.stopPropagation()}>
+            <Image
+              src={property.images[lightboxIndex]}
+              alt={`Fullscreen context ${lightboxIndex + 1}`}
+              maxH="100%"
+              maxW="100%"
+              objectFit="contain"
+              borderRadius="md"
+              userSelect="none"
+            />
+          </Box>
+
+          {property.images.length > 1 && (
+            <Box
+              position="absolute"
+              right={{ base: "2", md: "6" }}
+              color="white"
+              cursor="pointer"
+              p="3"
+              borderRadius="full"
+              bg="whiteAlpha.200"
+              _hover={{ bg: "whiteAlpha.400" }}
+              onClick={handleNextImage}
+            >
+              <LuChevronRight size={28} />
+            </Box>
+          )}
+
+          <Text
+            position="absolute"
+            bottom="4"
+            color="gray.300"
+            fontSize="sm"
+            fontWeight="semibold"
+            userSelect="none"
+          >
+            {lightboxIndex + 1} / {property.images.length}
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 }
