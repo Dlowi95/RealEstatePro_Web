@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import {
   Box,
@@ -21,6 +23,8 @@ import {
 } from "@clerk/clerk-react";
 import axios from "axios";
 import vnAddressData from "../../../utils/full_json_generated_data_vn_units.json";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const CreatePropertyPage = () => {
   const { user } = useUser();
@@ -78,7 +82,7 @@ const CreatePropertyPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/properties/create",
+        `${API_URL}/api/properties/create`,
         finalData,
       );
 
