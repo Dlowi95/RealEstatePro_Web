@@ -22,7 +22,7 @@ const chatAssistant = async (req, res) => {
     const [propertiesFromDB, areaStats] = await Promise.all([
       Property.find({ status: "approved" })
         .sort({ createdAt: -1 })
-        .limit(10) 
+        .limit(50)
         .select("_id title type price area location description")
         .lean(),
       Property.aggregate([
