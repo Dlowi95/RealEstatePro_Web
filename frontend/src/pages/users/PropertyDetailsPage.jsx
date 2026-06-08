@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth, useClerk } from "@clerk/clerk-react";
 import axios from "axios";
-import { LuHeart, LuUser, LuPhone, LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
+import {
+  LuHeart,
+  LuUser,
+  LuPhone,
+  LuChevronLeft,
+  LuChevronRight,
+  LuX,
+} from "react-icons/lu";
 import {
   Box,
   Flex,
@@ -17,7 +24,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
@@ -34,7 +42,9 @@ export default function PropertyDetailsPage() {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE_URL}/api/properties/${id}?userId=${userId || ""}`);
+        const res = await axios.get(
+          `${API_BASE_URL}/api/properties/${id}?userId=${userId || ""}`,
+        );
         if (res.data?.success) {
           setProperty(res.data.data);
           setMainImage(res.data.data.images?.[0] || "");
@@ -52,7 +62,9 @@ export default function PropertyDetailsPage() {
     const checkFavoriteStatus = async () => {
       if (!userId || !property?._id) return;
       try {
-        const statusRes = await axios.get(`${API_BASE_URL}/api/properties/favorites/check/${userId}/${property._id}`);
+        const statusRes = await axios.get(
+          `${API_BASE_URL}/api/properties/favorites/check/${userId}/${property._id}`,
+        );
         setIsFavorite(statusRes.data?.isFavorite ?? false);
       } catch (err) {
         console.error("Error checking favorite status:", err);
@@ -62,12 +74,18 @@ export default function PropertyDetailsPage() {
   }, [property?._id, userId]);
 
   useEffect(() => {
-    if (!property?.images || property.images.length <= 1 || lightboxIndex !== null) return;
-    
+    if (
+      !property?.images ||
+      property.images.length <= 1 ||
+      lightboxIndex !== null
+    )
+      return;
+
     const timer = setInterval(() => {
       setMainImage((current) => {
         const currentIndex = property.images.indexOf(current);
-        const nextIndex = currentIndex >= property.images.length - 1 ? 0 : currentIndex + 1;
+        const nextIndex =
+          currentIndex >= property.images.length - 1 ? 0 : currentIndex + 1;
         return property.images[nextIndex];
       });
     }, 3000);
@@ -93,10 +111,13 @@ export default function PropertyDetailsPage() {
     if (!property?._id) return;
     try {
       setFavLoading(true);
-      const res = await axios.post(`${API_BASE_URL}/api/properties/favorites/toggle`, {
-        userId,
-        propertyId: property._id,
-      });
+      const res = await axios.post(
+        `${API_BASE_URL}/api/properties/favorites/toggle`,
+        {
+          userId,
+          propertyId: property._id,
+        },
+      );
       if (res.data?.success) {
         setIsFavorite(res.data.isFavorite);
       }
@@ -110,13 +131,17 @@ export default function PropertyDetailsPage() {
   const handlePrevImage = (e) => {
     e.stopPropagation();
     if (!property?.images) return;
-    setLightboxIndex((prev) => (prev === 0 ? property.images.length - 1 : prev - 1));
+    setLightboxIndex((prev) =>
+      prev === 0 ? property.images.length - 1 : prev - 1,
+    );
   };
 
   const handleNextImage = (e) => {
     e.stopPropagation();
     if (!property?.images) return;
-    setLightboxIndex((prev) => (prev === property.images.length - 1 ? 0 : prev + 1));
+    setLightboxIndex((prev) =>
+      prev === property.images.length - 1 ? 0 : prev + 1,
+    );
   };
 
   if (loading) {
@@ -139,7 +164,11 @@ export default function PropertyDetailsPage() {
 
   return (
     <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh" w="100%">
-      <Container maxW="1200px" py={{ base: "4", md: "8" }} px={{ base: "4", md: "6" }}>
+      <Container
+        maxW="1200px"
+        py={{ base: "4", md: "8" }}
+        px={{ base: "4", md: "6" }}
+      >
         <Grid templateColumns={{ base: "1fr", lg: "7fr 3fr" }} gap={6} w="100%">
           <Box
             bg={{ base: "white", _dark: "gray.900" }}
@@ -169,16 +198,20 @@ export default function PropertyDetailsPage() {
               }}
             >
               {mainImage ? (
-                <Image 
-                  src={mainImage} 
-                  alt={property.title} 
-                  w="100%" 
-                  h="100%" 
-                  objectFit="cover" 
-                  transition="opacity 0.5s ease-in-out" 
+                <Image
+                  src={mainImage}
+                  alt={property.title}
+                  w="100%"
+                  h="100%"
+                  objectFit="cover"
+                  transition="opacity 0.5s ease-in-out"
                 />
               ) : (
-                <Center h="100%"><Text color={{ base: "gray.400", _dark: "gray.300" }}>Không có hình ảnh</Text></Center>
+                <Center h="100%">
+                  <Text color={{ base: "gray.400", _dark: "gray.300" }}>
+                    Không có hình ảnh
+                  </Text>
+                </Center>
               )}
             </Box>
 
@@ -205,14 +238,29 @@ export default function PropertyDetailsPage() {
             )}
 
             <Box mt={6}>
-              <Text fontSize="sm" color={{ base: "gray.500", _dark: "gray.300" }}>
-                {property.type === "Buy" ? "Bán" : "Cho thuê"} / {property.location?.province} / {property.location?.ward}
+              <Text
+                fontSize="sm"
+                color={{ base: "gray.500", _dark: "gray.300" }}
+              >
+                {property.type === "Buy" ? "Bán" : "Cho thuê"} /{" "}
+                {property.location?.province} / {property.location?.ward}
               </Text>
-              <Text fontSize={{ base: "lg", md: "2xl" }} fontWeight="bold" color={{ base: "gray.800", _dark: "whiteAlpha.900" }} mt={2} lineHeight="1.4">
+              <Text
+                fontSize={{ base: "lg", md: "2xl" }}
+                fontWeight="bold"
+                color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                mt={2}
+                lineHeight="1.4"
+              >
                 {property.title}
               </Text>
-              <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.300" }} mt={2}>
-                📍 {property.location?.address}, {property.location?.ward}, {property.location?.province}
+              <Text
+                fontSize="sm"
+                color={{ base: "gray.600", _dark: "gray.300" }}
+                mt={2}
+              >
+                📍 {property.location?.address}, {property.location?.ward},{" "}
+                {property.location?.province}
               </Text>
             </Box>
 
@@ -227,37 +275,107 @@ export default function PropertyDetailsPage() {
               borderColor={{ base: "gray.100", _dark: "whiteAlpha.200" }}
             >
               <Box>
-                <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.300" }} fontWeight="medium">MỨC GIÁ</Text>
-                <Text fontSize={{ base: "md", md: "xl" }} fontWeight="bold" color="#E65C00" mt={1}>
+                <Text
+                  fontSize="xs"
+                  color={{ base: "gray.500", _dark: "gray.300" }}
+                  fontWeight="medium"
+                >
+                  MỨC GIÁ
+                </Text>
+                <Text
+                  fontSize={{ base: "md", md: "xl" }}
+                  fontWeight="bold"
+                  color="#E65C00"
+                  mt={1}
+                >
                   {property.price?.toLocaleString("vi-VN")} VNĐ
                 </Text>
               </Box>
-              <Box borderLeft="1px solid" borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }} pl={4}>
-                <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.300" }} fontWeight="medium">DIỆN TÍCH</Text>
-                <Text fontSize={{ base: "md", md: "xl" }} fontWeight="bold" color={{ base: "gray.800", _dark: "whiteAlpha.900" }} mt={1}>
+              <Box
+                borderLeft="1px solid"
+                borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                pl={4}
+              >
+                <Text
+                  fontSize="xs"
+                  color={{ base: "gray.500", _dark: "gray.300" }}
+                  fontWeight="medium"
+                >
+                  DIỆN TÍCH
+                </Text>
+                <Text
+                  fontSize={{ base: "md", md: "xl" }}
+                  fontWeight="bold"
+                  color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                  mt={1}
+                >
                   {property.area} m²
                 </Text>
               </Box>
             </Grid>
 
             <Box mt={8}>
-              <Text fontSize="lg" fontWeight="bold" mb={3} color={{ base: "gray.800", _dark: "whiteAlpha.900" }} borderBottom="2px solid" borderColor="#E65C00" w="fit-content" pb={1}>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                mb={3}
+                color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                borderBottom="2px solid"
+                borderColor="#E65C00"
+                w="fit-content"
+                pb={1}
+              >
                 Thông tin mô tả
               </Text>
               <Box
                 lineHeight="1.8"
                 color={{ base: "gray.700", _dark: "gray.100" }}
                 fontSize="sm"
-                css={{ "& img": { maxWidth: "100% !important", height: "auto !important", borderRadius: "lg", marginTop: "12px", marginBottom: "12px" } }}
-                dangerouslySetInnerHTML={{ __html: property.description }}
+                wordBreak="break-word"
+                overflowWrap="break-word"
+                css={{
+                  "& img": {
+                    maxWidth: "100% !important",
+                    height: "auto !important",
+                    borderRadius: "lg",
+                    marginTop: "12px",
+                    marginBottom: "12px",
+                  },
+                  "& p, & span, & div": {
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
+                  },
+                }}
+                dangerouslySetInnerHTML={{
+                  // 2. Dùng Regex thay thế toàn bộ khoảng trắng "không ngắt" (&nbsp; hoặc \u00a0) thành khoảng trắng thường trước khi render
+                  __html: property.description
+                    ? property.description.replace(/&nbsp;|\u00a0/g, " ")
+                    : "",
+                }}
               />
             </Box>
 
             <Box mt={8}>
-              <Text fontSize="lg" fontWeight="bold" mb={3} color={{ base: "gray.800", _dark: "whiteAlpha.900" }} borderBottom="2px solid" borderColor="#E65C00" w="fit-content" pb={1}>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                mb={3}
+                color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                borderBottom="2px solid"
+                borderColor="#E65C00"
+                w="fit-content"
+                pb={1}
+              >
                 Vị trí trên bản đồ
               </Text>
-              <Box h={{ base: "260px", sm: "400px" }} w="100%" borderRadius="xl" overflow="hidden" border="1px solid" borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}>
+              <Box
+                h={{ base: "260px", sm: "400px" }}
+                w="100%"
+                borderRadius="xl"
+                overflow="hidden"
+                border="1px solid"
+                borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+              >
                 <iframe
                   title="Google Maps Bản đồ"
                   width="100%"
@@ -272,7 +390,13 @@ export default function PropertyDetailsPage() {
           </Box>
 
           <Box w="100%">
-            <VStack gap={4} position={{ base: "static", lg: "sticky" }} top="90px" align="stretch" w="100%">
+            <VStack
+              gap={4}
+              position={{ base: "static", lg: "sticky" }}
+              top="90px"
+              align="stretch"
+              w="100%"
+            >
               <Box
                 bg={{ base: "white", _dark: "gray.900" }}
                 p={5}
@@ -283,39 +407,121 @@ export default function PropertyDetailsPage() {
                 textAlign="center"
               >
                 <Flex direction="column" align="center" py={3}>
-                  <Box w="70px" h="70px" bg="#FFF1E6" color="#E65C00" borderRadius="full" display="flex" alignItems="center" justifyContent="center" mb={3} borderWidth="2px" borderColor="#FFD7BF" overflow="hidden">
+                  <Box
+                    w="70px"
+                    h="70px"
+                    bg="#FFF1E6"
+                    color="#E65C00"
+                    borderRadius="full"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    mb={3}
+                    borderWidth="2px"
+                    borderColor="#FFD7BF"
+                    overflow="hidden"
+                  >
                     {property.owner?.avatar ? (
-                      <Image src={property.owner.avatar} w="100%" h="100%" objectFit="cover" alt={property.owner.fullName} />
+                      <Image
+                        src={property.owner.avatar}
+                        w="100%"
+                        h="100%"
+                        objectFit="cover"
+                        alt={property.owner.fullName}
+                      />
                     ) : (
                       <LuUser size={32} />
                     )}
                   </Box>
-                  <Text fontWeight="bold" fontSize="md" color={{ base: "gray.800", _dark: "whiteAlpha.900" }} noOfLines={1}>
+                  <Text
+                    fontWeight="bold"
+                    fontSize="md"
+                    color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
+                    noOfLines={1}
+                  >
                     {property.owner?.fullName || "Chủ tin đăng"}
                   </Text>
-                  <Text fontSize="xs" color={{ base: "gray.400", _dark: "gray.300" }} mt={0.5}>
+                  <Text
+                    fontSize="xs"
+                    color={{ base: "gray.400", _dark: "gray.300" }}
+                    mt={0.5}
+                  >
                     Thành viên RealEstate Pro
                   </Text>
                 </Flex>
 
                 <VStack gap={3} mt={4} w="100%">
-                  <Button bg="#E65C00" color="white" size="lg" w="100%" fontWeight="bold" _hover={{ bg: "#CC5200" }} onClick={handleCallAction}>
+                  <Button
+                    bg="#E65C00"
+                    color="white"
+                    size="lg"
+                    w="100%"
+                    fontWeight="bold"
+                    _hover={{ bg: "#CC5200" }}
+                    onClick={handleCallAction}
+                  >
                     <LuPhone size={18} style={{ marginRight: "6px" }} />
                     Gọi: {property.contactPhone}
                   </Button>
-                  <Button variant={isFavorite ? "solid" : "outline"} colorPalette="orange" size="lg" w="100%" onClick={handleToggleFavorite} loading={favLoading}>
-                    <LuHeart size={18} style={{ marginRight: "6px", fill: isFavorite ? "currentColor" : "none" }} />
+                  <Button
+                    variant={isFavorite ? "solid" : "outline"}
+                    colorPalette="orange"
+                    size="lg"
+                    w="100%"
+                    onClick={handleToggleFavorite}
+                    loading={favLoading}
+                  >
+                    <LuHeart
+                      size={18}
+                      style={{
+                        marginRight: "6px",
+                        fill: isFavorite ? "currentColor" : "none",
+                      }}
+                    />
                     {isFavorite ? "Đã lưu vào yêu thích" : "Lưu tin đăng này"}
                   </Button>
                 </VStack>
               </Box>
 
-              <Box bg={{ base: "orange.50", _dark: "orange.950" }} p={4} borderRadius="xl" borderWidth="1px" borderColor={{ base: "orange.100", _dark: "orange.900" }}>
-                <Text fontSize="xs" fontWeight="bold" color={{ base: "orange.700", _dark: "orange.200" }}>💡 Mẹo giao dịch an toàn:</Text>
+              <Box
+                bg={{ base: "orange.50", _dark: "orange.950" }}
+                p={4}
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor={{ base: "orange.100", _dark: "orange.900" }}
+              >
+                <Text
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={{ base: "orange.700", _dark: "orange.200" }}
+                >
+                  💡 Mẹo giao dịch an toàn:
+                </Text>
                 <VStack align="stretch" gap={2} mt={2.5}>
-                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">• <strong>Kiểm tra thực tế:</strong> Tuyệt đối không chuyển tiền cọc trước khi xem trực tiếp tài sản.</Text>
-                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">• <strong>Xác minh pháp lý:</strong> Yêu cầu kiểm tra kỹ sổ đỏ/sổ hồng bản gốc và căn cước của chủ nhà.</Text>
-                  <Text fontSize="11px" color={{ base: "orange.800", _dark: "orange.100" }} lineHeight="1.5">• <strong>Hợp đồng rõ ràng:</strong> Mọi giao dịch đặt cọc nên có biên nhận và thực hiện tại văn phòng công chứng.</Text>
+                  <Text
+                    fontSize="11px"
+                    color={{ base: "orange.800", _dark: "orange.100" }}
+                    lineHeight="1.5"
+                  >
+                    • <strong>Kiểm tra thực tế:</strong> Tuyệt đối không chuyển
+                    tiền cọc trước khi xem trực tiếp tài sản.
+                  </Text>
+                  <Text
+                    fontSize="11px"
+                    color={{ base: "orange.800", _dark: "orange.100" }}
+                    lineHeight="1.5"
+                  >
+                    • <strong>Xác minh pháp lý:</strong> Yêu cầu kiểm tra kỹ sổ
+                    đỏ/sổ hồng bản gốc và căn cước của chủ nhà.
+                  </Text>
+                  <Text
+                    fontSize="11px"
+                    color={{ base: "orange.800", _dark: "orange.100" }}
+                    lineHeight="1.5"
+                  >
+                    • <strong>Hợp đồng rõ ràng:</strong> Mọi giao dịch đặt cọc
+                    nên có biên nhận và thực hiện tại văn phòng công chứng.
+                  </Text>
                 </VStack>
               </Box>
             </VStack>
@@ -323,91 +529,100 @@ export default function PropertyDetailsPage() {
         </Grid>
       </Container>
 
-      {lightboxIndex !== null && property.images && property.images.length > 0 && (
-        <Box
-          position="fixed"
-          top="0"
-          left="0"
-          width="100vw"
-          height="100vh"
-          bg="rgba(0, 0, 0, 0.95)"
-          zIndex="7000"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          onClick={() => setLightboxIndex(null)}
-        >
+      {lightboxIndex !== null &&
+        property.images &&
+        property.images.length > 0 && (
           <Box
-            position="absolute"
-            top="4"
-            right="4"
-            color="white"
-            cursor="pointer"
-            p="3"
-            borderRadius="full"
-            bg="whiteAlpha.200"
-            _hover={{ bg: "whiteAlpha.400" }}
+            position="fixed"
+            top="0"
+            left="0"
+            width="100vw"
+            height="100vh"
+            bg="rgba(0, 0, 0, 0.95)"
+            zIndex="7000"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             onClick={() => setLightboxIndex(null)}
           >
-            <LuX size={24} />
-          </Box>
-
-          {property.images.length > 1 && (
             <Box
               position="absolute"
-              left={{ base: "2", md: "6" }}
+              top="4"
+              right="4"
               color="white"
               cursor="pointer"
               p="3"
               borderRadius="full"
               bg="whiteAlpha.200"
               _hover={{ bg: "whiteAlpha.400" }}
-              onClick={handlePrevImage}
+              onClick={() => setLightboxIndex(null)}
             >
-              <LuChevronLeft size={28} />
+              <LuX size={24} />
             </Box>
-          )}
 
-          <Box maxW="90%" maxH="82%" display="flex" justifyContent="center" alignItems="center" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={property.images[lightboxIndex]}
-              alt={`Fullscreen context ${lightboxIndex + 1}`}
-              maxH="100%"
-              maxW="100%"
-              objectFit="contain"
-              borderRadius="md"
+            {property.images.length > 1 && (
+              <Box
+                position="absolute"
+                left={{ base: "2", md: "6" }}
+                color="white"
+                cursor="pointer"
+                p="3"
+                borderRadius="full"
+                bg="whiteAlpha.200"
+                _hover={{ bg: "whiteAlpha.400" }}
+                onClick={handlePrevImage}
+              >
+                <LuChevronLeft size={28} />
+              </Box>
+            )}
+
+            <Box
+              maxW="90%"
+              maxH="82%"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={property.images[lightboxIndex]}
+                alt={`Fullscreen context ${lightboxIndex + 1}`}
+                maxH="100%"
+                maxW="100%"
+                objectFit="contain"
+                borderRadius="md"
+                userSelect="none"
+              />
+            </Box>
+
+            {property.images.length > 1 && (
+              <Box
+                position="absolute"
+                right={{ base: "2", md: "6" }}
+                color="white"
+                cursor="pointer"
+                p="3"
+                borderRadius="full"
+                bg="whiteAlpha.200"
+                _hover={{ bg: "whiteAlpha.400" }}
+                onClick={handleNextImage}
+              >
+                <LuChevronRight size={28} />
+              </Box>
+            )}
+
+            <Text
+              position="absolute"
+              bottom="4"
+              color="gray.300"
+              fontSize="sm"
+              fontWeight="semibold"
               userSelect="none"
-            />
-          </Box>
-
-          {property.images.length > 1 && (
-            <Box
-              position="absolute"
-              right={{ base: "2", md: "6" }}
-              color="white"
-              cursor="pointer"
-              p="3"
-              borderRadius="full"
-              bg="whiteAlpha.200"
-              _hover={{ bg: "whiteAlpha.400" }}
-              onClick={handleNextImage}
             >
-              <LuChevronRight size={28} />
-            </Box>
-          )}
-
-          <Text
-            position="absolute"
-            bottom="4"
-            color="gray.300"
-            fontSize="sm"
-            fontWeight="semibold"
-            userSelect="none"
-          >
-            {lightboxIndex + 1} / {property.images.length}
-          </Text>
-        </Box>
-      )}
+              {lightboxIndex + 1} / {property.images.length}
+            </Text>
+          </Box>
+        )}
     </Box>
   );
 }
