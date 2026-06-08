@@ -3,34 +3,35 @@ const Property = require("../models/Property");
 const Favourite = require("../models/Favourite");
 const User = require("../models/User");
 
-// --- HÀM HEURISTICS CHẤM ĐIỂM CHẤT LƯỢNG TIN (TỐI ĐA 100 ĐIỂM) ---
+// --- HÀM HEURISTICS CHẤM ĐIỂM CHẤT LƯỢNG TIN (TỐI ĐA 100 ĐIỂM HOÀN CHỈNH) ---
 const calculatePropertyScore = (data) => {
   let score = 0;
 
-  // 1. Tiêu chí Số lượng hình ảnh (Tối đa 25 điểm)
+  // 1. Tiêu chí Số lượng hình ảnh (Tối đa 30 điểm)
   const imgCount = data.images?.length || 0;
   if (imgCount >= 3) {
-    score += 25;
+    score += 30;
   } else if (imgCount === 1 || imgCount === 2) {
-    score += 10;
+    score += 15;
   }
 
-  // 2. Tiêu chí Độ dài văn bản mô tả (Tối đa 25 điểm)
+  // 2. Tiêu chí Độ dài văn bản mô tả (Tối đa 30 điểm)
   const descLen = data.description?.length || 0;
   if (descLen > 100) {
-    score += 25;
+    score += 30;
   } else if (descLen >= 20) {
     score += 15;
   } else if (descLen > 0) {
     score += 5;
   }
 
-  // 3. Tiêu chí Đầy đủ thông tin cốt lõi (Tối đa 30 điểm)
-  if (data.contactPhone) score += 10;
-  if (data.area) score += 10;
+  // 3. Tiêu chí Đầy đủ thông tin cốt lõi (Tối đa 40 điểm)
+  if (data.contactPhone) score += 15;
+  if (data.area) score += 15;
   if (data.location?.address) score += 10;
 
-  // 4. Tiêu chí Phát hiện từ khóa spam/nhạy cảm (Trừ tối đa 20 điểm)
+
+  // 4. Tiêu chí Phát hiện từ khóa spam/nhạy cảm (Trừ thẳng tay 20 điểm)
   const spamKeywords = [
     "cam kết lời gấp đôi",
     "trúng thưởng lớn",
@@ -42,7 +43,6 @@ const calculatePropertyScore = (data) => {
     score -= 20;
   }
 
-  // Giới hạn điểm số từ 0 đến 100
   return Math.max(0, Math.min(score, 100));
 };
 
