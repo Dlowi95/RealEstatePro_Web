@@ -41,6 +41,7 @@ const CreatePropertyPage = () => {
     contactPhone: "",
   });
   const [description, setDescription] = useState("");
+  const [errors, setErrors] = useState({});
 
   const provinces = vnAddressData.map((province) => ({
     code: province.Code,
@@ -63,10 +64,27 @@ const CreatePropertyPage = () => {
       [name]: value,
       ...(name === "province" ? { ward: "" } : {}),
     }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = "Tiêu đề không được để trống";
+    if (!formData.propertyType) newErrors.propertyType = "Vui lòng chọn loại bất động sản";
+    if (!formData.price || Number(formData.price) <= 0) newErrors.price = "Giá phải lớn hơn 0";
+    if (!formData.area || Number(formData.area) <= 0) newErrors.area = "Diện tích phải lớn hơn 0";
+    if (!formData.contactPhone.trim()) newErrors.contactPhone = "Số điện thoại không được để trống";
+    if (!formData.province) newErrors.province = "Vui lòng chọn tỉnh/thành";
+    if (!formData.ward) newErrors.ward = "Vui lòng chọn xã/phường";
+    if (!formData.address.trim()) newErrors.address = "Địa chỉ không được để trống";
+    if (!description || !description.trim() || description === "<p><br></p>") newErrors.description = "Mô tả không được để trống";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     const finalData = {
       ...formData,
@@ -151,7 +169,7 @@ const CreatePropertyPage = () => {
               Đăng tin mới
             </Heading>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <Stack gap={5} align="stretch" w="100%">
                 <Field.Root required>
                   <Field.Label
@@ -165,10 +183,15 @@ const CreatePropertyPage = () => {
                     placeholder="VD: Căn hộ Vinhomes 2PN view biển"
                     bg={{ base: "white", _dark: "gray.800" }}
                     color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                    borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                    borderColor={errors.title ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     onChange={handleChange}
                     value={formData.title}
                   />
+                  {errors.title && (
+                    <Text color="red.500" fontSize="sm" mt={1}>
+                      {errors.title}
+                    </Text>
+                  )}
                 </Field.Root>
 
                 <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w="100%">
@@ -208,7 +231,7 @@ const CreatePropertyPage = () => {
                         value={formData.propertyType}
                         bg={{ base: "white", _dark: "gray.800" }}
                         color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                        borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                        borderColor={errors.propertyType ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                       >
                         <option value="">Chọn loại</option>
                         <option value="Apartment">Căn hộ</option>
@@ -216,6 +239,11 @@ const CreatePropertyPage = () => {
                         <option value="Land">Đất nền</option>
                       </NativeSelect.Field>
                     </NativeSelect.Root>
+                    {errors.propertyType && (
+                      <Text color="red.500" fontSize="sm" mt={1}>
+                        {errors.propertyType}
+                      </Text>
+                    )}
                   </Field.Root>
                 </SimpleGrid>
 
@@ -235,8 +263,13 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      borderColor={errors.price ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
+                    {errors.price && (
+                      <Text color="red.500" fontSize="sm" mt={1}>
+                        {errors.price}
+                      </Text>
+                    )}
                   </Field.Root>
 
                   <Field.Root required>
@@ -254,8 +287,13 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      borderColor={errors.area ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
+                    {errors.area && (
+                      <Text color="red.500" fontSize="sm" mt={1}>
+                        {errors.area}
+                      </Text>
+                    )}
                   </Field.Root>
 
                   <Field.Root required>
@@ -273,8 +311,13 @@ const CreatePropertyPage = () => {
                       onChange={handleChange}
                       bg={{ base: "white", _dark: "gray.800" }}
                       color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                      borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                      borderColor={errors.contactPhone ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     />
+                    {errors.contactPhone && (
+                      <Text color="red.500" fontSize="sm" mt={1}>
+                        {errors.contactPhone}
+                      </Text>
+                    )}
                   </Field.Root>
                 </SimpleGrid>
 
@@ -309,7 +352,7 @@ const CreatePropertyPage = () => {
                           onChange={handleChange}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                          borderColor={errors.province ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">Chọn tỉnh/thành</option>
                           {provinces.map((province) => (
@@ -319,6 +362,11 @@ const CreatePropertyPage = () => {
                           ))}
                         </NativeSelect.Field>
                       </NativeSelect.Root>
+                      {errors.province && (
+                        <Text color="red.500" fontSize="sm" mt={1}>
+                          {errors.province}
+                        </Text>
+                      )}
                     </Field.Root>
 
                     <Field.Root required>
@@ -336,7 +384,7 @@ const CreatePropertyPage = () => {
                           disabled={!formData.province}
                           bg={{ base: "white", _dark: "gray.800" }}
                           color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                          borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                          borderColor={errors.ward ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                         >
                           <option value="">
                             {formData.province ? "Chọn xã/phường" : "Chọn tỉnh trước"}
@@ -348,6 +396,11 @@ const CreatePropertyPage = () => {
                           ))}
                         </NativeSelect.Field>
                       </NativeSelect.Root>
+                      {errors.ward && (
+                        <Text color="red.500" fontSize="sm" mt={1}>
+                          {errors.ward}
+                        </Text>
+                      )}
                     </Field.Root>
                   </SimpleGrid>
                   <Input
@@ -355,10 +408,15 @@ const CreatePropertyPage = () => {
                     placeholder="Địa chỉ chi tiết"
                     bg={{ base: "white", _dark: "gray.800" }}
                     color={{ base: "gray.800", _dark: "whiteAlpha.900" }}
-                    borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                    borderColor={errors.address ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     value={formData.address}
                     onChange={handleChange}
                   />
+                  {errors.address && (
+                    <Text color="red.500" fontSize="sm" mt={1}>
+                      {errors.address}
+                    </Text>
+                  )}
                 </Box>
 
                 <Field.Root w="100%">
@@ -424,7 +482,7 @@ const CreatePropertyPage = () => {
                   <Box
                     bg={{ base: "white", _dark: "gray.800" }}
                     border="1px solid"
-                    borderColor={{ base: "gray.200", _dark: "whiteAlpha.200" }}
+                    borderColor={errors.description ? "red.500" : { base: "gray.200", _dark: "whiteAlpha.200" }}
                     rounded="md"
                     w="100%"
                     overflow="hidden"
@@ -432,7 +490,10 @@ const CreatePropertyPage = () => {
                     <ReactQuill
                       theme="snow"
                       value={description}
-                      onChange={setDescription}
+                      onChange={(value) => {
+                        setDescription(value);
+                        setErrors((prev) => ({ ...prev, description: undefined }));
+                      }}
                       style={{
                         height: "280px",
                         marginBottom: "45px",
@@ -440,6 +501,11 @@ const CreatePropertyPage = () => {
                       }}
                     />
                   </Box>
+                  {errors.description && (
+                    <Text color="red.500" fontSize="sm" mt={1}>
+                      {errors.description}
+                    </Text>
+                  )}
                 </Field.Root>
 
                 <Button
