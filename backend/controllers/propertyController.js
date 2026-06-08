@@ -10,7 +10,7 @@ const calculatePropertyScore = (data) => {
   // 1. Tiêu chí Số lượng hình ảnh (Tối đa 30 điểm)
   const imgCount = data.images?.length || 0;
   if (imgCount >= 3) {
-    score += 30;
+    score += 30; // Đầy đủ góc nhìn không gian trực quan rõ ràng
   } else if (imgCount === 1 || imgCount === 2) {
     score += 15;
   }
@@ -18,25 +18,53 @@ const calculatePropertyScore = (data) => {
   // 2. Tiêu chí Độ dài văn bản mô tả (Tối đa 30 điểm)
   const descLen = data.description?.length || 0;
   if (descLen > 100) {
-    score += 30;
+    score += 30; // Nội dung đầu tư, mô tả chi tiết tiện ích xung quanh
   } else if (descLen >= 20) {
     score += 15;
   } else if (descLen > 0) {
     score += 5;
   }
 
-  // 3. Tiêu chí Đầy đủ thông tin cốt lõi (Tối đa 40 điểm)
-  if (data.contactPhone) score += 15;
-  if (data.area) score += 15;
-  if (data.location?.address) score += 10;
+  // 3. Tiêu chí Đầy đủ thông tin cốt lõi dựa trên Form UI (Tối đa 40 điểm)
+  
+  // 3.1. Độ chính xác Vị trí (Tối đa 15 điểm)
+  const hasProvince = !!data.location?.province;
+  const hasWard = !!data.location?.ward;
+  const hasAddress = !!data.location?.address;
+  // Bắt buộc phải điền đủ cả 3 cấp Tỉnh/Thành + Xã/Phường + Địa chỉ chi tiết mới được điểm
+  if (hasProvince && hasWard && hasAddress) {
+    score += 15;
+  }
+
+  // 3.2. Định danh Giao dịch (Tối đa 15 điểm)
+  const priceNum = Number(data.price) || 0;
+  const areaNum = Number(data.area) || 0;
+  const hasPhone = !!data.contactPhone;
+  if (priceNum > 0 && areaNum > 0 && hasPhone) {
+    score += 15;
+  }
+
+  // 3.3. Tiêu đề & Phân loại bộ lọc (Tối đa 10 điểm)
+  const titleLen = data.title?.length || 0;
+  const hasType = !!data.type;
+  const hasPropertyType = !!data.propertyType;
+  if (titleLen > 10 && hasType && hasPropertyType) {
+    score += 10;
+  }
 
 
-  // 4. Tiêu chí Phát hiện từ khóa spam/nhạy cảm (Trừ thẳng tay 20 điểm)
+  // 4. Bộ lọc phát hiện từ khóa Spam / Clickbait / Rủi ro pháp lý bất động sản (Trừ thẳng tay 20 điểm)
   const spamKeywords = [
-    "cam kết lời gấp đôi",
-    "trúng thưởng lớn",
-    "giá rẻ sập sàn",
+    "vi bằng",           
+    "sổ chung",
+    "cắt lỗ sâu",
+    "ngộp ngân hàng",
+    "vỡ nợ bán gấp",
+    "bán rẻ",
+    "giá shock",
   ];
+
+  // Gộp tiêu đề và mô tả, chuyển về chữ thường để quét chống bypass viết hoa chữ cái
   const contentToSearch = `${data.title || ""} ${data.description || ""}`.toLowerCase();
   const hasSpam = spamKeywords.some((keyword) => contentToSearch.includes(keyword));
   if (hasSpam) {
@@ -69,12 +97,16 @@ const createProperty = async (req, res) => {
       });
     }
 
+    // Nạp đầy đủ các trường thông tin vào hàm chấm điểm Heuristic
     const calculatedScore = calculatePropertyScore({
       title,
       description,
       images,
       contactPhone,
       area,
+      price,
+      type,
+      propertyType,
       location
     });
 
@@ -261,14 +293,19 @@ const updateProperty = async (req, res) => {
       images: updateData.images !== undefined ? updateData.images : currentProperty.images,
       contactPhone: updateData.contactPhone !== undefined ? updateData.contactPhone : currentProperty.contactPhone,
       area: updateData.area !== undefined ? updateData.area : currentProperty.area,
+      price: updateData.price !== undefined ? updateData.price : currentProperty.price,
+      type: updateData.type !== undefined ? updateData.type : currentProperty.type,
+      propertyType: updateData.propertyType !== undefined ? updateData.propertyType : currentProperty.propertyType,
       location: {
+        province: updateData.location?.province !== undefined ? updateData.location.province : currentProperty.location?.province,
+        ward: updateData.location?.ward !== undefined ? updateData.location.ward : currentProperty.location?.ward,
         address: updateData.location?.address !== undefined ? updateData.location.address : currentProperty.location?.address,
       },
     };
 
-    // Tính lại điểm chất lượng tin mới sau khi người dùng sửa bài
+    // Tính lại điểm chất lượng tin mới sau khi người dùng sửa bài dựa trên dữ liệu đã gộp
     updateData.score = calculatePropertyScore(mergedData);
-    updateData.status = "pending"; // Reset trạng thái về chờ duyệt khi sửa bài
+    updateData.status = "pending"; // Reset trạng thái về chờ duyệt khi có bất cứ thao tác chỉnh sửa nào
 
     const updatedProperty = await Property.findByIdAndUpdate(
       id, 
