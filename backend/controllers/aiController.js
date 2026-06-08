@@ -39,8 +39,7 @@ const chatAssistant = async (req, res) => {
         const shortDesc = cleanDesc.length > 150 ? cleanDesc.substring(0, 150) + "..." : cleanDesc;
         const typeStr = p.type === "Buy" ? "Bán" : "Cho thuê";
         
-        
-        return `- ${p.title} | Đường dẫn xem chi tiết: /properties/${p._id} | ${typeStr} | Giá: ${p.price?.toLocaleString("vi-VN")} VNĐ | Diện tích: ${p.area}m² | Địa chỉ: ${locationStr} | Mô tả: ${shortDesc}`;
+        return `- Tên bất động sản: "${p.title}" | Hình thức: ${typeStr} | Giá: ${p.price?.toLocaleString("vi-VN")} VNĐ | Diện tích: ${p.area}m² | Địa chỉ: ${locationStr} | Mô tả ngắn: ${shortDesc}`;
       })
       .join("\n");
 
@@ -48,25 +47,24 @@ const chatAssistant = async (req, res) => {
       .map((stat) => `- Khu vực ${stat._id || "Không rõ"}: ${stat.count} tin đăng`)
       .join("\n");
 
-    const systemInstruction = `Bạn là Trợ lý ảo thông minh của sàn bất động sản RealEstatePro.
+    const systemInstruction = `Bạn là một Chuyên viên tư vấn bất động sản chuyên nghiệp, am hiểu thị trường và cực kỳ thân thiện của sàn giao dịch RealEstatePro.
 
-NHIỆM VỤ:
-1. TƯ VẤN TÌM KIẾM: Dựa vào "DANH SÁCH BẤT ĐỘNG SẢN" dưới đây để gợi ý sản phẩm phù hợp cho khách. Nếu khách hỏi thông tin không có trong danh sách, hãy báo là hiện tại chưa có dữ liệu và mời họ xem các tin khác.
-2. THỐNG KÊ HỆ THỐNG: Dựa vào "THỐNG KÊ TIN ĐĂNG THEO KHU VỰC" để trả lời câu hỏi về số lượng nhà đất ở các tỉnh/thành.
+NHIỆM VỤ CỦA BẠN:
+1. TƯ VẤN SẢN PHẨM: Dựa hoàn toàn vào dữ liệu mục "DANH SÁCH BẤT ĐỘNG SẢN NỔI BẬT" để giới thiệu sản phẩm phù hợp nhất cho khách hàng.
+2. THỐNG KÊ HỆ THỐNG: Dựa vào thông tin "THỐNG KÊ TIN ĐĂNG THEO KHU VỰC" để giải đáp số lượng nhà đất ở các tỉnh/thành khi khách hỏi.
 
 THỐNG KÊ TIN ĐĂNG THEO KHU VỰC (Từ nhiều nhất đến ít nhất):
 ${statsContext}
 
-DANH SÁCH BẤT ĐỘNG SẢN NỔI BẬT ĐANG CÓ:
+DANH SÁCH BẤT ĐỘNG SẢN NỔI BẬT ĐANG CÓ TRÊN HỆ THỐNG:
 ${propertyContext}
 
-LƯU Ý QUAN TRỌNG:
-- Trả lời thân thiện, lịch sự, ngắn gọn và súc tích bằng tiếng Việt.
-- TUYỆT ĐỐI KHÔNG SỬ DỤNG mã HTML (như <div>, <p>...). CHỈ dùng Markdown cơ bản (in đậm **, gạch đầu dòng -).
-- SỬ SỬA TẠI ĐÂY (CẤM AI IN ID THÔ): Tuyệt đối KHÔNG tự ý hiển thị mã ID dưới dạng chuỗi thô (như 6a1536...) ra màn hình chat vì nhìn rất mất thẩm mỹ.
-- HƯỚNG DẪN CHÈN LINK: Khi gợi ý bất động sản cho khách, hãy luôn gắn link Markdown trực tiếp vào TÊN của bất động sản đó theo cấu trúc: [Tên bất động sản](Đường dẫn xem chi tiết). 
-  Ví dụ cụ thể: Nếu giới thiệu căn hộ, hãy trả về dạng: Bạn có thể tham khảo **[Dinh thự The Rivus Elie Saab](/properties/6a15367986f4032ffdd2378e)** với mức giá...
-- Nếu câu hỏi KHÔNG liên quan đến bất động sản, nhà đất, hoặc hệ thống RealEstatePro, hãy lịch sự từ chối và hướng khách hàng về chủ đề nhà đất.`;
+QUY TẮC PHÁT NGÔN BẮT BUỘC ĐỂ ĐI BÁO CÁO (VI PHẠM SẼ BỊ TRỪ ĐIỂM):
+- Phải trả lời bằng tiếng Việt lịch sự, văn phong ngắn gọn, tập trung thẳng vào câu hỏi của khách.
+- TUYỆT ĐỐI KHÔNG sử dụng các cú pháp tạo liên kết Markdown dạng [Tên](Đường dẫn) hay hiển thị bất kỳ chuỗi mã ID kỹ thuật nào ra khung chat.
+- TUYỆT ĐỐI KHÔNG để lộ các ký tự đường dẫn hệ thống như "/properties/...". Hãy gọi tên nhà đất một cách tự nhiên bằng cách đặt tên bất động sản trong dấu ngoặc kép.
+  * Ví dụ chuẩn: "Hiện tại hệ thống đang có căn '${propertiesFromDB[0]?.title || "Biệt thự cổ thời Pháp"}' với mức giá..."
+- Nếu khách hàng hỏi các chủ đề nằm ngoài lĩnh vực bất động sản, phong thủy hoặc không liên quan đến RealEstatePro, hãy lịch sự từ chối và hướng họ quay lại câu hỏi nhà đất.`;
 
     const formattedMessages = [
       { role: "system", content: systemInstruction },
@@ -80,8 +78,8 @@ LƯU Ý QUAN TRỌNG:
     const chatCompletion = await groq.chat.completions.create({
       messages: formattedMessages,
       model: "llama-3.3-70b-versatile",
-      temperature: 0.3, 
-      max_tokens: 1000,
+      temperature: 0.1,
+      max_tokens: 800,
     });
 
     const responseText = chatCompletion.choices[0]?.message?.content || "";
