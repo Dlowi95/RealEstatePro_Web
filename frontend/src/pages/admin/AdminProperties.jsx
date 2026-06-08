@@ -16,6 +16,7 @@ import {
   Input,
   Field,
   Tabs,
+  Menu,
 } from "@chakra-ui/react";
 import { useAuthContext } from "../../context/AuthContext";
 import { toaster } from "../../components/ui/toaster";
@@ -28,6 +29,7 @@ import {
   FaTrash,
   FaChevronLeft,
   FaChevronRight,
+  FaChevronDown,
 } from "react-icons/fa";
 
 export default function AdminProperties() {
@@ -330,86 +332,82 @@ export default function AdminProperties() {
                       </Tooltip>
                     </Table.Cell>
 
-                    <Table.Cell px={4} py={2}>
-                      <HStack gap={2} flexWrap="wrap" justify="center">
-                        {prop.status === "pending" && (
-                          <Tooltip content="Duyệt tin">
-                            <Button
-                              size="xs"
-                              colorPalette="green"
-                              variant="solid"
-                              onClick={() => handleApprove(prop._id)}
+                    <Table.Cell px={4} py={2} textAlign="center">
+                      <Menu.Root>
+                        <Menu.Trigger asChild>
+                          <Button size="xs"  variant="outline">
+                            <FaChevronDown />
+                          </Button>
+                        </Menu.Trigger>
+                        <Menu.Positioner zIndex="5100">
+                          <Menu.Content
+                            bg="bg.panel"
+                            borderColor="border.default"
+                            boxShadow="md"
+                            minW="140px"
+                          >
+                            {prop.status === "pending" && (
+                              <Menu.Item
+                                onSelect={() => handleApprove(prop._id)}
+                                value="approve"
+                              >
+                                <HStack gap={2} align="center">
+                                  <FaCheck />
+                                  <Text>Duyệt tin</Text>
+                                </HStack>
+                              </Menu.Item>
+                            )}
+                            <Menu.Item
+                              onSelect={() => handleToggleHide(prop._id)}
+                              value="toggleHide"
                             >
-                              <FaCheck /> Duyệt
-                            </Button>
-                          </Tooltip>
-                        )}
-
-                        <Tooltip
-                          content={
-                            prop.status === "hidden" ? "Hiện tin" : "Ẩn tin"
-                          }
-                        >
-                          <Button
-                            size="xs"
-                            colorPalette="orange"
-                            variant="solid"
-                            onClick={() => handleToggleHide(prop._id)}
-                          >
-                            {prop.status === "hidden" ? (
-                              <FaEye />
-                            ) : (
-                              <FaEyeSlash />
-                            )}{" "}
-                            {prop.status === "hidden" ? "Hiện" : "Ẩn"}
-                          </Button>
-                        </Tooltip>
-
-                        <Tooltip content="Xem chi tiết">
-                          <Button
-                            size="xs"
-                            colorPalette="blue"
-                            variant="solid"
-                            onClick={() => {
-                              setViewingProperty(prop);
-                              setIsViewOpen(true);
-                            }}
-                          >
-                            <FaEye /> Xem
-                          </Button>
-                        </Tooltip>
-
-                        <Tooltip content="Chỉnh sửa">
-                          <Button
-                            size="xs"
-                            colorPalette="yellow"
-                            variant="solid"
-                            onClick={() => {
-                              setEditingProperty(prop);
-                              setEditForm({
-                                title: prop.title,
-                                price: prop.price,
-                                area: prop.area,
-                                contactPhone: prop.contactPhone || "",
-                              });
-                              setIsEditOpen(true);
-                            }}
-                          >
-                            <FaEdit /> Sửa
-                          </Button>
-                        </Tooltip>
-
-                        <Tooltip content="Xóa tin">
-                          <Button
-                            size="xs"
-                            colorPalette="red"
-                            variant="solid"
-                            onClick={() => handleDelete(prop._id)}
-                          >
-                            <FaTrash /> Xóa
-                          </Button>
-                        </Tooltip>
-                      </HStack>
+                              <HStack gap={2} align="center">
+                                {prop.status === "hidden" ? <FaEye /> : <FaEyeSlash />}
+                                <Text>{prop.status === "hidden" ? "Hiện tin" : "Ẩn tin"}</Text>
+                              </HStack>
+                            </Menu.Item>
+                            <Menu.Item
+                              onSelect={() => {
+                                setViewingProperty(prop);
+                                setIsViewOpen(true);
+                              }}
+                              value="view"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaEye />
+                                <Text>Xem chi tiết</Text>
+                              </HStack>
+                            </Menu.Item>
+                            <Menu.Item
+                              onSelect={() => {
+                                setEditingProperty(prop);
+                                setEditForm({
+                                  title: prop.title,
+                                  price: prop.price,
+                                  area: prop.area,
+                                  contactPhone: prop.contactPhone || "",
+                                });
+                                setIsEditOpen(true);
+                              }}
+                              value="edit"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaEdit />
+                                <Text>Chỉnh sửa</Text>
+                              </HStack>
+                            </Menu.Item>
+                            <Menu.Item
+                              onSelect={() => handleDelete(prop._id)}
+                              value="delete"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaTrash />
+                                <Text>Xóa tin</Text>
+                              </HStack>
+                            </Menu.Item>
+                          </Menu.Content>
+                        </Menu.Positioner>
+                      </Menu.Root>
                     </Table.Cell>
                   </Table.Row>
                 );

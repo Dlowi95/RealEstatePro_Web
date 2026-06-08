@@ -18,6 +18,7 @@ import {
   IconButton,
   Select,
   InputElement,
+  Menu,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
@@ -32,6 +33,7 @@ import {
   FaUserEdit,
   FaChevronLeft,
   FaChevronRight,
+  FaChevronDown,
   FaSearch,
 } from "react-icons/fa";
 
@@ -285,78 +287,94 @@ export default function AdminUsers() {
                       {user.isBlocked ? "Bị khóa" : "Hoạt động"}
                     </Badge>
                   </Table.Cell>
-                  <Table.Cell px={4} py={2}>
-                    <HStack gap={2} flexWrap="wrap">
-                      {canEdit ? (
-                        <Tooltip content="Chỉnh sửa thông tin">
-                          <Button
-                            size="xs"
-                            colorPalette="blue"
-                            variant="solid"
-                            onClick={() => openEditModal(user)}
-                          >
-                            <FaEdit /> Sửa
-                          </Button>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip content="Chỉnh sửa hồ sơ của bạn">
-                          <Button
-                            size="xs"
-                            colorPalette="gray"
-                            variant="solid"
-                            as={Link}
-                            to="/admin/settings"
-                          >
-                            <FaUserEdit /> Sửa hồ sơ
-                          </Button>
-                        </Tooltip>
-                      )}
-                      {canBlock && (
-                        <Tooltip
-                          content={
-                            user.isBlocked
-                              ? "Mở khóa người dùng"
-                              : "Khóa người dùng"
-                          }
+                  <Table.Cell px={4} py={2} textAlign="center">
+                    <Menu.Root>
+                      <Menu.Trigger asChild>
+                        <Button size="xs" variant="outline">
+                          <FaChevronDown />
+                        </Button>
+                      </Menu.Trigger>
+                      <Menu.Positioner zIndex="5100">
+                        <Menu.Content
+                          bg="bg.panel"
+                          borderColor="border.default"
+                          boxShadow="md"
+                          minW="160px"
                         >
-                          <Button
-                            size="xs"
-                            colorPalette={user.isBlocked ? "green" : "red"}
-                            variant="solid"
-                            onClick={() =>
-                              handleToggleBlock(user._id, user.isBlocked)
-                            }
-                          >
-                            {user.isBlocked ? <FaLockOpen /> : <FaLock />}{" "}
-                            {user.isBlocked ? "Mở khóa" : "Khóa"}
-                          </Button>
-                        </Tooltip>
-                      )}
-                      {canPromote && (
-                        <Tooltip content="Nâng cấp lên quyền Admin">
-                          <Button
-                            size="xs"
-                            colorPalette="purple"
-                            variant="solid"
-                            onClick={() => handlePromote(user._id)}
-                          >
-                            <FaUserShield /> Lên Admin
-                          </Button>
-                        </Tooltip>
-                      )}
-                      {canDelete && (
-                        <Tooltip content="Xóa vĩnh viễn người dùng">
-                          <Button
-                            size="xs"
-                            colorPalette="red"
-                            variant="solid"
-                            onClick={() => handleDelete(user._id)}
-                          >
-                            <FaTrash /> Xóa
-                          </Button>
-                        </Tooltip>
-                      )}
-                    </HStack>
+                          {canEdit ? (
+                            <Menu.Item
+                              onSelect={() => openEditModal(user)}
+                              value="edit"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaEdit />
+                                <Text>Chỉnh sửa</Text>
+                              </HStack>
+                            </Menu.Item>
+                          ) : (
+                            <Menu.Item
+                              as={Link}
+                              to="/admin/settings"
+                              value="editProfile"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaUserEdit />
+                                <Text>Sửa hồ sơ</Text>
+                              </HStack>
+                            </Menu.Item>
+                          )}
+
+                          {canBlock && (
+                            <Menu.Item
+                              onSelect={() =>
+                                handleToggleBlock(user._id, user.isBlocked)
+                              }
+                              value="toggleBlock"
+                            >
+                              <HStack gap={2} align="center">
+                                {user.isBlocked ? <FaLockOpen /> : <FaLock />}
+                                <Text>{user.isBlocked ? "Mở khóa" : "Khóa"}</Text>
+                              </HStack>
+                            </Menu.Item>
+                          )}
+
+                          {canPromote && (
+                            <Menu.Item
+                              onSelect={() => handlePromote(user._id)}
+                              value="promote"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaUserShield />
+                                <Text>Lên Admin</Text>
+                              </HStack>
+                            </Menu.Item>
+                          )}
+
+                          {canDelete && (
+                            <Menu.Item
+                              onSelect={() => handleDelete(user._id)}
+                              value="delete"
+                            >
+                              <HStack gap={2} align="center">
+                                <FaTrash />
+                                <Text>Xóa</Text>
+                              </HStack>
+                            </Menu.Item>
+                          )}
+
+                          {!canEdit &&
+                            !canBlock &&
+                            !canPromote &&
+                            !canDelete && (
+                              <Menu.Item disabled value="none">
+                                <HStack gap={2} align="center">
+                                  <Text>Không có hành động</Text>
+                                </HStack>
+                              </Menu.Item>
+                            )}
+                        </Menu.Content>
+                      </Menu.Positioner>
+                    </Menu.Root>
                   </Table.Cell>
                 </Table.Row>
               );
